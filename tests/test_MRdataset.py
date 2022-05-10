@@ -5,9 +5,6 @@
 import pytest
 
 
-from MRdataset import MRdataset
-
-
 @pytest.fixture
 def response():
     """Sample pytest fixture.

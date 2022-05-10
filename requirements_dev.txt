@@ -9,4 +9,5 @@ Sphinx==1.8.5
 twine==1.14.0
 
 pytest==6.2.4
-
+nibabel==3.2.2
+pydicom==2.3.0

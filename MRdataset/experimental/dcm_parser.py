@@ -46,6 +46,22 @@ class DicomObject:
                 return False
         return True
 
+    def isEqual(self, other, return_diff=True):
+        flag = True
+        diff = {}
+        if not isinstance(other, DicomObject):
+            return NotImplemented
+        if self.dicom.filename == other.dicom.filename:
+            warnings.warn("Comparing same dicom files.")
+        for k in self.fparams:
+            if self.fparams[k] != other.fparams[k]:
+                flag = False
+                diff[k] = [self.fparams[k], other.fparams[k]]
+        if return_diff:
+            return flag, str(diff)
+        else:
+            return flag
+
     def csa_parser(self):
         self.image_header = read(self.dicom[self.params['CSA']['ImageHeaderInfo']].value)
         self.series_header = read(self.dicom[self.params['CSA']['SeriesHeaderInfo']].value)
@@ -113,9 +129,11 @@ class DicomObject:
         # rows\frequency columns\phase rows\phase columns.")
 
         # Effective Echo Spacing (ms) = 1000/(BPP * phase encoding lines)
-        self.fparams['EffectiveEchoSpacing'] = 1000 / (
-                self.fparams['BandwidthPerPixelPhaseEncode'] * self.fparams["PhaseEncodingLines"])
-
+        try:
+            self.fparams['EffectiveEchoSpacing'] = 1000 / (
+                    self.fparams['BandwidthPerPixelPhaseEncode'] * self.fparams["PhaseEncodingLines"])
+        except:
+            self.fparams['EffectiveEchoSpacing'] = None
         # three modes: warm-up, standard, advanced
         self.fparams["ShimMethod"] = eval(self.csaprops["sAdjData.uiAdjShimMode"])
         self.fparams["is3D"] = self.fparams["MRAcquisitionType"] == '3D'
@@ -160,15 +178,14 @@ if __name__ == "__main__":
     from MRdataset.modules.localdataset import LocalDataset
     from tqdm import tqdm
 
-    boldDataset = LocalDataset()
-    n = 100
-    k = 100
+    boldDataset = LocalDataset(name="165639", data_dir="/media/harsh/My Passport/MRI_Datasets/abcd_daily_QA/raamanap-20220509_165639/abcd_daily_qa_20220309")
     i = boldDataset[0]
     obj1 = DicomObject('modules/resources/bold_params.json').parse(i)
     for j in tqdm(boldDataset):
         # for j in tqdm(boldDataset[k+n:k+2*n], leave=False):
         obj2 = DicomObject('modules/resources/bold_params.json').parse(j)
-        if obj1 != obj2:
-            print(i, j)
+        flag, val = obj1.isEqual(obj2)
+        if not flag:
+            print(j, val)
         del obj2
 

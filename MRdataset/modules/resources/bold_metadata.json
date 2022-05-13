@@ -1,0 +1,44 @@
+{
+    "subjects": {
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI2": [
+            "171103143700"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI4": [
+            "171103143700"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI1": [
+            "171103143700"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI3": [
+            "171103143700"
+        ]
+    },
+    "modalities": {
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI2": [
+            "['EP', 'SK', 'SS']"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI4": [
+            "['EP', 'SK', 'SS']"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI1": [
+            "['EP', 'SK', 'SS']"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI3": [
+            "['EP', 'SK', 'SS']"
+        ]
+    },
+    "sessions": {
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI2": [
+            "1.3.12.2.1107.5.2.36.40482.2017110315064034924108410.0.0.0"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI4": [
+            "1.3.12.2.1107.5.2.36.40482.2017110315064034924108410.0.0.0"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI1": [
+            "1.3.12.2.1107.5.2.36.40482.2017110315064034924108410.0.0.0"
+        ],
+        "/media/harsh/My Passport/BOLD5000/BOLD5000_Unfiltered_CSI3": [
+            "1.3.12.2.1107.5.2.36.40482.2017110315064034924108410.0.0.0"
+        ]
+    }
+}

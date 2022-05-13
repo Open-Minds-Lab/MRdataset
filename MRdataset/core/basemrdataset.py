@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Dataset(ABC):
     """An abstract class representing a dataset"""
 
@@ -10,7 +11,6 @@ class Dataset(ABC):
     @abstractmethod
     def __len__(self):
         raise TypeError("__len__ attribute implementation for dataset is missing.")
-
 
 # class BaseMRDataset(Dataset):
 #     """Base class for container classes holding MRI datasets: XNAT, BIDS, DICOM"""

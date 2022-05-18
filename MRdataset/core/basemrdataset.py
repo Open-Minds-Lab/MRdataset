@@ -5,7 +5,7 @@ class Dataset(ABC):
     """An abstract class representing a dataset"""
 
     @abstractmethod
-    def __getitem__(self, idx):
+    def __getitem__(self, *args, **kwargs):
         raise NotImplementedError("__getitem__ attribute implementation for dataset is missing.")
 
     @abstractmethod

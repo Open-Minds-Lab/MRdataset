@@ -123,9 +123,9 @@ class XnatDataset(Dataset):
             data_dict[sid][session]["mode"] = modality
             data_dict[sid][session]["files"].append(filename.as_posix())
 
-            if i > 100000:
-                break
-            i += 1
+            # if i > 100000:
+            #     break
+            # i += 1
         with open(self.json_path, "w") as file:
             json.dump(dict(data_dict), file, indent=4)
 
@@ -146,7 +146,8 @@ class XnatDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def __getitem__(self, sub, sid, session):
+    def __getitem__(self, idx):
+        sid, session = idx
         obj = self.data[sid][session]
         return obj
 

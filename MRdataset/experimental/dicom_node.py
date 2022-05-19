@@ -2,14 +2,16 @@ from nibabel.nicom import csareader
 import pydicom
 import warnings
 from MRdataset.experimental import tags
-from MRdataset.experimental import Node
+from MRdataset.experimental import node
 
 
-class DicomNode(Node.Node):
+class DicomNode(node.Node):
     def __init__(self, filepath):
         super().__init__()
         self.filepath = filepath
         self.populate()
+        del self.dicom
+        del self.csaprops
 
     def populate(self):
         self._read()
@@ -77,9 +79,10 @@ class DicomNode(Node.Node):
         self.fparams["MultiBandComment"] = self.fparams["Comments"]
         so = str(eval(self.csaprops["sKSpace.ucMultiSliceMode"]))
         self.fparams["SliceOrder"] = tags.SODict[so]
-
         if self.fparams["EchoTrainLength"] > 1:
-            assert self.fparams["EchoTrainLength"] == self.fparams["PhaseEncodingLines"]
+            check = (self.fparams["EchoTrainLength"] == self.fparams["PhaseEncodingLines"])
+            if not check:
+                print("PhaseEncodingLines is not equal to EchoTrainLength : {0}".format(self.filepath))
         try:
             self.fparams['EffectiveEchoSpacing'] = 1000 / (
                     self.fparams['BandwidthPerPixelPhaseEncode'] * self.fparams["PhaseEncodingLines"])
@@ -133,4 +136,3 @@ if __name__ == "__main__":
     filepath = "/media/harsh/My Passport/MRI_Datasets/sinhah-20220514_140054/MIND016/scans/10-gre_field_mapping/resources/DICOM/1.3.12.2.1107.5.2.43.67078.30000019082010561171200000019-10-1-13j6l3y.dcm"
     l = DicomNode(filepath)
     print(l.fparams)
-

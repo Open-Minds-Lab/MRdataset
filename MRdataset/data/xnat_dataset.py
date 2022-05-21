@@ -1,55 +1,67 @@
 from MRdataset.utils import functional
 from MRdataset.utils import progress
-from MRdataset.core.basemrdataset import Dataset
+from MRdataset.data.base import Dataset
+from MRdataset.data import config
 from pathlib import Path
+from collections import defaultdict
+from pydicom.multival import MultiValue
 import json
 import pydicom
-from collections import defaultdict
 import warnings
+
 
 class XnatDataset(Dataset):
     def __init__(self,
                  name='mind',
-                 style='local',
-                 data_dir=None,
-                 verbose=True,
+                 input=None,
+                 metadata=None,
+                 verbose=False,
                  reindex=False,
-                 combine=True):
+                 **kwargs):
         """
+        A dataset class for XNAT Dataset.
+        Args:
+            name:  an identifier/name for the dataset
+            input: directory containing dataset with dicom files, supports nested hierarchies
+            metadata: directory to store metadata files
+            verbose: allow verbose output on console
+            reindex: overwrite existing metadata files
 
+        Examples:
+            >>> from MRdataset.data import xnat_dataset
+            >>> dataset = xnatdataset.XnatDataset()
         """
-        default_data_dir = "/media/harsh/My Passport/MRI_Datasets/sinhah-20220514_140054/"
-        self.DATA_DIR = Path(data_dir) if data_dir else Path(default_data_dir)
+        # Manage directories
+        self.DATA_DIR = Path(input)
         if not self.DATA_DIR.exists():
             raise FileNotFoundError('Provide a valid /path/to/dataset/')
 
-        json_filename = "resources/{0}.json".format(name)
-        self.json_path = Path(__file__).resolve().parent/json_filename
-        metadata_filename = "resources/{0}.json".format(name+'_metadata')
-        self.metadata_path = Path(__file__).resolve().parent/metadata_filename
+        self.METADATA_DIR = Path(metadata)
+        if not self.METADATA_DIR.exists():
+            raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
+        self.json_path = self.METADATA_DIR/"{0}.json".format(name)
+        self.metadata_path = self.METADATA_DIR/"{0}.json".format(name+'_metadata')
         self.indexed = self.json_path.exists()
 
+        # Private Placeholders for metadata
         self._subjects = []
         self._modalities = defaultdict(list)
         self._sessions = defaultdict(list)
-        # self.subjects = list
 
-        # Constants
-        self.SESSION_TAG = (0x20, 0x0e)
-        self.SEQUENCE_TAG = (0x18, 0x20)
-        self.VARIANT_TAG = (0x18, 0x21)
-        self.SUBJECT_TAG = (0x10, 0x10)
-
+        # Start indexing
         self.verbose = verbose
         if not self.indexed or reindex:
             if self.verbose:
-                print("JSON file not found, It will take sometime to skim the dataset.", end="...")
-            with progress.Spinner():
+                print("Indexing dataset.", end="...")
+                with progress.Spinner():
+                    self.data = self.walk()
+                print("\n")
+            else:
                 self.data = self.walk()
         else:
             if self.verbose:
-                print("JSON file found.")
+                print("Metadata files found.")
 
             with open(self.json_path, 'r') as f:
                 self.data = json.load(f)
@@ -58,8 +70,6 @@ class XnatDataset(Dataset):
             self._subjects = metadata['subjects']
             self._modalities = metadata['modalities']
             self._sessions = metadata['sessions']
-
-        print(self)
 
     @property
     def subjects(self):
@@ -74,24 +84,25 @@ class XnatDataset(Dataset):
         return self._sessions
 
     def get_session(self, dicom):
-        series = dicom.get(self.SESSION_TAG, None).value
+        series = dicom.get(config.SESSION, None).value
         return series
 
     def get_modality(self, dicom):
         mode = []
-        sequence = dicom.get(self.SEQUENCE_TAG, None).value
-        variant = dicom.get(self.VARIANT_TAG, None).value
+        sequence = dicom.get(config.SEQUENCE, None).value
+        variant = dicom.get(config.VARIANT, None).value
+
         # If string, append to list
-        # If list, convert expression to list, append to list
+        # If pydicom.multival.MultiValue, convert expression to list, append to list
         if isinstance(sequence, str):
             mode.append(sequence)
-        elif isinstance(sequence, pydicom.multival.MultiValue):
+        elif isinstance(sequence, MultiValue):
             mode.append(list(sequence))
         else:
             warnings.warn("Error reading modality. Skipping.")
         if isinstance(variant, str):
             mode.append(variant)
-        elif isinstance(variant, pydicom.multival.MultiValue):
+        elif isinstance(variant, MultiValue):
             mode.append(list(variant))
         else:
             warnings.warn("Error reading modality. Skipping.")
@@ -99,12 +110,11 @@ class XnatDataset(Dataset):
         return functional.flatten(mode)
 
     def get_subject(self, dicom):
-        name = str(dicom.get(self.SUBJECT_TAG, None).value)
+        name = str(dicom.get(config.SUBJECT, None).value)
         return name
 
     def walk(self):
         data_dict = functional.DeepDefaultDict(depth=3)
-        i = 0
         # from random import shuffle
         for filename in self.DATA_DIR.glob('**/*.dcm'):
             dicom = pydicom.dcmread(filename)
@@ -123,9 +133,6 @@ class XnatDataset(Dataset):
             data_dict[sid][session]["mode"] = modality
             data_dict[sid][session]["files"].append(filename.as_posix())
 
-            # if i > 100000:
-            #     break
-            # i += 1
         with open(self.json_path, "w") as file:
             json.dump(dict(data_dict), file, indent=4)
 
@@ -140,7 +147,8 @@ class XnatDataset(Dataset):
         return data_dict
 
     def __str__(self):
-        return '\n#Files : {0}    \n' \
+        return 'XnatDataset was created\n' \
+               '#Files : {0}    \n' \
                '#Subject: {1}'.format(len(self), len(self.subjects))
 
     def __len__(self):
@@ -148,10 +156,4 @@ class XnatDataset(Dataset):
 
     def __getitem__(self, idx):
         sid, session = idx
-        obj = self.data[sid][session]
-        return obj
-
-
-if __name__ == "__main__":
-    dataset = XnatDataset(reindex=True)
-    # print(dataset.__getitem__(0))
+        return self.data[sid][session]

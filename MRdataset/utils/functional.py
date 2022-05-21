@@ -9,7 +9,6 @@ def fix(f):
     """
     return lambda *args, **kwargs: f(fix(f), *args, **kwargs)
 
-
 def flatten(arg):
     returnlist = []
     for i in arg:
@@ -21,20 +20,15 @@ def flatten(arg):
 
 
 class DeepDefaultDict(defaultdict):
-    def __init__(self, depth, default=list, _root=True):
-        self.root = _root
+    def __init__(self, depth, default=list):
         self.depth = depth
         if self.depth > 1:
-            curr_default = lambda: DeepDefaultDict(depth-1, default, False)
+            curr_default = lambda: DeepDefaultDict(depth-1, default)
         else:
             curr_default = default
         defaultdict.__init__(self, curr_default)
 
     def __repr__(self):
-        # if self.root:
-        #     return "DeepDefaultDict(%d): {%s}" % (self.depth,
-        #                                             defaultdict.__repr__(self))
-        # else:
         return dict.__repr__(self)
 
     def __str__(self):

@@ -43,7 +43,7 @@ def main():
             parser.print_help()
             raise OSError('Invalid directory for saving metadata. Use -c flag to create new directories automatically')
     dataset = create_dataset(args)
-    return dataset
+    return 0
 
 
 if __name__ == "__main__":

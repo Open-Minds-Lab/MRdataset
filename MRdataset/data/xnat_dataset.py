@@ -34,6 +34,8 @@ class XnatDataset(Dataset):
             >>> dataset = xnat_dataset.XnatDataset()
         """
         super().__init__()
+        self.name = name
+
         # Manage directories
         self.DATA_DIR = Path(dataroot)
         if not self.DATA_DIR.exists():
@@ -43,8 +45,8 @@ class XnatDataset(Dataset):
         if not self.METADATA_DIR.exists():
             raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
-        self.json_path = self.METADATA_DIR/"{0}.json".format(name)
-        self.metadata_path = self.METADATA_DIR/"{0}.json".format(name+'_metadata')
+        self.json_path = self.METADATA_DIR/"{0}.json".format(self.name)
+        self.metadata_path = self.METADATA_DIR/"{0}.json".format(self.name+'_metadata')
         self.indexed = self.json_path.exists()
         if self.indexed:
             if not self.metadata_path.exists():

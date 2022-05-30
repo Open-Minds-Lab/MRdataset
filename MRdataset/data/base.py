@@ -47,7 +47,7 @@ def create_dataset(opt):
     if isinstance(opt, dict):
         dataset_class = find_dataset_using_style(opt['style'])
         dataset = dataset_class(**opt)
-        if opt.get('verbose', False):
+        if opt.get('verbose', True):
             print(dataset)
     else:
         raise TypeError("Unsupported type. Expects either a Namespace or dict")

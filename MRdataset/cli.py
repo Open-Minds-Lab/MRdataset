@@ -37,13 +37,13 @@ def main():
         raise OSError('Invalid directory for input dataset')
     output_dir = Path(args.metadataroot)
     if not output_dir.is_dir():
-        if args.mkdir:
+        if args.create:
             output_dir.mkdir(parents=True, exist_ok=True)
         else:
             parser.print_help()
             raise OSError('Invalid directory for saving metadata. Use -c flag to create new directories automatically')
     dataset = create_dataset(args)
-    return 0
+    return dataset
 
 
 if __name__ == "__main__":

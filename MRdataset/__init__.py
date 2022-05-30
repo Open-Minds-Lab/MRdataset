@@ -7,31 +7,23 @@ __version__ = '0.1.0'
 import argparse
 from MRdataset.data import find_dataset_using_style
 
+
 def create_dataset(opt):
     """
-	Train a model to classify Foos and Bars.
-
-	Usage::
-
-	>>> import klassify
-	>>> data = [("green", "foo"), ("orange", "bar")]
-	>>> classifier = klassify.train(data)
-
-	:param train_data: A list of tuples of the form ``(color, label)``.
-	:rtype: A :class:`Classifier <Classifier>`
-
     Create dataset as per arguments.
 
     This function acts as a Wrapper class for base.Dataset.
     This is the main interface between this package and your analysis
 
-    Args:
-        opt: expects either a Namespace object from argparse,
-             for command-line interface or python dict
+    Usage::
 
-    Examples:
-        >>> from MRdataset import create_dataset
-        >>> dataset = create_dataset(opt)
+    >>> from MRdataset import create_dataset
+    >>> dataset = create_dataset(opt)
+
+    :param opt: expects either a Namespace object from argparse,
+             for command-line interface or python dict
+    :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
+
     """
     if isinstance(opt, argparse.Namespace):
         opt = vars(opt)

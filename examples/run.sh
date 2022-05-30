@@ -10,7 +10,7 @@
 
  INPUT_DIR="/media/harsh/My Passport/MRI_Datasets/sinhah-20220520_201328/"
  OUTPUT_DIR="/home/harsh/My Passport/MRI_Datasets/metadata/"
- python /home/harsh/PycharmProjects/MRdataset/MRdataset/cli.py --dataroot "$INPUT_DIR" --metadataroot "$OUTPUT_DIR" --style xnat --name cha_mjff --verbose -c
+ python /home/harsh/PycharmProjects/MRdataset/MRdataset/cli.py --dataroot "$INPUT_DIR" --metadataroot "$OUTPUT_DIR" --style xnat --name cha_mjff -c
 
 #INPUT_DIR="/media/harsh/My Passport/MRI_Datasets/sinhah-20220520_210659/"
 #OUTPUT_DIR="/home/harsh/PycharmProjects/MRdataset/MRdataset/resources/"

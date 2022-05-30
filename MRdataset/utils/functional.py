@@ -11,6 +11,8 @@ def fix(f):
 
 def flatten(arg):
     returnlist = []
+    if not arg:
+        return returnlist
     for i in arg:
         if isinstance(i, list):
             returnlist.extend(flatten(i))

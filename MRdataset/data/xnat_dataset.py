@@ -9,6 +9,7 @@ import json
 import pydicom
 import warnings
 
+
 # TODO: check what if each variable is None. Apply try catch
 # TODO: generate metadata from index, if metadata is absent
 class XnatDataset(Dataset):
@@ -146,6 +147,7 @@ class XnatDataset(Dataset):
             sid = self._get_subject(dicom)
             project = self._get_project(dicom)
 
+            # Convert to string, because list is not hashable
             if str(modality) not in self._modalities[sid]:
                 self._modalities[sid].append(str(modality))
             if sid not in self._subjects:

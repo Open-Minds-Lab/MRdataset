@@ -199,5 +199,7 @@ class XnatDataset(Dataset):
         sid, session = idx
         try:
             value = self.data[sid][session]
+            return value
         except KeyError:
             warnings.warn("Index ({0}, {1}) absent. Skipping. Do you want to regenerate index?".format(sid, session))
+

@@ -32,16 +32,13 @@ def main():
 
     args = parser.parse_args()
     if not Path(args.dataroot).is_dir():
-        print(Path(args.dataroot).exists())
-        parser.print_help()
-        raise OSError('Invalid directory for input dataset')
+        raise OSError('Expected valid directory for --dataroot argument, Got {0}'.format(args.dataroot))
     output_dir = Path(args.metadataroot)
     if not output_dir.is_dir():
         if args.create:
             output_dir.mkdir(parents=True, exist_ok=True)
         else:
-            parser.print_help()
-            raise OSError('Invalid directory for saving metadata. Use -c flag to create new directories automatically')
+            raise OSError('Expected valid directory for --metadata argument. Use -c flag to create new directories automatically')
     dataset = create_dataset(args)
     return dataset
 

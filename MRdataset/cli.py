@@ -13,7 +13,7 @@ def main():
     optional = parser.add_argument_group('optional arguments')
 
     # Add help
-    optional.add_argument('-h', '-help', action='help', default=argparse.SUPPRESS,
+    optional.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
                           help='show this help message and exit')
     required.add_argument('-i', '--dataroot', type=str,
                           help='directory containing downloaded dataset with dicom files, supports nested hierarchies')

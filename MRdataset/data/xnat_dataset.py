@@ -162,24 +162,24 @@ class XnatDataset(Dataset):
                         logging.warning("Invalid file: %s" % filename)
                         continue
 
-                # modality = self._get_modality(dicom)
-                series = self._get_series(dicom)
-                session = self._get_session(dicom)
-                sid = self._get_subject(dicom)
-                project = self._get_project(dicom)
+                    # modality = self._get_modality(dicom)
+                    series = self._get_series(dicom)
+                    session = self._get_session(dicom)
+                    sid = self._get_subject(dicom)
+                    project = self._get_project(dicom)
 
-                # Convert to string, because list is not hashable
-                if str(series) not in self._modalities[sid]:
-                    self._modalities[sid].append(str(series))
-                if sid not in self._subjects:
-                    self._subjects.append(sid)
-                if session not in self._sessions[sid]:
-                    self._sessions[sid].append(session)
-                if project not in self._projects:
-                    self._projects.append(project)
+                    # Convert to string, because list is not hashable
+                    if str(series) not in self._modalities[sid]:
+                        self._modalities[sid].append(str(series))
+                    if sid not in self._subjects:
+                        self._subjects.append(sid)
+                    if session not in self._sessions[sid]:
+                        self._sessions[sid].append(session)
+                    if project not in self._projects:
+                        self._projects.append(project)
 
-                data_dict[sid][session]["mode"] = series
-                data_dict[sid][session]["files"].append(filename.as_posix())
+                    data_dict[sid][session]["mode"] = series
+                    data_dict[sid][session]["files"].append(filename.as_posix())
             except:
                 logging.warning("Unable to read: %s" % filename)
 

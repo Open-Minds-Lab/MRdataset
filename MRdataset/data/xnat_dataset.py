@@ -8,7 +8,7 @@ from pydicom.multival import MultiValue
 import json
 import pydicom
 import warnings
-
+import dicom2nifti
 
 # TODO: check what if each variable is None. Apply try catch
 # TODO: generate metadata from index, if metadata is absent
@@ -143,24 +143,33 @@ class XnatDataset(Dataset):
     def walk(self):
         data_dict = functional.DeepDefaultDict(depth=3)
         for filename in self.DATA_DIR.glob('**/*.dcm'):
-            dicom = pydicom.dcmread(filename)
-            modality = self._get_modality(dicom)
-            session = self._get_session(dicom)
-            sid = self._get_subject(dicom)
-            project = self._get_project(dicom)
+            try:
+                if dicom2nifti.compressed_dicom.is_dicom_file(filename):
+                    dicom = dicom2nifti.compressed_dicom.read_file(filename,
+                                    stop_before_pixels=True)
+                    if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
+                        warnings.warn("Invalid file: %s" % filename, stacklevel=2)
+                        continue
 
-            # Convert to string, because list is not hashable
-            if str(modality) not in self._modalities[sid]:
-                self._modalities[sid].append(str(modality))
-            if sid not in self._subjects:
-                self._subjects.append(sid)
-            if session not in self._sessions[sid]:
-                self._sessions[sid].append(session)
-            if project not in self._projects:
-                self._projects.append(project)
+                modality = self._get_modality(dicom)
+                session = self._get_session(dicom)
+                sid = self._get_subject(dicom)
+                project = self._get_project(dicom)
 
-            data_dict[sid][session]["mode"] = modality
-            data_dict[sid][session]["files"].append(filename.as_posix())
+                # Convert to string, because list is not hashable
+                if str(modality) not in self._modalities[sid]:
+                    self._modalities[sid].append(str(modality))
+                if sid not in self._subjects:
+                    self._subjects.append(sid)
+                if session not in self._sessions[sid]:
+                    self._sessions[sid].append(session)
+                if project not in self._projects:
+                    self._projects.append(project)
+
+                data_dict[sid][session]["mode"] = modality
+                data_dict[sid][session]["files"].append(filename.as_posix())
+            except:
+                warnings.warn("Unable to read: %s" % filename, stacklevel=2)
 
         with open(self.json_path, "w") as file:
             json.dump(dict(data_dict), file, indent=4)

@@ -1,4 +1,6 @@
 from collections import defaultdict
+from MRdataset.utils import config
+from nibabel.nicom import csareader
 
 
 def fix(f):
@@ -36,3 +38,14 @@ class DeepDefaultDict(defaultdict):
     def __str__(self):
         return dict.__str__(self)
 
+
+def header_exists(dicom):
+    try:
+        series = dicom.get(config.SERIES_HEADER_INFO).value
+        image = dicom.get(config.IMAGE_HEADER_INFO).value
+        series_header = csareader.read(series)
+        image_header = csareader.read(image)
+        items = series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
+        return True
+    except:
+        return False

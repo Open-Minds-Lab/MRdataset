@@ -1,12 +1,10 @@
-from MRdataset.utils import functional
+from MRdataset.utils import functional, config
 from MRdataset.utils import progress
 from MRdataset.data.base import Dataset
-from MRdataset.data import config
 from pathlib import Path
 from collections import defaultdict
 from pydicom.multival import MultiValue
 import json
-import pydicom
 import warnings
 import dicom2nifti
 import logging
@@ -126,6 +124,9 @@ class XnatDataset(Dataset):
         ret_string = "_".join([str(b), a])
         return ret_string.replace(" ", "_")
 
+    def _get_image_type(self, dicom):
+        return self._get_property(dicom, 'IMAGE_TYPE')
+
     def _get_modality(self, dicom):
         mode = []
         sequence = self._get_property(dicom, 'SEQUENCE')
@@ -161,9 +162,16 @@ class XnatDataset(Dataset):
                     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
                         logging.warning("Invalid file: %s" % filename)
                         continue
-
+                    if not functional.header_exists(dicom):
+                        logging.warning("Header Absent: %s" % filename)
+                        continue
                     # modality = self._get_modality(dicom)
                     series = self._get_series(dicom)
+                    # TODO: make the check more concrete. See dicom2nifti for details
+                    if 'local' in series:
+                        logging.warning("Localizer: Skipping %s" % filename)
+                        continue
+
                     session = self._get_session(dicom)
                     sid = self._get_subject(dicom)
                     project = self._get_project(dicom)

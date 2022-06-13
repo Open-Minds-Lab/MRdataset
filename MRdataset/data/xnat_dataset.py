@@ -9,6 +9,7 @@ import json
 import pydicom
 import warnings
 import dicom2nifti
+import logging
 
 # TODO: check what if each variable is None. Apply try catch
 # TODO: generate metadata from index, if metadata is absent
@@ -115,6 +116,16 @@ class XnatDataset(Dataset):
     def _get_session(self, dicom):
         return self._get_property(dicom, 'SESSION')
 
+    def _get_series(self, dicom):
+        a = self._get_property(dicom, 'SERIES_DESCRIPTION')
+        b = self._get_property(dicom, 'SERIES_NUMBER')
+        if a is None:
+            a = self._get_property(dicom, 'SEQUENCE_NAME')
+        if a is None:
+            a = self._get_property(dicom, 'PROTOCOL_NAME')
+        ret_string = "_".join([str(b), a])
+        return ret_string.replace(" ", "_")
+
     def _get_modality(self, dicom):
         mode = []
         sequence = self._get_property(dicom, 'SEQUENCE')
@@ -127,13 +138,13 @@ class XnatDataset(Dataset):
         elif isinstance(sequence, MultiValue):
             mode.append(list(sequence))
         else:
-            warnings.warn("Error reading <sequence>. Do you think its a phantom?")
+            logging.warning("Error reading <sequence>. Do you think its a phantom?")
         if isinstance(variant, str):
             mode.append(variant)
         elif isinstance(variant, MultiValue):
             mode.append(list(variant))
         else:
-            warnings.warn("Error reading <variant>. Do you think its a phantom?")
+            logging.warning("Error reading <variant>. Do you think its a phantom?")
 
         return functional.flatten(mode)
 
@@ -148,17 +159,18 @@ class XnatDataset(Dataset):
                     dicom = dicom2nifti.compressed_dicom.read_file(filename,
                                     stop_before_pixels=True)
                     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-                        warnings.warn("Invalid file: %s" % filename, stacklevel=2)
+                        logging.warning("Invalid file: %s" % filename)
                         continue
 
-                modality = self._get_modality(dicom)
+                # modality = self._get_modality(dicom)
+                series = self._get_series(dicom)
                 session = self._get_session(dicom)
                 sid = self._get_subject(dicom)
                 project = self._get_project(dicom)
 
                 # Convert to string, because list is not hashable
-                if str(modality) not in self._modalities[sid]:
-                    self._modalities[sid].append(str(modality))
+                if str(series) not in self._modalities[sid]:
+                    self._modalities[sid].append(str(series))
                 if sid not in self._subjects:
                     self._subjects.append(sid)
                 if session not in self._sessions[sid]:
@@ -166,10 +178,10 @@ class XnatDataset(Dataset):
                 if project not in self._projects:
                     self._projects.append(project)
 
-                data_dict[sid][session]["mode"] = modality
+                data_dict[sid][session]["mode"] = series
                 data_dict[sid][session]["files"].append(filename.as_posix())
             except:
-                warnings.warn("Unable to read: %s" % filename, stacklevel=2)
+                logging.warning("Unable to read: %s" % filename)
 
         with open(self.json_path, "w") as file:
             json.dump(dict(data_dict), file, indent=4)
@@ -189,16 +201,16 @@ class XnatDataset(Dataset):
 
     def is_unique_project(self):
         if len(self.projects) > 1:
-            warnings.warn("Expected all the dicom files to be in the same project/study. "
+            logging.warning("Expected all the dicom files to be in the same project/study. "
                           "Found {0} unique project/study id(s)".format(len(self.projects)))
             return False
         if len(self.projects) == 1:
             if self.projects[0] is None:
-                warnings.warn("Unique project/study id not found. Assuming that all dicom "
+                logging.warning("Unique project/study id not found. Assuming that all dicom "
                               "files to be in the same project.")
                 return False
             return True
-        warnings.warn("Error in processing! self.projects is empty")
+        logging.warning("Error in processing! self.projects is empty")
         return False
 
     def __str__(self):
@@ -214,5 +226,5 @@ class XnatDataset(Dataset):
             value = self.data[sid][session]
             return value
         except KeyError:
-            warnings.warn("Index ({0}, {1}) absent. Skipping. Do you want to regenerate index?".format(sid, session))
+            logging.warning("Index ({0}, {1}) absent. Skipping. Do you want to regenerate index?".format(sid, session))
 

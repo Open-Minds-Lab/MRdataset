@@ -186,8 +186,8 @@ class XnatDataset(Dataset):
                     if project not in self._projects:
                         self._projects.append(project)
 
-                    data_dict[sid][session]["mode"] = series
-                    data_dict[sid][session]["files"].append(filename.as_posix())
+                    data_dict[sid][series]["id"] = session
+                    data_dict[sid][series]["files"].append(filename.as_posix())
             except:
                 logging.warning("Unable to read: %s" % filename)
 

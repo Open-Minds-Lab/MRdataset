@@ -177,8 +177,8 @@ class XnatDataset(Dataset):
                     project = self._get_project(dicom)
 
                     # Convert to string, because list is not hashable
-                    if str(series) not in self._modalities[sid]:
-                        self._modalities[sid].append(str(series))
+                    if str(sid) not in self._modalities[series]:
+                        self._modalities[series].append(sid)
                     if sid not in self._subjects:
                         self._subjects.append(sid)
                     if session not in self._sessions[sid]:

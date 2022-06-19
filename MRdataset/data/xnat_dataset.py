@@ -158,7 +158,7 @@ class XnatDataset(Dataset):
             try:
                 if dicom2nifti.compressed_dicom.is_dicom_file(filename):
                     dicom = dicom2nifti.compressed_dicom.read_file(filename,
-                                    stop_before_pixels=True)
+                                                                   stop_before_pixels=True)
                     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
                         logging.warning("Invalid file: %s" % filename)
                         continue
@@ -168,12 +168,16 @@ class XnatDataset(Dataset):
                     # modality = self._get_modality(dicom)
                     series = self._get_series(dicom)
                     # TODO: make the check more concrete. See dicom2nifti for details
-                    if 'local' in series:
+                    if 'local' in series.lower():
                         logging.warning("Localizer: Skipping %s" % filename)
                         continue
 
                     session = self._get_session(dicom)
                     sid = self._get_subject(dicom)
+                    if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
+                        logging.warning('ACR/Phantom: %s' % filename)
+                        continue
+
                     project = self._get_project(dicom)
 
                     # Convert to string, because list is not hashable

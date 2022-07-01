@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from MRdataset.utils import config
 from nibabel.nicom import csareader
@@ -10,6 +11,7 @@ def fix(f):
     d = fix(defaultdict)()
     """
     return lambda *args, **kwargs: f(fix(f), *args, **kwargs)
+
 
 def flatten(arg):
     returnlist = []
@@ -25,12 +27,10 @@ def flatten(arg):
 
 class DeepDefaultDict(defaultdict):
     def __init__(self, depth, default=list):
-        self.depth = depth
-        if self.depth > 1:
-            curr_default = lambda: DeepDefaultDict(depth-1, default)
+        if depth > 1:
+            defaultdict.__init__(self, lambda: DeepDefaultDict(depth-1, default))
         else:
-            curr_default = default
-        defaultdict.__init__(self, curr_default)
+            defaultdict.__init__(self, default)
 
     def __repr__(self):
         return dict.__repr__(self)
@@ -44,8 +44,13 @@ def header_exists(dicom):
         series = dicom.get(config.SERIES_HEADER_INFO).value
         image = dicom.get(config.IMAGE_HEADER_INFO).value
         series_header = csareader.read(series)
-        image_header = csareader.read(image)
-        items = series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
+
+        # just try reading these values, to bypass any errors, don't need these values now
+        # image_header = \
+        csareader.read(image)
+        # items = \
+        series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         return False

@@ -35,7 +35,7 @@ def create_dataset(opt):
     Usage::
 
     >>> from MRdataset import create_dataset
-    >>> dataset = create_dataset(opt)
+    >>> data = create_dataset(opt)
 
     :param opt: expects either a Namespace object from argparse,
              for command-line interface or python dict
@@ -74,9 +74,4 @@ def find_dataset_using_style(dataset_style):
     if dataset is None:
         raise NotImplementedError("Expected to find %s which is supposed  \
         to be a subclass of base.Dataset in %s.py" % (target_dataset_class, dataset_modulename))
-
     return dataset
-
-
-
-

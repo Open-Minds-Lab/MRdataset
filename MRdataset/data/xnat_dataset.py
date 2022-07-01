@@ -9,8 +9,8 @@ import warnings
 import dicom2nifti
 import logging
 
+
 # TODO: check what if each variable is None. Apply try catch
-# TODO: generate metadata from index, if metadata is absent
 class XnatDataset(Dataset):
     def __init__(self,
                  name='mind',
@@ -101,7 +101,7 @@ class XnatDataset(Dataset):
     def _create_metadata(self):
         raise NotImplementedError
 
-    # TODO: Move to baseclass
+    # TODO: Move to baseclass or utils
     def _get_property(self, dicom, attribute):
         element = dicom.get(getattr(config, attribute), None)
         if not element:
@@ -132,8 +132,8 @@ class XnatDataset(Dataset):
         sequence = self._get_property(dicom, 'SEQUENCE')
         variant = self._get_property(dicom, 'VARIANT')
 
-        # If string, append to list
-        # If pydicom.multival.MultiValue, convert expression to list, append to list
+        # If str, append to list
+        # If "pydicom.multival.MultiValue", convert expression to list, append to list
         if isinstance(sequence, str):
             mode.append(sequence)
         elif isinstance(sequence, MultiValue):
@@ -192,8 +192,9 @@ class XnatDataset(Dataset):
 
                     data_dict[sid][series]["id"] = session
                     data_dict[sid][series]["files"].append(filename.as_posix())
-            except:
+            except Exception as e:
                 logging.warning("Unable to read: %s" % filename)
+                logging.exception(e)
 
         with open(self.json_path, "w") as file:
             json.dump(dict(data_dict), file, indent=4)
@@ -214,12 +215,12 @@ class XnatDataset(Dataset):
     def is_unique_project(self):
         if len(self.projects) > 1:
             logging.warning("Expected all the dicom files to be in the same project/study. "
-                          "Found {0} unique project/study id(s)".format(len(self.projects)))
+                            "Found {0} unique project/study id(s)".format(len(self.projects)))
             return False
         if len(self.projects) == 1:
             if self.projects[0] is None:
                 logging.warning("Unique project/study id not found. Assuming that all dicom "
-                              "files to be in the same project.")
+                                "files to be in the same project.")
                 return False
             return True
         logging.warning("Error in processing! self.projects is empty")
@@ -239,4 +240,3 @@ class XnatDataset(Dataset):
             return value
         except KeyError:
             logging.warning("Index ({0}, {1}) absent. Skipping. Do you want to regenerate index?".format(sid, session))
-

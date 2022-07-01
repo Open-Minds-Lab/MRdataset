@@ -38,7 +38,8 @@ def main():
         if args.create:
             metadata_dir.mkdir(parents=True, exist_ok=True)
         else:
-            raise OSError('Expected valid directory for --metadata argument. Use -c flag to create new directories automatically')
+            raise OSError('Expected valid directory for --metadata argument. '
+                          'Use -c flag to create new directories automatically')
     dataset = create_dataset(args)
     return dataset
 

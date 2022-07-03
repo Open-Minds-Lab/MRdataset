@@ -35,7 +35,8 @@ setup(
     description="MRdataset",
     entry_points={
         'console_scripts': [
-            'MRdataset=MRdataset.cli:main',
+            'mrdataset=MRdataset.cli:main',
+            'mrds=MRdataset.cli:main'
         ],
     },
     install_requires=requirements,
@@ -47,7 +48,7 @@ setup(
     packages=find_packages(include=['MRdataset', 'MRdataset.*']),
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/raamana/MRdataset',
+    url='https://github.com/openmindslab/MRdataset',
     version='0.1.0',
     zip_safe=False,
 )

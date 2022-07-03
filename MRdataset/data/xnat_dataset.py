@@ -48,7 +48,8 @@ class XnatDataset(Dataset):
         self.indexed = self.json_path.exists()
         if self.indexed:
             if not self.metadata_path.exists():
-                warnings.warn("Generating metadata from dataset index. Use --reindex flag to regenerate index")
+                warnings.warn("Expected {name}_metadata.json. Got None. "
+                              "Re-generating metadata from old dataset index. Use --reindex flag to regenerate index")
                 self._create_metadata()
 
         # Private Placeholders for metadata
@@ -80,6 +81,8 @@ class XnatDataset(Dataset):
             self._modalities = metadata['modalities']
             self._sessions = metadata['sessions']
             self._projects = metadata.get('projects', list())
+            self.name = self.projects[0]
+            warnings.warn("Found dataset name in cache metadata files. Using {0} as identifier.", stacklevel=2)
 
     @property
     def subjects(self):

@@ -1,4 +1,4 @@
-# Constants
+# Constant Dicom Identifiers
 SESSION = (0x20, 0x0e)
 SEQUENCE = (0x18, 0x20)
 VARIANT = (0x18, 0x21)
@@ -11,3 +11,6 @@ SEQUENCE_NAME = (0x18, 0x24)
 IMAGE_TYPE = (0x08, 0x08)
 IMAGE_HEADER_INFO = (0x29, 0x1010)
 SERIES_HEADER_INFO = (0x29, 0x1020)
+
+# Constant Paths
+CACHE_DIR = ".mrdataset"

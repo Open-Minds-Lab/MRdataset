@@ -1,9 +1,8 @@
-from MRdataset.utils import functional, config
+from MRdataset.utils import functional, common
 from MRdataset.utils import progress
 from MRdataset.data.base import Dataset
 from pathlib import Path
 from collections import defaultdict
-from pydicom.multival import MultiValue
 import json
 import warnings
 import dicom2nifti
@@ -14,17 +13,16 @@ import logging
 class XnatDataset(Dataset):
     def __init__(self,
                  name='mind',
-                 dataroot=None,
-                 metadataroot=None,
+                 data_root=None,
+                 metadata_root=None,
                  verbose=False,
-                 reindex=False,
-                 **kwargs):
+                 reindex=False):
         """
         A dataset class for XNAT Dataset.
         Args:
             name:  an identifier/name for the dataset
-            dataroot: directory containing dataset with dicom files, supports nested hierarchies
-            metadataroot: directory to store metadata files
+            data_root: directory containing dataset with dicom files, supports nested hierarchies
+            metadata_root: directory to store metadata files
             verbose: allow verbose output on console
             reindex: overwrite existing metadata files
 
@@ -36,16 +34,17 @@ class XnatDataset(Dataset):
         self.name = name
 
         # Manage directories
-        self.DATA_DIR = Path(dataroot)
-        if not self.DATA_DIR.exists():
+        self.data_root = Path(data_root)
+        if not self.data_root.exists():
             raise FileNotFoundError('Provide a valid /path/to/dataset/')
 
-        self.METADATA_DIR = Path(metadataroot)
-        if not self.METADATA_DIR.exists():
+        self.metadata_root = Path(metadata_root)
+        if not self.metadata_root.exists():
             raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
-        self.json_path = self.METADATA_DIR/"{0}.json".format(self.name)
-        self.metadata_path = self.METADATA_DIR/"{0}.json".format(self.name+'_metadata')
+        self.json_path = self.metadata_root / "{0}.json".format(self.name)
+        self.metadata_path = self.metadata_root / "{0}.json".format(self.name + '_metadata')
+
         self.indexed = self.json_path.exists()
         if self.indexed:
             if not self.metadata_path.exists():
@@ -101,60 +100,9 @@ class XnatDataset(Dataset):
     def _create_metadata(self):
         raise NotImplementedError
 
-    # TODO: Move to baseclass or utils
-    def _get_property(self, dicom, attribute):
-        element = dicom.get(getattr(config, attribute), None)
-        if not element:
-            return None
-        return element.value
-
-    def _get_project(self, dicom):
-        return self._get_property(dicom, 'STUDY')
-
-    def _get_session(self, dicom):
-        return self._get_property(dicom, 'SESSION')
-
-    def _get_series(self, dicom):
-        a = self._get_property(dicom, 'SERIES_DESCRIPTION')
-        b = self._get_property(dicom, 'SERIES_NUMBER')
-        if a is None:
-            a = self._get_property(dicom, 'SEQUENCE_NAME')
-        if a is None:
-            a = self._get_property(dicom, 'PROTOCOL_NAME')
-        ret_string = "_".join([str(b), a])
-        return ret_string.replace(" ", "_")
-
-    def _get_image_type(self, dicom):
-        return self._get_property(dicom, 'IMAGE_TYPE')
-
-    def _get_modality(self, dicom):
-        mode = []
-        sequence = self._get_property(dicom, 'SEQUENCE')
-        variant = self._get_property(dicom, 'VARIANT')
-
-        # If str, append to list
-        # If "pydicom.multival.MultiValue", convert expression to list, append to list
-        if isinstance(sequence, str):
-            mode.append(sequence)
-        elif isinstance(sequence, MultiValue):
-            mode.append(list(sequence))
-        else:
-            logging.warning("Error reading <sequence>. Do you think its a phantom?")
-        if isinstance(variant, str):
-            mode.append(variant)
-        elif isinstance(variant, MultiValue):
-            mode.append(list(variant))
-        else:
-            logging.warning("Error reading <variant>. Do you think its a phantom?")
-
-        return functional.flatten(mode)
-
-    def _get_subject(self, dicom):
-        return str(self._get_property(dicom, 'SUBJECT'))
-
     def walk(self):
         data_dict = functional.DeepDefaultDict(depth=3)
-        for filename in self.DATA_DIR.glob('**/*.dcm'):
+        for filename in self.data_root.glob('**/*.dcm'):
             try:
                 if dicom2nifti.compressed_dicom.is_dicom_file(filename):
                     dicom = dicom2nifti.compressed_dicom.read_file(filename,
@@ -166,19 +114,19 @@ class XnatDataset(Dataset):
                         logging.warning("Header Absent: %s" % filename)
                         continue
                     # modality = self._get_modality(dicom)
-                    series = self._get_series(dicom)
+                    series = common.get_series(dicom)
                     # TODO: make the check more concrete. See dicom2nifti for details
                     if 'local' in series.lower():
                         logging.warning("Localizer: Skipping %s" % filename)
                         continue
 
-                    session = self._get_session(dicom)
-                    sid = self._get_subject(dicom)
+                    session = common.get_session(dicom)
+                    sid = common.get_subject(dicom)
                     if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
                         logging.warning('ACR/Phantom: %s' % filename)
                         continue
 
-                    project = self._get_project(dicom)
+                    project = common.get_project(dicom)
 
                     # Convert to string, because list is not hashable
                     if str(sid) not in self._modalities[series]:

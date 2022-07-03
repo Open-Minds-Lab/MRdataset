@@ -40,7 +40,9 @@ def main():
         else:
             raise OSError('Expected valid directory for --metadata argument. '
                           'Use -c flag to create new directories automatically')
-    dataset = create_dataset(args)
+
+    dataset = create_dataset(style=args.style, data_root=args.dataroot, verbose=args.verbose)
+
     return dataset
 
 

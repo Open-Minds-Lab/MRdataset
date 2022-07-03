@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import argparse
 import importlib
-
+from MRdataset.utils.config import CACHE_DIR
+from pathlib import Path
 
 class Dataset(ABC):
     """This class is an abstract base class (ABC) for datasets.
@@ -25,7 +26,7 @@ class Dataset(ABC):
         raise TypeError("__len__ attribute implementation for dataset is missing.")
 
 
-def create_dataset(opt):
+def create_dataset(style='xnat', data_root="", verbose=False):
     """
     Create dataset as per arguments.
 
@@ -42,15 +43,17 @@ def create_dataset(opt):
     :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
-    if isinstance(opt, argparse.Namespace):
-        opt = vars(opt)
-    if isinstance(opt, dict):
-        dataset_class = find_dataset_using_style(opt['style'])
-        dataset = dataset_class(**opt)
-        if opt.get('verbose', True):
-            print(dataset)
-    else:
-        raise TypeError("Unsupported type. Expects either a Namespace or dict")
+
+    data_root = Path(data_root).resolve()
+    metadata_root = data_root / CACHE_DIR
+    metadata_root.mkdir(exist_ok=True)
+
+    dataset_class = find_dataset_using_style(style.lower())
+    dataset = dataset_class(dataroot=data_root, metadataroot=metadata_root)
+
+    if verbose:
+        print(dataset)
+
     return dataset
 
 

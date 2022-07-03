@@ -56,5 +56,6 @@ def header_exists(dicom):
         logging.exception(e)
         return False
 
+
 def random_name():
     return str(hash(str(uuid.uuid1())) % 1000000)

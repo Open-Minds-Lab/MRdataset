@@ -12,11 +12,11 @@ import logging
 # TODO: check what if each variable is None. Apply try catch
 class XnatDataset(Dataset):
     def __init__(self,
-                 name='mind',
                  data_root=None,
                  metadata_root=None,
-                 verbose=False,
-                 reindex=False):
+                 name='mind',
+                 reindex=False,
+                 verbose=False):
         """
         A dataset class for XNAT Dataset.
         Args:
@@ -176,6 +176,7 @@ class XnatDataset(Dataset):
 
     def __str__(self):
         return 'XnatDataset {1} was created\n' \
+               'Please use identifier {1} with --name flag to utilize generated cache\n' \
                '#Subject: {0}'.format(len(self.subjects), self.name)
 
     def __len__(self):

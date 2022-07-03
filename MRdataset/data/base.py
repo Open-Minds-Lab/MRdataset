@@ -19,7 +19,8 @@ class Dataset(ABC):
         """
         Initialize the class; save the options in the class
         """
-        self.name = None
+        self.data_root = None
+        self.metadata_root = None
 
     @abstractmethod
     def __getitem__(self, *args, **kwargs):
@@ -60,7 +61,7 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
     metadata_root.mkdir(exist_ok=True)
     if name is None:
         warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
-                      'Using a random identifier instead. Use --name flag for persistent metadata',
+                      'May use a random value or old name from cached files. Use --name flag for persistent metadata',
                       stacklevel=2)
         name = functional.random_name()
 

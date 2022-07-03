@@ -81,8 +81,6 @@ class XnatDataset(Dataset):
             self._modalities = metadata['modalities']
             self._sessions = metadata['sessions']
             self._projects = metadata.get('projects', list())
-            self.name = self.projects[0]
-            warnings.warn("Found dataset name in cache metadata files. Using {0} as identifier.", stacklevel=2)
 
     @property
     def subjects(self):

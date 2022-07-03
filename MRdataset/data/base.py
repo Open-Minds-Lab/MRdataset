@@ -61,7 +61,7 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
     metadata_root.mkdir(exist_ok=True)
     if name is None:
         warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
-                      'May use a random value or old name from cached files. Use --name flag for persistent metadata',
+                      'Using a random name. Use --name flag for persistent metadata',
                       stacklevel=2)
         name = functional.random_name()
 

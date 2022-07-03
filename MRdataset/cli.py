@@ -15,9 +15,8 @@ def main():
 
     required.add_argument('-d', '--data_root', type=str, required=True,
                           help='directory containing downloaded dataset with dicom files, supports nested hierarchies')
-    required.add_argument('-s', '--style', type=str, required=True,
+    optional.add_argument('-s', '--style', type=str, default='xnat',
                           help='choose type of dataset, one of [xnat|bids|other]')
-
     optional.add_argument('-n', '--name', type=str,
                           help='provide a identifier/name for dataset')
     optional.add_argument('-h', '--help', action='help', default=argparse.SUPPRESS,
@@ -31,8 +30,8 @@ def main():
     if not Path(args.data_root).is_dir():
         raise OSError('Expected valid directory for --data_root argument, Got {0}'.format(args.data_root))
 
-    dataset = create_dataset(style=args.style,
-                             data_root=args.data_root,
+    dataset = create_dataset(data_root=args.data_root,
+                             style=args.style,
                              name=args.name,
                              reindex=args.reindex,
                              verbose=args.verbose)

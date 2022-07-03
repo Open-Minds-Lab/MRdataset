@@ -30,7 +30,7 @@ class Dataset(ABC):
         raise TypeError("__len__ attribute implementation for dataset is missing.")
 
 
-def create_dataset(style='xnat', data_root="", name=None, reindex=False, verbose=False):
+def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
     """
     Create dataset as per arguments.
 
@@ -52,8 +52,10 @@ def create_dataset(style='xnat', data_root="", name=None, reindex=False, verbose
     :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
-
+    if not Path(data_root).is_dir():
+        raise OSError('Expected valid directory for --data_root argument, Got {0}'.format(data_root))
     data_root = Path(data_root).resolve()
+
     metadata_root = data_root / CACHE_DIR
     metadata_root.mkdir(exist_ok=True)
     if name is None:

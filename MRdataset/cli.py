@@ -1,5 +1,6 @@
 """Console script for MRdataset."""
 import argparse
+import logging
 import sys
 from pathlib import Path
 from MRdataset import create_dataset
@@ -30,7 +31,11 @@ def main():
     if not Path(args.data_root).is_dir():
         raise OSError('Expected valid directory for --data_root argument, Got {0}'.format(args.data_root))
 
-    dataset = create_dataset(style=args.style, data_root=args.dataroot, verbose=args.verbose)
+    dataset = create_dataset(style=args.style,
+                             data_root=args.data_root,
+                             name=args.name,
+                             reindex=args.reindex,
+                             verbose=args.verbose)
     return dataset
 
 

@@ -1,8 +1,12 @@
+import logging
+import warnings
 from abc import ABC, abstractmethod
 import argparse
 import importlib
 from MRdataset.utils.config import CACHE_DIR
 from pathlib import Path
+from MRdataset.utils import functional
+
 
 class Dataset(ABC):
     """This class is an abstract base class (ABC) for datasets.
@@ -26,7 +30,7 @@ class Dataset(ABC):
         raise TypeError("__len__ attribute implementation for dataset is missing.")
 
 
-def create_dataset(style='xnat', data_root="", verbose=False):
+def create_dataset(style='xnat', data_root="", name=None, reindex=False, verbose=False):
     """
     Create dataset as per arguments.
 
@@ -36,10 +40,15 @@ def create_dataset(style='xnat', data_root="", verbose=False):
     Usage::
 
     >>> from MRdataset import create_dataset
-    >>> data = create_dataset(opt)
+    >>> data = create_dataset('xnat', '/path/to/my/data/')
 
-    :param opt: expects either a Namespace object from argparse,
-             for command-line interface or python dict
+    :param style: expects a string specifying the Dataset class.
+            Imports "data/{style}_dataset.py
+    :param data_root: /path/to/my/dataset containing .dcm files
+    :param name: optional identifier you may want to use,
+            otherwise it uses project name from dicom properties
+    :param reindex: optional flag, if true delete all associated metadata files and rebuilds index
+    :param verbose: print more stuff
     :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
@@ -47,10 +56,18 @@ def create_dataset(style='xnat', data_root="", verbose=False):
     data_root = Path(data_root).resolve()
     metadata_root = data_root / CACHE_DIR
     metadata_root.mkdir(exist_ok=True)
+    if name is None:
+        warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
+                      'Using a random identifier instead. Use --name flag for persistent metadata',
+                      stacklevel=2)
+        name = functional.random_name()
 
     dataset_class = find_dataset_using_style(style.lower())
-    dataset = dataset_class(dataroot=data_root, metadataroot=metadata_root)
-
+    dataset = dataset_class(data_root=data_root,
+                            metadata_root=metadata_root,
+                            name=name,
+                            reindex=reindex,
+                            verbose=verbose)
     if verbose:
         print(dataset)
 

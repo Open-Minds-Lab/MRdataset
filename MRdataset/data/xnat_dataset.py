@@ -115,7 +115,7 @@ class XnatDataset(Dataset):
                     if not functional.header_exists(dicom):
                         logging.warning("Header Absent: %s" % filename)
                         continue
-                    # modality = self._get_modality(dicom)
+                    echo_number = common.get_echo_number(dicom)
                     series = common.get_series(dicom)
                     # TODO: make the check more concrete. See dicom2nifti for details
                     if 'local' in series.lower():
@@ -130,18 +130,22 @@ class XnatDataset(Dataset):
 
                     project = common.get_project(dicom)
 
+                    # MRIcrogl detected 2 different series in a single folder
+                    # Even though Series Instance UID was same, there was
+                    # a difference in echo number, for gre_field_mapping
+                    run = session + '_e' + str(echo_number)
                     # Convert to string, because list is not hashable
                     if str(sid) not in self._modalities[series]:
                         self._modalities[series].append(sid)
                     if sid not in self._subjects:
                         self._subjects.append(sid)
-                    if session not in self._sessions[sid]:
-                        self._sessions[sid].append(session)
+                    if run not in self._sessions[sid]:
+                        self._sessions[sid].append(run)
                     if project not in self._projects:
                         self._projects.append(project)
 
-                    data_dict[sid][series]["id"] = session
-                    data_dict[sid][series]["files"].append(filename.as_posix())
+                    # data_dict[sid][series][run] = run
+                    data_dict[sid][series][run].append(filename.as_posix())
             except Exception as e:
                 logging.warning("Unable to read: %s" % filename)
                 logging.exception(e)

@@ -18,6 +18,14 @@ def get_session(dicom):
     return get_dicom_property(dicom, 'SESSION')
 
 
+def get_echo_number(dicom):
+    return get_dicom_property(dicom, 'ECHO_NUMBER')
+
+
+def get_instance_number(dicom):
+    return get_dicom_property(dicom, 'INSTANCE_NUMBER')
+
+
 def get_series(dicom):
     a = get_dicom_property(dicom, 'SERIES_DESCRIPTION')
     b = get_dicom_property(dicom, 'SERIES_NUMBER')

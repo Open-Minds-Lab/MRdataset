@@ -7,6 +7,7 @@ import json
 import warnings
 import dicom2nifti
 import logging
+import pydicom
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -105,9 +106,9 @@ class XnatDataset(Dataset):
         data_dict = functional.DeepDefaultDict(depth=3)
         for filename in self.data_root.glob('**/*.dcm'):
             try:
-                if dicom2nifti.compressed_dicom.is_dicom_file(filename):
-                    dicom = dicom2nifti.compressed_dicom.read_file(filename,
-                                                                   stop_before_pixels=True)
+                if dicom2nifti.common.is_dicom_file(filename):
+                    dicom = pydicom.read_file(filename,
+                                              stop_before_pixels=True)
                     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
                         logging.warning("Invalid file: %s" % filename)
                         continue

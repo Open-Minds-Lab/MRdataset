@@ -19,13 +19,15 @@ class XnatDataset(Dataset):
                  reindex=False,
                  verbose=False):
         """
-        A dataset class for XNAT Dataset.
+        Class defining an XNAT dataset class. Encapsulates all the details necessary for execution
+        hence easing the subsequent analysis/workflow.
+
         Args:
-            name:  an identifier/name for the dataset
             data_root: directory containing dataset with dicom files, supports nested hierarchies
             metadata_root: directory to store metadata files
-            verbose: allow verbose output on console
+            name:  an identifier/name for the dataset
             reindex: overwrite existing metadata files
+            verbose: allow verbose output on console
 
         Examples:
             >>> from MRdataset.data import xnat_dataset
@@ -85,18 +87,31 @@ class XnatDataset(Dataset):
 
     @property
     def subjects(self):
+        """
+        Collection of all subjects in the folder.
+        """
         return self._subjects
 
     @property
     def modalities(self):
+        """
+        Collection of all modalities, grouped by subjects.
+        """
         return self._modalities
 
     @property
     def sessions(self):
+        """
+        Collection of all unique SeriesInstanceUID, grouped by subject id
+        """
         return self._sessions
 
     @property
     def projects(self):
+        """
+        Collection of all Study ID values in the dataset. Can be used to decide if
+        the folder contains different scans from different projects
+        """
         return self._projects
 
     def _create_metadata(self):
@@ -116,7 +131,10 @@ class XnatDataset(Dataset):
                         logging.warning("Header Absent: %s" % filename)
                         continue
                     echo_number = common.get_echo_number(dicom)
+
+                    # TODO should we call it a modality? i think we should
                     series = common.get_series(dicom)
+
                     # TODO: make the check more concrete. See dicom2nifti for details
                     if 'local' in series.lower():
                         logging.warning("Localizer: Skipping %s" % filename)

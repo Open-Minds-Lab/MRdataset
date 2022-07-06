@@ -1,8 +1,17 @@
-from collections import defaultdict
-import uuid
+import functools
 import sys
-import time
 import threading
+import time
+import uuid
+from collections import defaultdict
+from collections.abc import Hashable
+
+
+def safe_get(dictionary, keys, default=None):
+    return functools.reduce(
+        lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."),
+        dictionary
+    )
 
 
 def fix(f):
@@ -42,6 +51,10 @@ class DeepDefaultDict(defaultdict):
 
 def random_name():
     return str(hash(str(uuid.uuid1())) % 1000000)
+
+
+def is_hashable(value):
+    return isinstance(value, Hashable)
 
 
 class Spinner:

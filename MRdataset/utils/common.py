@@ -28,13 +28,17 @@ def get_instance_number(dicom):
 
 def get_series(dicom):
     a = get_dicom_property(dicom, 'SERIES_DESCRIPTION')
-    b = get_dicom_property(dicom, 'SERIES_NUMBER')
+
     if a is None:
         a = get_dicom_property(dicom, 'SEQUENCE_NAME')
     if a is None:
         a = get_dicom_property(dicom, 'PROTOCOL_NAME')
-    ret_string = "_".join([str(b), a])
+
+    # TODO need to decide on wether to use SERIES NUMBER as part of modality identification
+    b = get_dicom_property(dicom, 'SERIES_NUMBER')
+    ret_string = "_".join([str(b), a.lower()])
     return ret_string.replace(" ", "_")
+    # return a.lower().replace(" ", "_")
 
 
 def get_image_type(dicom):

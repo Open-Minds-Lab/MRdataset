@@ -153,8 +153,11 @@ class Subject(Node):
     So, each modality, say T1 will have multiple subjects. And each subject
     can have multiple run instances where a run instance is a series of brain volumes
     """
-    def __init__(self, name):
+    def __init__(self, name, path):
         super().__init__(name)
+        self.path = Path(path).resolve()
+        if not self.path.exists():
+            raise FileNotFoundError('Provide a valid /path/to/subject/')
         self.run_instances = list()
 
     def __str__(self):

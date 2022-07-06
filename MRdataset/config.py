@@ -1,9 +1,9 @@
 # Constant Dicom Identifiers
 TAGS = {
-    "session": (0x20, 0x0e),
+    "series_instance_uid": (0x20, 0x0e),
     "sequence": (0x18, 0x20),
     "variant": (0x18, 0x21),
-    "subject": (0x10, 0x10),
+    "patient_name": (0x10, 0x10),
     "study_id": (0x08, 0x1030),
     "series_description": (0x08, 0x103E),
     "series_number": (0x20, 0x11),

@@ -1,14 +1,13 @@
-import MRdataset.common
-import MRdataset.utils
-from MRdataset.utils import common
-from MRdataset.base import Dataset
-from pathlib import Path
-from collections import defaultdict
 import json
-import warnings
-import dicom2nifti
 import logging
+import warnings
+from pathlib import Path
+
+from MRdataset import common
+from MRdataset import utils
+import dicom2nifti
 import pydicom
+from MRdataset.base import Dataset
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -56,11 +55,11 @@ class XnatDataset(Dataset):
                               "Re-generating metadata from old dataset index. Use --reindex flag to regenerate index")
                 self._create_metadata()
 
-        # Private Placeholders for metadata
-        self._subjects = []
-        self._modalities = defaultdict(list)
-        self._sessions = defaultdict(list)
-        self._projects = []
+        # # Private Placeholders for metadata
+        # self._subjects = []
+        # self._modalities = defaultdict(list)
+        # self._sessions = defaultdict(list)
+        # self._projects = []
 
         # Start indexing
         self.verbose = verbose
@@ -118,37 +117,43 @@ class XnatDataset(Dataset):
     def _create_metadata(self):
         raise NotImplementedError
 
+    def is_valid_file(self, filename):
+        if not dicom2nifti.common.is_dicom_file(filename):
+            return False
+        dicom = pydicom.read_file(filename,
+                                  stop_before_pixels=True)
+        if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
+            logging.warning("Invalid file: %s" % filename)
+            return False
+
+        if not common.header_exists(dicom):
+            logging.warning("Header Absent: %s" % filename)
+            return False
+
+        # TODO: make the check more concrete. See dicom2nifti for details
+        if 'local' in common.get_series(dicom).lower():
+            logging.warning("Localizer: Skipping %s" % filename)
+            return False
+
+        sid = common.get_subject(dicom)
+        if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
+            logging.warning('ACR/Phantom: %s' % filename)
+            return False
+
+        return True
+
     def walk(self):
         data_dict = functional.DeepDefaultDict(depth=3)
         for filename in self.data_root.glob('**/*.dcm'):
             try:
-                if dicom2nifti.common.is_dicom_file(filename):
-                    dicom = pydicom.read_file(filename,
-                                              stop_before_pixels=True)
-                    if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-                        logging.warning("Invalid file: %s" % filename)
-                        continue
-                    if not MRdataset.common.header_exists(dicom):
-                        logging.warning("Header Absent: %s" % filename)
-                        continue
+                if self.is_valid_file(filename):
+
                     echo_number = common.get_echo_number(dicom)
+                    project = common.get_project(dicom)
 
                     # TODO should we call it a modality? i think we should
                     series = common.get_series(dicom)
-
-                    # TODO: make the check more concrete. See dicom2nifti for details
-                    if 'local' in series.lower():
-                        logging.warning("Localizer: Skipping %s" % filename)
-                        continue
-
                     session = common.get_session(dicom)
-                    sid = common.get_subject(dicom)
-                    if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
-                        logging.warning('ACR/Phantom: %s' % filename)
-                        continue
-
-                    project = common.get_project(dicom)
-
                     # MRIcrogl detected 2 different series in a single folder
                     # Even though Series Instance UID was same, there was
                     # a difference in echo number, for gre_field_mapping

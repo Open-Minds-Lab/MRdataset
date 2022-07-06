@@ -1,13 +1,12 @@
-import json
 import logging
-import warnings
+import pickle
 from pathlib import Path
 
-from MRdataset import common
-from MRdataset import utils
 import dicom2nifti
 import pydicom
-from MRdataset.base import Dataset
+from MRdataset import common
+from MRdataset import config
+from MRdataset.base import Dataset, Project, Run, Modality, Subject
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -45,42 +44,17 @@ class XnatDataset(Dataset):
         if not self.metadata_root.exists():
             raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
-        self.json_path = self.metadata_root / "{0}.json".format(self.name)
-        self.metadata_path = self.metadata_root / "{0}.json".format(self.name + '_metadata')
+        cache_path = self.metadata_root / "{}.pkl".format(self.name)
+        indexed = cache_path.exists()
 
-        self.indexed = self.json_path.exists()
-        if self.indexed:
-            if not self.metadata_path.exists():
-                warnings.warn("Expected {name}_metadata.json. Got None. "
-                              "Re-generating metadata from old dataset index. Use --reindex flag to regenerate index")
-                self._create_metadata()
-
-        # # Private Placeholders for metadata
-        self._modalities = defaultdict(set)
-        self._projects = set()
-        self.project = Project(name=self.name)
-
-        # Start indexing
-        self.verbose = verbose
-        if not self.indexed or reindex:
-            if self.verbose:
-                print("Indexing dataset.", end="...")
-                with MRdataset.utils.Spinner():
-                    self.data = self.walk()
-                print("\n")
-            else:
-                self.data = self.walk()
+        if not indexed or reindex:
+            self.project_node = Project(name=self.name)
+            self.walk()
+            with open(cache_path, "wb") as f:
+                pickle.dump(self.project_node, f)
         else:
-            if self.verbose:
-                print("Metadata files found.")
-
-            with open(self.json_path, 'r') as f:
-                self.data = json.load(f)
-
-            with open(self.metadata_path, 'r') as f:
-                metadata = json.load(f)
-            self._modalities = metadata['modalities']
-            self._projects = metadata.get('projects', list())
+            with open(cache_path, 'rb') as f:
+                self.project_node = pickle.load(f)
 
     @property
     def modalities(self):
@@ -97,14 +71,10 @@ class XnatDataset(Dataset):
         """
         return self._projects
 
-    def _create_metadata(self):
-        raise NotImplementedError
+    # def _create_metadata(self):
+    #     raise NotImplementedError
 
-    def is_valid_file(self, filename):
-        if not dicom2nifti.common.is_dicom_file(filename):
-            return False
-        dicom = pydicom.read_file(filename,
-                                  stop_before_pixels=True)
+    def is_valid_file(self, filename, dicom):
         if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
             logging.warning("Invalid file: %s" % filename)
             return False
@@ -114,7 +84,7 @@ class XnatDataset(Dataset):
             return False
 
         # TODO: make the check more concrete. See dicom2nifti for details
-        if 'local' in common.get_series(dicom).lower():
+        if 'local' in common.get_dicom_modality(dicom).lower():
             logging.warning("Localizer: Skipping %s" % filename)
             return False
 
@@ -123,82 +93,58 @@ class XnatDataset(Dataset):
             logging.warning('ACR/Phantom: %s' % filename)
             return False
 
+        # TODO: Add checks to remove aahead_64ch_head_coil
+
         return True
 
     def walk(self):
-        data_dict = functional.DeepDefaultDict(depth=3)
-        for filename in self.data_root.glob('**/*.dcm'):
+        study_ids_found = set()
+        for filepath in self.data_root.glob('**/*.dcm'):
             try:
-                if self.is_valid_file(filename):
+                if not dicom2nifti.common.is_dicom_file(filepath):
+                    return False
+                dicom = pydicom.read_file(filepath,
+                                          stop_before_pixels=True)
+                if self.is_valid_file(filepath, dicom):
+                    dcm_echo_number = common.get_tags_by_name(dicom, 'echo_number')
+                    dcm_project_name = common.get_tags_by_name(dicom, 'study_id')
+                    dcm_modality_name = common.get_dicom_modality(dicom)
+                    dcm_subject_name = common.get_tags_by_name(dicom, 'patient_name')
+                    dcm_series_instance_uid = common.get_tags_by_name(dicom, 'series_instance_uid')
 
-                    echo_number = common.get_echo_number(dicom)
-                    project = common.get_project(dicom)
+                    modality_node = self.project_node.get_modality(dcm_modality_name)
+                    if modality_node is None:
+                        modality_node = Modality(dcm_modality_name)
 
-                    # TODO should we call it a modality? i think we should
-                    series = common.get_series(dicom)
-                    session = common.get_session(dicom)
-                    # MRIcrogl detected 2 different series in a single folder
+                    subject_node = modality_node.get_subject(dcm_subject_name)
+                    if subject_node is None:
+                        subject_node = Subject(dcm_subject_name, Path(filepath).parent)
+
+                    # dcm2niix detected 2 different series in a single folder
                     # Even though Series Instance UID was same, there was
                     # a difference in echo number, for gre_field_mapping
-                    run = session + '_e' + str(echo_number)
-                    # Convert to string, because list is not hashable
-                    if str(sid) not in self._modalities[series]:
-                        self._modalities[series].append(sid)
-                    if sid not in self._subjects:
-                        self._subjects.append(sid)
-                    if run not in self._sessions[sid]:
-                        self._sessions[sid].append(run)
-                    if project not in self._projects:
-                        self._projects.append(project)
+                    run_name = dcm_series_instance_uid + '_e' + str(dcm_echo_number)
 
-                    # data_dict[sid][series][run] = run
-                    data_dict[sid][series][run].append(filename.as_posix())
-            except Exception as e:
-                logging.warning("Unable to read: %s" % filename)
+                    run_node = subject_node.get_run(run_name)
+                    if run_node is None:
+                        run_node = Run(run_name)
+
+                    dcm_params = common.parse(filepath)
+                    if len(run_node.params) == 0:
+                        run_node.params = dcm_params.copy()
+                    elif run_node.param_difference(dcm_params):
+                        raise config.ChangingParamsinSeries(filepath)
+
+                    subject_node.add_run(run_node)
+                    modality_node.add_subject(subject_node)
+                    self.project_node.add_modality(modality_node)
+                    study_ids_found.add(dcm_project_name)
+
+            except config.MRdatasetException as e:
                 logging.exception(e)
-
-        with open(self.json_path, "w") as file:
-            json.dump(dict(data_dict), file, indent=4)
-
-        self.is_unique_project()
-
-        metadata = {
-            "subjects": self.subjects,
-            "modalities": self.modalities,
-            "sessions": self.sessions,
-            "projects": self.projects
-        }
-        with open(self.metadata_path, "w") as file:
-            json.dump(dict(metadata), file, indent=4)
-
-        return data_dict
-
-    def is_unique_project(self):
-        if len(self.projects) > 1:
-            logging.warning("Expected all the dicom files to be in the same project/study. "
-                            "Found {0} unique project/study id(s)".format(len(self.projects)))
-            return False
-        if len(self.projects) == 1:
-            if self.projects[0] is None:
-                logging.warning("Unique project/study id not found. Assuming that all dicom "
-                                "files to be in the same project.")
-                return False
-            return True
-        logging.warning("Error in processing! self.projects is empty")
-        return False
+        if len(study_ids_found) > 1:
+            raise config.MultipleProjectsinDataset(study_ids_found)
 
     def __str__(self):
-        return 'XnatDataset {1} was created\n' \
-               'Please use identifier {1} with --name flag to utilize generated cache\n' \
-               '#Subject: {0}'.format(len(self.subjects), self.name)
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        sid, session = idx
-        try:
-            value = self.data[sid][session]
-            return value
-        except KeyError:
-            logging.warning("Index ({0}, {1}) absent. Skipping. Do you want to regenerate index?".format(sid, session))
+        return 'XnatDataset {} was created\n' \
+               'Pass --name {} to use generated cache\n'.format(self.name)

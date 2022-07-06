@@ -1,11 +1,11 @@
 import importlib
 import warnings
-from abc import ABC, abstractmethod
+from abc import ABC
+from collections.abc import Iterable
 from pathlib import Path
-from collections import defaultdict
 
-
-import MRdataset
+from MRdataset.config import CACHE_DIR
+from dictdiffer import diff as dict_diff
 
 
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
@@ -61,7 +61,7 @@ def find_dataset_using_style(dataset_style):
     is a subclass of MRdataset.base.Dataset
     """
 
-    dataset_modulename = "MRdataset.data." + dataset_style + "_dataset"
+    dataset_modulename = "MRdataset." + dataset_style + "_dataset"
     datasetlib = importlib.import_module(dataset_modulename)
 
     dataset = None
@@ -107,7 +107,7 @@ class Node(ABC):
         for child in self._children:
             if child.name == other.name:
                 return
-        self._children.append(child)
+        self._children.append(other)
 
     def _get(self, name):
         for child in self._children:
@@ -116,13 +116,14 @@ class Node(ABC):
         else:
             return None
 
-    def param_difference(self, other, ignore_params):
+    def param_difference(self, other, ignore_params=[None]):
         if isinstance(other, Node):
             other = other.params
         elif isinstance(other, dict):
-            return list(dict_diff(self.params, other), ignore=set(ignore_params))
-        else:
-            raise TypeError("Expected type 'dict', got {} instead".format(type(other)))
+            if isinstance(ignore_params, Iterable):
+                return list(dict_diff(self.params, other, ignore=set(ignore_params)))
+            raise TypeError("Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
+        raise TypeError("Expected type 'dict', got {} instead".format(type(other)))
 
     def __repr__(self):
         return self.__str__()
@@ -143,7 +144,7 @@ class Project(Node):
         return self._children
 
     def add_modality(self, new_modality):
-        self.add(new_modality)
+        self.__add__(new_modality)
 
     def get_modality(self, name):
         return self._get(name)
@@ -162,14 +163,13 @@ class Modality(Node):
     """
     def __init__(self, name):
         super().__init__(name)
-        self.subjects = list()
 
     @property
     def subjects(self):
         return self._children
 
     def add_subject(self, new_subject):
-        self.add(new_subject)
+        self.__add__(new_subject)
 
     def get_subject(self, name):
         return self._get(name)
@@ -185,35 +185,34 @@ class Subject(Node):
     A single subject may contain multiple sessions for a single modality.
     For example, For a project called ABCD, it is grouped by modalities like T1, T2 etc.
     So, each modality, say T1 will have multiple subjects. And each subject
-    can have multiple run instances where a run instance is a series of brain volumes
+    can have multiple run where a run instance is a series of brain volumes
     """
     def __init__(self, name, path):
         super().__init__(name)
         self.path = Path(path).resolve()
         if not self.path.exists():
             raise FileNotFoundError('Provide a valid /path/to/subject/')
-        self.run_instances = list()
+        self.run = list()
 
     @property
-    def run_instances(self):
+    def runs(self):
         return self._children
 
-    def add_run_instance(self, new_run_instance):
-        self.add(new_run_instance)
+    def add_run(self, new_run):
+        self.__add__(new_run)
 
-    def get_run_instance(self, name):
+    def get_run(self, name):
         return self._get(name)
 
-
     def __str__(self):
-        return "Subject {} with {} run instances".format(self.name, len(self.run_instances))
+        return "Subject {} with {} runs".format(self.name, len(self.run))
 
 
-class RunInstance():
+class Run(Node):
     """
     Container to manage properties and issues at the run level.
-    Encapsulates all the details necessary for a run instance.
-    A run instance is a series of brain volumes.
+    Encapsulates all the details necessary for a run.
+    A run is a series of brain volumes.
     This is the lowest level in the hierarchy. Individual .dcm files should have same
     parameters at this level.
     """

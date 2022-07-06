@@ -1,10 +1,12 @@
+import logging
+from collections import defaultdict
 from pathlib import Path
 
 import pydicom
-from MRdataset.utils import config
+from MRdataset import config
+from MRdataset import utils
 from nibabel.nicom import csareader
-from pydicom.multival import MultiValue
-import logging
+
 
 def get_dicom_modality(dicom):
     property1 = get_tags_by_name(dicom, 'series_description')
@@ -20,18 +22,14 @@ def get_dicom_modality(dicom):
     return property1.replace(" ", "_")
 
 
-def get_image_type(dicom):
-    return get_dicom_property(dicom, 'IMAGE_TYPE')
-
-
 def get_subject(dicom):
-    return str(get_dicom_property(dicom, 'SUBJECT'))
+    return str(get_tags_by_name(dicom, 'patient_name'))
 
 
 def header_exists(dicom):
     try:
-        series = dicom.get(config.SERIES_HEADER_INFO).value
-        image = dicom.get(config.IMAGE_HEADER_INFO).value
+        series = get_header(dicom, 'series_header_info')
+        image = get_header(dicom, 'image_header_info')
         series_header = csareader.read(series)
 
         # just try reading these values, to bypass any errors, don't need these values now
@@ -80,8 +78,8 @@ def parse(dicom_path):
         get_header(dicom, "series_description")]).replace(" ", "_")
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
     params["phase_encoding_direction"] = get_phase_encoding(dicom,
-                                                            is3d=subj.params['is3d'],
-                                                            echo_train_length=subj.params['echo_train_length'])
+                                                            is3d=params['is3d'],
+                                                            echo_train_length=params['echo_train_length'])
     return params
 
 
@@ -106,7 +104,7 @@ def get_tags_by_name(dicom, name):
 
 def csa_parser(dicom):
     series_header = csareader.read(get_header(dicom, 'series_header_info'))
-    items = functional.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
+    items = utils.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
     if items:
         text = items[0].split("\n")
     else:
@@ -163,7 +161,7 @@ def get_phase_encoding(dicom, is3d, echo_train_length, is_flipy=True):
     if echo_train_length > 1:
         is_skip = False
     image_header = get_header(dicom, 'image_header_info')
-    phvalue = functional.safe_get(image_header, 'tags.PhaseEncodingDirectionPositive.items')
+    phvalue = utils.safe_get(image_header, 'tags.PhaseEncodingDirectionPositive.items')
     if phvalue:
         phpos = phvalue[0]
     else:

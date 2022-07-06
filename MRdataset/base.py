@@ -1,11 +1,9 @@
 import importlib
 import warnings
 from abc import ABC
-from collections.abc import Iterable
 from pathlib import Path
 
 from MRdataset.config import CACHE_DIR
-from dictdiffer import diff as dict_diff
 
 
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
@@ -100,15 +98,6 @@ class Node(ABC):
                 return child
         else:
             return None
-
-    def param_difference(self, other, ignore_params=[None]):
-        if isinstance(other, Node):
-            other = other.params
-        elif isinstance(other, dict):
-            if isinstance(ignore_params, Iterable):
-                return list(dict_diff(self.params, other, ignore=set(ignore_params)))
-            raise TypeError("Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
-        raise TypeError("Expected type 'dict', got {} instead".format(type(other)))
 
     def __repr__(self):
         return self.__str__()

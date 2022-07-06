@@ -86,7 +86,7 @@ class Dataset(ABC):
     """
     def __init__(self, **kwargs):
         """
-        Initialize the class; save the options in the class
+        Initialize the class; save the options in the classk
         """
         self.data_root = None
         self.metadata_root = None
@@ -109,7 +109,7 @@ class Node(ABC):
     def __init__(self, name):
         self.name = name
         self.error = False
-        self.params = defaultdict()
+        self.params = dict()
         self._children = list()
 
     def __add__(self, other):
@@ -124,6 +124,14 @@ class Node(ABC):
                 return child
         else:
             return None
+
+    def param_difference(self, other, ignore_params):
+        if isinstance(other, Node):
+            other = other.params
+        elif isinstance(other, dict):
+            return list(dict_diff(self.params, other), ignore=set(ignore_params))
+        else:
+            raise TypeError("Expected type 'dict', got {} instead".format(type(other)))
 
     def __repr__(self):
         return self.__str__()
@@ -151,6 +159,7 @@ class Project(Node):
 
     def __str__(self):
         return "Project {} with {} modalities".format(self.name, len(self.modalities))
+
 
 
 class Modality(Node):
@@ -220,7 +229,7 @@ class RunInstance():
     def __init__(self, name):
         self.name = name
         self.error = False
-        self.params = defaultdict()
+        self.params = dict()
         self.files = list()
 
     def __str__(self):

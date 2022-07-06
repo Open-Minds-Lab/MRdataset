@@ -91,15 +91,6 @@ class Dataset(ABC):
         self.data_root = None
         self.metadata_root = None
 
-    @abstractmethod
-    def __getitem__(self, *args, **kwargs):
-        raise NotImplementedError("__getitem__ attribute implementation for dataset is missing.")
-
-    @abstractmethod
-    def __len__(self):
-        raise TypeError("__len__ attribute implementation for dataset is missing.")
-
-
 
 class Node(ABC):
     """

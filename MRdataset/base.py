@@ -100,6 +100,7 @@ class Dataset(ABC):
         raise TypeError("__len__ attribute implementation for dataset is missing.")
 
 
+
 class Node(ABC):
     """
     An abstract class specifying a generic node in a neuroimaging experiment.
@@ -109,6 +110,20 @@ class Node(ABC):
         self.name = name
         self.error = False
         self.params = defaultdict()
+        self._children = list()
+
+    def __add__(self, other):
+        for child in self._children:
+            if child.name == other.name:
+                return
+        self._children.append(child)
+
+    def _get(self, name):
+        for child in self._children:
+            if child.name == name:
+                return child
+        else:
+            return None
 
     def __repr__(self):
         return self.__str__()
@@ -123,7 +138,16 @@ class Project(Node):
     """
     def __init__(self, name):
         super().__init__(name)
-        self.modalities = list()
+
+    @property
+    def modalities(self):
+        return self._children
+
+    def add_modality(self, new_modality):
+        self.add(new_modality)
+
+    def get_modality(self, name):
+        return self._get(name)
 
     def __str__(self):
         return "Project {} with {} modalities".format(self.name, len(self.modalities))
@@ -139,6 +163,16 @@ class Modality(Node):
     def __init__(self, name):
         super().__init__(name)
         self.subjects = list()
+
+    @property
+    def subjects(self):
+        return self._children
+
+    def add_subject(self, new_subject):
+        self.add(new_subject)
+
+    def get_subject(self, name):
+        return self._get(name)
 
     def __str__(self):
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
@@ -160,11 +194,22 @@ class Subject(Node):
             raise FileNotFoundError('Provide a valid /path/to/subject/')
         self.run_instances = list()
 
+    @property
+    def run_instances(self):
+        return self._children
+
+    def add_run_instance(self, new_run_instance):
+        self.add(new_run_instance)
+
+    def get_run_instance(self, name):
+        return self._get(name)
+
+
     def __str__(self):
         return "Subject {} with {} run instances".format(self.name, len(self.run_instances))
 
 
-class RunInstance(Node):
+class RunInstance():
     """
     Container to manage properties and issues at the run level.
     Encapsulates all the details necessary for a run instance.
@@ -173,8 +218,22 @@ class RunInstance(Node):
     parameters at this level.
     """
     def __init__(self, name):
-        super().__init__(name)
+        self.name = name
+        self.error = False
+        self.params = defaultdict()
         self.files = list()
 
     def __str__(self):
         return "Run {}".format(self.name)
+
+# class Slice(Node):
+#     def __init__(self, name, filepath):
+#         super.__init__(name)
+#         self.path = filepath
+#
+#     def parse_params(self):
+#         from common import parse
+#         self.params = parse(self.path)
+#
+#     def __str__(self):
+#         return "Slice {}".format(self.name)

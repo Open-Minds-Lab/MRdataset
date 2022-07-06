@@ -56,10 +56,9 @@ class XnatDataset(Dataset):
                 self._create_metadata()
 
         # # Private Placeholders for metadata
-        # self._subjects = []
-        # self._modalities = defaultdict(list)
-        # self._sessions = defaultdict(list)
-        # self._projects = []
+        self._modalities = defaultdict(set)
+        self._projects = set()
+        self.project = Project(name=self.name)
 
         # Start indexing
         self.verbose = verbose
@@ -80,17 +79,8 @@ class XnatDataset(Dataset):
 
             with open(self.metadata_path, 'r') as f:
                 metadata = json.load(f)
-            self._subjects = metadata['subjects']
             self._modalities = metadata['modalities']
-            self._sessions = metadata['sessions']
             self._projects = metadata.get('projects', list())
-
-    @property
-    def subjects(self):
-        """
-        Collection of all subjects in the folder.
-        """
-        return self._subjects
 
     @property
     def modalities(self):
@@ -98,13 +88,6 @@ class XnatDataset(Dataset):
         Collection of all modalities, grouped by subjects.
         """
         return self._modalities
-
-    @property
-    def sessions(self):
-        """
-        Collection of all unique SeriesInstanceUID, grouped by subject id
-        """
-        return self._sessions
 
     @property
     def projects(self):

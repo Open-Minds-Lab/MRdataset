@@ -4,4 +4,4 @@ __author__ = """Pradeep Raamana"""
 __email__ = 'raamana@gmail.com'
 __version__ = '0.1.0'
 
-from MRdataset.data.base import create_dataset
+from MRdataset.base import create_dataset

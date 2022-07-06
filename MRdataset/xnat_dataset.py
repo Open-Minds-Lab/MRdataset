@@ -1,6 +1,7 @@
-from MRdataset.utils import functional, common
-from MRdataset.utils import progress
-from MRdataset.data.base import Dataset
+import MRdataset.common
+import MRdataset.utils
+from MRdataset.utils import common
+from MRdataset.base import Dataset
 from pathlib import Path
 from collections import defaultdict
 import json
@@ -30,7 +31,7 @@ class XnatDataset(Dataset):
             verbose: allow verbose output on console
 
         Examples:
-            >>> from MRdataset.data import xnat_dataset
+            >>> from MRdataset import xnat_dataset
             >>> dataset = xnat_dataset.XnatDataset()
         """
         super().__init__()
@@ -66,7 +67,7 @@ class XnatDataset(Dataset):
         if not self.indexed or reindex:
             if self.verbose:
                 print("Indexing dataset.", end="...")
-                with progress.Spinner():
+                with MRdataset.utils.Spinner():
                     self.data = self.walk()
                 print("\n")
             else:
@@ -127,7 +128,7 @@ class XnatDataset(Dataset):
                     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
                         logging.warning("Invalid file: %s" % filename)
                         continue
-                    if not functional.header_exists(dicom):
+                    if not MRdataset.common.header_exists(dicom):
                         logging.warning("Header Absent: %s" % filename)
                         continue
                     echo_number = common.get_echo_number(dicom)

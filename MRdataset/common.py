@@ -1,4 +1,5 @@
-from MRdataset.utils import functional, config
+from MRdataset.utils import config
+from nibabel.nicom import csareader
 from pydicom.multival import MultiValue
 import logging
 
@@ -70,3 +71,20 @@ def get_modality(dicom):
 
 def get_subject(dicom):
     return str(get_dicom_property(dicom, 'SUBJECT'))
+
+
+def header_exists(dicom):
+    try:
+        series = dicom.get(config.SERIES_HEADER_INFO).value
+        image = dicom.get(config.IMAGE_HEADER_INFO).value
+        series_header = csareader.read(series)
+
+        # just try reading these values, to bypass any errors, don't need these values now
+        # image_header = \
+        csareader.read(image)
+        # items = \
+        series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
+        return True
+    except Exception as e:
+        logging.exception(e)
+        return False

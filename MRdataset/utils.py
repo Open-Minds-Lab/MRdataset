@@ -1,8 +1,8 @@
-import logging
 from collections import defaultdict
-from MRdataset.utils import config
-from nibabel.nicom import csareader
 import uuid
+import sys
+import time
+import threading
 
 
 def fix(f):
@@ -40,22 +40,39 @@ class DeepDefaultDict(defaultdict):
         return dict.__str__(self)
 
 
-def header_exists(dicom):
-    try:
-        series = dicom.get(config.SERIES_HEADER_INFO).value
-        image = dicom.get(config.IMAGE_HEADER_INFO).value
-        series_header = csareader.read(series)
-
-        # just try reading these values, to bypass any errors, don't need these values now
-        # image_header = \
-        csareader.read(image)
-        # items = \
-        series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
-        return True
-    except Exception as e:
-        logging.exception(e)
-        return False
-
-
 def random_name():
     return str(hash(str(uuid.uuid1())) % 1000000)
+
+
+class Spinner:
+    busy = False
+    delay = 0.1
+
+    @staticmethod
+    def spinning_cursor():
+        while 1:
+            for cursor in '|/-\\':
+                yield cursor
+
+    def __init__(self, delay=None):
+        self.spinner_generator = self.spinning_cursor()
+        if delay and float(delay):
+            self.delay = delay
+
+    def spinner_task(self):
+        while self.busy:
+            sys.stdout.write(next(self.spinner_generator))
+            sys.stdout.flush()
+            time.sleep(self.delay)
+            sys.stdout.write('\b')
+            sys.stdout.flush()
+
+    def __enter__(self):
+        self.busy = True
+        threading.Thread(target=self.spinner_task).start()
+
+    def __exit__(self, exception, value, tb):
+        self.busy = False
+        time.sleep(self.delay)
+        if exception is not None:
+            return False

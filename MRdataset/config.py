@@ -63,3 +63,43 @@ SVDict = {
     "NONE": "no sequence variant"
 }
 ATDict = ["2D", "3D"]
+
+
+class MRdatasetException(Exception):
+    """Custom error that is raised when some critical properties are not found in dicom file"""
+    def __init__(self, message, **kwargs):
+        super().__init__(message)
+
+class MRdatasetWarning(Exception):
+    """Custom error that is raised when some critical properties are not found in dicom file"""
+    def __init__(self, message, **kwargs):
+        super().__init__(message)
+
+
+#
+# class EmptySubject(ComplianceException):
+#     """"""
+#     pass
+#
+#
+# class NonCompliantSubject(ComplianceException):
+#     """"""
+#     pass
+
+
+class ChangingParamsinSeries(MRdatasetException):
+    """Custom error that is raised when parameter values are different for
+    different slices even though the SeriesInstanceUID is same."""
+
+    def __init__(self, filepath):
+        super().__init__("Expected all dicom slices to have same parameters. "
+                         "Got changing parameters : {}".format(filepath))
+
+class MultipleProjectsinDataset(MRdatasetException):
+    """
+    Custom error that is raised when dcm files in directory have different study ids.
+    Expected all dicom files belong to a single study id. Cross-Study is not supported.
+    """
+    def __init__(self, study_ids):
+        super().__init__("Expected all the dicom files to be in the same project/study. "
+                         "Found study id(s) : ".format(len(study_ids)))

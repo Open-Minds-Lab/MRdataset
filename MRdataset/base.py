@@ -77,21 +77,6 @@ def find_dataset_using_style(dataset_style):
     return dataset
 
 
-class Dataset(ABC):
-    """This class is an abstract base class (ABC) for datasets.
-
-    To create a subclass, you need to implement the following functions:
-    -- <__init__>:      initialize the class, first call super().__init__()
-    -- <__getitem__>:   get a data sample
-    """
-    def __init__(self, **kwargs):
-        """
-        Initialize the class; save the options in the classk
-        """
-        self.data_root = None
-        self.metadata_root = None
-
-
 class Node(ABC):
     """
     An abstract class specifying a generic node in a neuroimaging experiment.
@@ -127,31 +112,6 @@ class Node(ABC):
 
     def __repr__(self):
         return self.__str__()
-
-
-class Project(Node):
-    """
-    Container to manage properties and issues at the project level.
-    Encapsulates all the details necessary for a complete project.
-    A single project may contain multiple modalities, and each modality
-    will have atleast single subject.
-    """
-    def __init__(self, name):
-        super().__init__(name)
-
-    @property
-    def modalities(self):
-        return self._children
-
-    def add_modality(self, new_modality):
-        self.__add__(new_modality)
-
-    def get_modality(self, name):
-        return self._get(name)
-
-    def __str__(self):
-        return "Project {} with {} modalities".format(self.name, len(self.modalities))
-
 
 
 class Modality(Node):

@@ -66,12 +66,12 @@ def find_dataset_using_style(dataset_style):
     target_dataset_class = dataset_style+'dataset'
     for name, cls in datasetlib.__dict__.items():
         if name.lower() == target_dataset_class.lower() \
-                and issubclass(cls, Dataset):
+                and issubclass(cls, Node):
             dataset = cls
 
     if dataset is None:
         raise NotImplementedError("Expected to find %s which is supposed  \
-        to be a subclass of base.Dataset in %s.py" % (target_dataset_class, dataset_modulename))
+        to be a subclass of base.Node in %s.py" % (target_dataset_class, dataset_modulename))
     return dataset
 
 
@@ -83,7 +83,6 @@ class Node(ABC):
     def __init__(self, name):
         self.name = name
         self.error = False
-        self.params = dict()
         self._children = list()
 
     def __add__(self, other):
@@ -112,6 +111,7 @@ class Modality(Node):
     """
     def __init__(self, name):
         super().__init__(name)
+        self.reference = dict()
 
     @property
     def subjects(self):
@@ -127,6 +127,7 @@ class Modality(Node):
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
 
 
+
 class Subject(Node):
     """
     Container to manage properties and issues at the subject level.
@@ -138,10 +139,10 @@ class Subject(Node):
     """
     def __init__(self, name, path):
         super().__init__(name)
+        self.params = dict()
         self.path = Path(path).resolve()
         if not self.path.exists():
             raise FileNotFoundError('Provide a valid /path/to/subject/')
-        self.run = list()
 
     @property
     def runs(self):
@@ -154,7 +155,7 @@ class Subject(Node):
         return self._get(name)
 
     def __str__(self):
-        return "Subject {} with {} runs".format(self.name, len(self.run))
+        return "Subject {} with {} runs".format(self.name, len(self.runs))
 
 
 class Run(Node):

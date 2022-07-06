@@ -6,21 +6,8 @@ from nibabel.nicom import csareader
 from pydicom.multival import MultiValue
 import logging
 
-def get_project(dicom):
-    return get_dicom_property(dicom, 'STUDY')
-
-
-def get_session(dicom):
-    return get_dicom_property(dicom, 'SESSION')
-
-
-def get_echo_number(dicom):
-    return get_dicom_property(dicom, 'ECHO_NUMBER')
-
-
-def get_instance_number(dicom):
-    return get_dicom_property(dicom, 'INSTANCE_NUMBER')
-
+def get_dicom_modality(dicom):
+    property1 = get_tags_by_name(dicom, 'series_description')
 
     if property1 is None:
         property1 = get_tags_by_name(dicom, 'SEQUENCE_NAME')
@@ -110,6 +97,11 @@ def get_header(dicom, name):
         return data.value
     return None
 
+def get_tags_by_name(dicom, name):
+    data = dicom.get(config.TAGS[name], None)
+    if data is None:
+        return None
+    return data.value
 
 def csa_parser(dicom):
     series_header = csareader.read(get_header(dicom, 'series_header_info'))

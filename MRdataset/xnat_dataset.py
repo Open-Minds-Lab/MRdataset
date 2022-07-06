@@ -1,25 +1,28 @@
 import logging
 import pickle
 from pathlib import Path
-
 import dicom2nifti
 import pydicom
 from MRdataset import common
 from MRdataset import config
-from MRdataset.base import Dataset, Project, Run, Modality, Subject
+from MRdataset.base import Node, Run, Modality, Subject
+from MRdataset.utils import param_difference
 
 
 # TODO: check what if each variable is None. Apply try catch
-class XnatDataset(Dataset):
+class XnatDataset(Node):
     def __init__(self,
                  data_root=None,
                  metadata_root=None,
                  name='mind',
                  reindex=False,
                  verbose=False):
+
         """
-        Class defining an XNAT dataset class. Encapsulates all the details necessary for execution
-        hence easing the subsequent analysis/workflow.
+        Container to manage properties and issues at the project level.
+        Encapsulates all the details necessary for a complete project.
+        A single project may contain multiple modalities, and each modality
+        will have atleast single subject.
 
         Args:
             data_root: directory containing dataset with dicom files, supports nested hierarchies
@@ -32,8 +35,7 @@ class XnatDataset(Dataset):
             >>> from MRdataset import xnat_dataset
             >>> dataset = xnat_dataset.XnatDataset()
         """
-        super().__init__()
-        self.name = name
+        super().__init__(name)
 
         # Manage directories
         self.data_root = Path(data_root)
@@ -48,54 +50,23 @@ class XnatDataset(Dataset):
         indexed = cache_path.exists()
 
         if not indexed or reindex:
-            self.project_node = Project(name=self.name)
             self.walk()
             with open(cache_path, "wb") as f:
-                pickle.dump(self.project_node, f)
+                pickle.dump(self.__dict__, f)
         else:
             with open(cache_path, 'rb') as f:
-                self.project_node = pickle.load(f)
+                temp_dict = pickle.load(f)
+                self.__dict__.update(temp_dict)
 
     @property
     def modalities(self):
-        """
-        Collection of all modalities, grouped by subjects.
-        """
-        return self._modalities
+        return self._children
 
-    @property
-    def projects(self):
-        """
-        Collection of all Study ID values in the dataset. Can be used to decide if
-        the folder contains different scans from different projects
-        """
-        return self._projects
+    def add_modality(self, new_modality):
+        self.__add__(new_modality)
 
-    # def _create_metadata(self):
-    #     raise NotImplementedError
-
-    def is_valid_file(self, filename, dicom):
-        if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-            logging.warning("Invalid file: %s" % filename)
-            return False
-
-        if not common.header_exists(dicom):
-            logging.warning("Header Absent: %s" % filename)
-            return False
-
-        # TODO: make the check more concrete. See dicom2nifti for details
-        if 'local' in common.get_dicom_modality(dicom).lower():
-            logging.warning("Localizer: Skipping %s" % filename)
-            return False
-
-        sid = common.get_subject(dicom)
-        if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
-            logging.warning('ACR/Phantom: %s' % filename)
-            return False
-
-        # TODO: Add checks to remove aahead_64ch_head_coil
-
-        return True
+    def get_modality(self, name):
+        return self._get(name)
 
     def walk(self):
         study_ids_found = set()
@@ -105,14 +76,14 @@ class XnatDataset(Dataset):
                     return False
                 dicom = pydicom.read_file(filepath,
                                           stop_before_pixels=True)
-                if self.is_valid_file(filepath, dicom):
+                if common.is_valid_file(filepath, dicom):
                     dcm_echo_number = common.get_tags_by_name(dicom, 'echo_number')
                     dcm_project_name = common.get_tags_by_name(dicom, 'study_id')
                     dcm_modality_name = common.get_dicom_modality(dicom)
                     dcm_subject_name = common.get_tags_by_name(dicom, 'patient_name')
                     dcm_series_instance_uid = common.get_tags_by_name(dicom, 'series_instance_uid')
 
-                    modality_node = self.project_node.get_modality(dcm_modality_name)
+                    modality_node = self.get_modality(dcm_modality_name)
                     if modality_node is None:
                         modality_node = Modality(dcm_modality_name)
 
@@ -132,12 +103,12 @@ class XnatDataset(Dataset):
                     dcm_params = common.parse(filepath)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_params.copy()
-                    elif run_node.param_difference(dcm_params):
+                    elif param_difference(dcm_params, run_node.params):
                         raise config.ChangingParamsinSeries(filepath)
 
                     subject_node.add_run(run_node)
                     modality_node.add_subject(subject_node)
-                    self.project_node.add_modality(modality_node)
+                    self.add_modality(modality_node)
                     study_ids_found.add(dcm_project_name)
 
             except config.MRdatasetException as e:
@@ -145,6 +116,7 @@ class XnatDataset(Dataset):
         if len(study_ids_found) > 1:
             raise config.MultipleProjectsinDataset(study_ids_found)
 
+
     def __str__(self):
-        return 'XnatDataset {} was created\n' \
-               'Pass --name {} to use generated cache\n'.format(self.name)
+        return 'XnatDataset {0} was created with {1} modalities\n' \
+               'Pass --name {0} to use generated cache\n'.format(self.name, len(self.modalities))

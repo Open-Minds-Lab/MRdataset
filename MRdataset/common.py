@@ -47,6 +47,8 @@ def header_exists(dicom):
 
 def parse(dicom_path):
     filepath = Path(dicom_path)
+    params = defaultdict()
+
     if not filepath.exists():
         raise OSError("Expected a valid filepath, Got invalid path : {0}\n"
                       "Consider re-indexing dataset.".format(filepath))
@@ -59,29 +61,28 @@ def parse(dicom_path):
             "Unable to read dicom file from disk : {0}".format(filepath)
         )
 
-    subj = SubjectNode(filepath)
     for k in config.PARAMETER_TAGS.keys():
         value = get_param_value_by_name(dicom, k)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
-        if not functional.is_hashable(value):
+        if not utils.is_hashable(value):
             value = str(value)
-        subj.params[k] = value
+        params[k] = value
 
     csa_values = csa_parser(dicom)
-    subj.params["slice_order"] = config.SODict[csa_values['so']]
-    subj.params['ipat'] = csa_values['ipat']
-    subj.params['shim'] = csa_values['shim']
+    params["slice_order"] = config.SODict[csa_values['so']]
+    params['ipat'] = csa_values['ipat']
+    params['shim'] = csa_values['shim']
 
-    subj.params["is3d"] = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
-    subj.params["modality"] = "_".join([
+    params["is3d"] = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
+    params["modality"] = "_".join([
         str(get_header(dicom, "series_number")),
         get_header(dicom, "series_description")]).replace(" ", "_")
-    subj.params["effective_echo_spacing"] = effective_echo_spacing(dicom)
-    subj.params["phase_encoding_direction"] = get_phase_encoding(dicom,
-                                                                 is3d=subj.params['is3d'],
-                                                                 echo_train_length=subj.params['echo_train_length'])
-    return subj
+    params["effective_echo_spacing"] = effective_echo_spacing(dicom)
+    params["phase_encoding_direction"] = get_phase_encoding(dicom,
+                                                            is3d=subj.params['is3d'],
+                                                            echo_train_length=subj.params['echo_train_length'])
+    return params
 
 
 def get_param_value_by_name(dicom, name):

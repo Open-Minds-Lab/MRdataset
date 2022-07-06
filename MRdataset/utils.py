@@ -5,6 +5,9 @@ import time
 import uuid
 from collections import defaultdict
 from collections.abc import Hashable
+from collections.abc import Iterable
+
+from dictdiffer import diff as dict_diff
 
 
 def safe_get(dictionary, keys, default=None):
@@ -12,6 +15,14 @@ def safe_get(dictionary, keys, default=None):
         lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."),
         dictionary
     )
+
+
+def param_difference(dict1, dict2, ignore_params=[None]):
+    if isinstance(dict1, dict) and isinstance(dict2, dict):
+        if isinstance(ignore_params, Iterable):
+            return list(dict_diff(dict1, dict2, ignore=set(ignore_params)))
+        raise TypeError("Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
+    raise TypeError("Expected type 'dict', got {} instead".format(type(dict2)))
 
 
 def fix(f):

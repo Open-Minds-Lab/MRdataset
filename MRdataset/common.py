@@ -22,7 +22,7 @@ def get_instance_number(dicom):
     return get_dicom_property(dicom, 'INSTANCE_NUMBER')
 
 
-def get_series(dicom):
+def get_modality(dicom):
     a = get_dicom_property(dicom, 'SERIES_DESCRIPTION')
 
     if a is None:
@@ -39,29 +39,6 @@ def get_series(dicom):
 
 def get_image_type(dicom):
     return get_dicom_property(dicom, 'IMAGE_TYPE')
-
-
-def get_modality(dicom):
-    mode = []
-    sequence = get_dicom_property(dicom, 'SEQUENCE')
-    variant = get_dicom_property(dicom, 'VARIANT')
-
-    # If str, append to list
-    # If "pydicom.multival.MultiValue", convert expression to list, append to list
-    if isinstance(sequence, str):
-        mode.append(sequence)
-    elif isinstance(sequence, MultiValue):
-        mode.append(list(sequence))
-    else:
-        logging.warning("Error reading <sequence>. Do you think its a phantom?")
-    if isinstance(variant, str):
-        mode.append(variant)
-    elif isinstance(variant, MultiValue):
-        mode.append(list(variant))
-    else:
-        logging.warning("Error reading <variant>. Do you think its a phantom?")
-
-    return functional.flatten(mode)
 
 
 def get_subject(dicom):

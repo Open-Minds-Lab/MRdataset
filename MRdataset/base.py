@@ -90,7 +90,6 @@ class Node(ABC):
     """
     def __init__(self, name, **kwargs):
         self.name = name
-        self.error = False
         self._children = list()
 
     def __add__(self, other):
@@ -119,7 +118,13 @@ class Modality(Node):
     """
     def __init__(self, name):
         super().__init__(name)
-        self.reference = dict()
+        self._reference = dict()
+        # multi_echo is not set
+        self.multi_echo_flag = None
+        self.compliant = None
+
+    def get_reference(self, echo_number):
+        return self._reference[echo_number]
 
     @property
     def subjects(self):
@@ -136,6 +141,19 @@ class Modality(Node):
     def __str__(self):
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
 
+    def set_reference(self, params, echo):
+        self._reference[echo] = params.copy()
+
+    def is_multi_echo(self):
+        if self.is_multi_echo() is None:
+            for subject in self.subjects:
+                for session in subject.sessions:
+                    if session.is_multi_echo():
+                        self.multi_echo_flag = True
+                        return self.multi_echo_flag
+            self.multi_echo_flag = False
+        return self.multi_echo_flag
+
 
 class Subject(Node):
     """
@@ -148,6 +166,7 @@ class Subject(Node):
     """
     def __init__(self, name):
         super().__init__(name)
+        self.compliant = None
 
     @property
     def sessions(self):
@@ -178,6 +197,7 @@ class Session(Node):
         super().__init__(name)
         self.params = dict()
         self.path = Path(path).resolve()
+        self.compliant = None
         if not self.path.exists():
             raise FileNotFoundError('Provide a valid /path/to/session/')
 
@@ -196,6 +216,9 @@ class Session(Node):
     def __str__(self):
         return "Session {} with {} runs".format(self.name, len(self.runs))
 
+    def is_multi_echo(self):
+        return len(self.runs) > 1
+
 
 class Run(Node):
     """
@@ -207,9 +230,10 @@ class Run(Node):
     """
     def __init__(self, name):
         super().__init__(name)
+        self.echo_time = 0
         self.error = False
         self.params = dict()
-        self.files = list()
+        self.delta = None
 
     def __str__(self):
         return "Run {}".format(self.name)

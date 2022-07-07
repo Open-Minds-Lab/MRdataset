@@ -93,6 +93,7 @@ class XnatDataset(Node):
                     dcm_subject_name = common.get_tags_by_name(dicom, 'patient_name')
                     dcm_session_name = common.get_tags_by_name(dicom, 'series_number')
                     dcm_series_instance_uid = common.get_tags_by_name(dicom, 'series_instance_uid')
+                    dcm_echo_time = common.get_tags_by_name(dicom, 'te')
 
                     modality_node = self.get_modality(dcm_modality_name)
                     if modality_node is None:
@@ -114,6 +115,7 @@ class XnatDataset(Node):
                     run_node = session_node.get_run(run_name)
                     if run_node is None:
                         run_node = Run(run_name)
+                    run_node.echo_time = dcm_echo_time
 
                     dcm_params = common.parse(filepath)
                     if len(run_node.params) == 0:

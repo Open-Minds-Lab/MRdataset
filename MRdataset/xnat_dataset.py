@@ -7,7 +7,7 @@ import pydicom
 
 from MRdataset import common
 from MRdataset import config
-from MRdataset.base import Node, Run, Modality, Subject, Session
+from MRdataset.base import Project, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference
 
 # Module-level logger
@@ -15,7 +15,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class XnatDataset(Node):
+class XnatDataset(Project):
     def __init__(self,
                  name='mind',
                  data_root=None,
@@ -24,11 +24,6 @@ class XnatDataset(Node):
                  verbose=False):
 
         """
-        Container to manage properties and issues at the project level.
-        Encapsulates all the details necessary for a complete project.
-        A single project may contain multiple modalities, and each modality
-        will have atleast single subject.
-
         Args:
             data_root: directory containing dataset with dicom files, supports nested hierarchies
             metadata_root: directory to store metadata files
@@ -40,18 +35,9 @@ class XnatDataset(Node):
             >>> from MRdataset import xnat_dataset
             >>> dataset = xnat_dataset.XnatDataset()
         """
-        super().__init__(name)
-
-        # Manage directories
-        self.data_root = Path(data_root)
-        if not self.data_root.exists():
-            raise FileNotFoundError('Provide a valid /path/to/dataset/')
-
-        self.metadata_root = Path(metadata_root)
-        if not self.metadata_root.exists():
-            raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
-
+        super().__init__(name, data_root, metadata_root)
         self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
+
         indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()
@@ -59,40 +45,6 @@ class XnatDataset(Node):
         else:
             self.load_dataset()
 
-        print(self)
-
-    @property
-    def modalities(self):
-        return self._children
-
-    @property
-    def compliant_modalities(self):
-        return self._compliant_children
-
-    @property
-    def non_compliant_modalities(self):
-        return self._non_compliant_children
-
-    def add_modality(self, new_modality):
-        self.__add__(new_modality)
-
-    def get_modality(self, name):
-        return self._get(name)
-
-    def add_compliant_modality(self, modality_name):
-        self._add_compliant(modality_name)
-
-    def add_non_compliant_modality(self, modality_name):
-        self._add_non_compliant(modality_name)
-
-    def save_dataset(self):
-        with open(self.cache_path, "wb") as f:
-            pickle.dump(self.__dict__, f)
-
-    def load_dataset(self):
-        with open(self.cache_path, 'rb') as f:
-            temp_dict = pickle.load(f)
-            self.__dict__.update(temp_dict)
 
     def walk(self):
         study_ids_found = set()

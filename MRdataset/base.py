@@ -2,7 +2,7 @@ import importlib
 import warnings
 from abc import ABC
 from pathlib import Path
-
+import pickle
 from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
 
@@ -74,7 +74,7 @@ def find_dataset_using_style(dataset_style):
     target_dataset_class = dataset_style+'dataset'
     for name, cls in datasetlib.__dict__.items():
         if name.lower() == target_dataset_class.lower() \
-                and issubclass(cls, Node):
+                and issubclass(cls, Project):
             dataset = cls
 
     if dataset is None:
@@ -123,6 +123,60 @@ class Node(ABC):
         return self.__str__()
 
 
+class Project(Node):
+    """
+            Container to manage properties and issues at the project level.
+        Encapsulates all the details necessary for a complete project.
+        A single project may contain multiple modalities, and each modality
+        will have atleast single subject.
+    """
+    def __init__(self, name, data_root, metadata_root):
+        super().__init__(name)
+        # Manage directories
+        self.data_root = Path(data_root)
+        if not self.data_root.exists():
+            raise FileNotFoundError('Provide a valid /path/to/dataset/')
+
+        self.metadata_root = Path(metadata_root)
+        if not self.metadata_root.exists():
+            raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
+
+        self.cache_path = None
+
+    @property
+    def modalities(self):
+        return self._children
+
+    @property
+    def compliant_modalities(self):
+        return self._compliant_children
+
+    @property
+    def non_compliant_modalities(self):
+        return self._non_compliant_children
+
+    def add_modality(self, new_modality):
+        self.__add__(new_modality)
+
+    def get_modality(self, name):
+        return self._get(name)
+
+    def add_compliant_modality(self, modality_name):
+        self._add_compliant(modality_name)
+
+    def add_non_compliant_modality(self, modality_name):
+        self._add_non_compliant(modality_name)
+
+    def save_dataset(self):
+        with open(self.cache_path, "wb") as f:
+            pickle.dump(self.__dict__, f)
+
+    def load_dataset(self):
+        with open(self.cache_path, 'rb') as f:
+            temp_dict = pickle.load(f)
+            self.__dict__.update(temp_dict)
+
+
 class Modality(Node):
     """
     Container to manage properties and issues at the modality level.
@@ -132,13 +186,13 @@ class Modality(Node):
     """
     def __init__(self, name):
         super().__init__(name)
-        self._reference = dict()
+        self.reference = dict()
         # multi_echo is not set
         self.multi_echo_flag = None
         self.compliant = None
 
     def get_reference(self, echo_number):
-        return self._reference[echo_number]
+        return self.reference[echo_number]
 
     @property
     def subjects(self):
@@ -170,10 +224,10 @@ class Modality(Node):
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
 
     def set_reference(self, params, echo):
-        self._reference[echo] = params.copy()
+        self.reference[echo] = params.copy()
 
     def is_multi_echo(self):
-        if self.is_multi_echo() is None:
+        if self.multi_echo_flag is None:
             for subject in self.subjects:
                 for session in subject.sessions:
                     if session.is_multi_echo():

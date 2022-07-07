@@ -12,9 +12,9 @@ from MRdataset.utils import param_difference
 # TODO: check what if each variable is None. Apply try catch
 class XnatDataset(Node):
     def __init__(self,
+                 name='mind',
                  data_root=None,
                  metadata_root=None,
-                 name='mind',
                  reindex=False,
                  verbose=False):
 

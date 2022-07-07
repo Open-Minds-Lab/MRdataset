@@ -4,6 +4,7 @@ from abc import ABC
 from pathlib import Path
 
 from MRdataset.config import CACHE_DIR
+from MRdataset.utils import random_name
 
 
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
@@ -38,14 +39,16 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
         warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
                       'Using a random name. Use --name flag for persistent metadata',
                       stacklevel=2)
-        name = functional.random_name()
+        name = random_name()
 
     dataset_class = find_dataset_using_style(style.lower())
-    dataset = dataset_class(data_root=data_root,
-                            metadata_root=metadata_root,
-                            name=name,
-                            reindex=reindex,
-                            verbose=verbose)
+    dataset = dataset_class(
+        name=name,
+        data_root=data_root,
+        metadata_root=metadata_root,
+        reindex=reindex,
+        verbose=verbose
+    )
     if verbose:
         print(dataset)
 
@@ -80,7 +83,7 @@ class Node(ABC):
     An abstract class specifying a generic node in a neuroimaging experiment.
     It is inherited to create subclasses like ProjectNode, ModalityNode, SubjectNode etc.
     """
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         self.name = name
         self.error = False
         self._children = list()
@@ -118,6 +121,8 @@ class Modality(Node):
         return self._children
 
     def add_subject(self, new_subject):
+        if not isinstance(new_subject, Subject):
+            raise TypeError("Expected argument of type <Subject>, got {} instead".format(type(new_subject)))
         self.__add__(new_subject)
 
     def get_subject(self, name):
@@ -127,7 +132,6 @@ class Modality(Node):
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
 
 
-
 class Subject(Node):
     """
     Container to manage properties and issues at the subject level.
@@ -135,6 +139,35 @@ class Subject(Node):
     A single subject may contain multiple sessions for a single modality.
     For example, For a project called ABCD, it is grouped by modalities like T1, T2 etc.
     So, each modality, say T1 will have multiple subjects. And each subject
+    can have multiple sessions.
+    """
+    def __init__(self, name):
+        super().__init__(name)
+        self.params = dict()
+
+    @property
+    def sessions(self):
+        return self._children
+
+    def add_session(self, new_session):
+        if not isinstance(new_session, Session):
+            raise TypeError("Expected argument of type <Session>, got {} instead".format(type(new_session)))
+        self.__add__(new_session)
+
+    def get_session(self, name):
+        return self._get(name)
+
+    def __str__(self):
+        return "Subject {} with {} sessions".format(self.name, len(self.sessions))
+
+
+class Session(Node):
+    """
+    Container to manage properties and issues at the session level.
+    Encapsulates all the details necessary for a session.
+    A single session may contain multiple sessions for a single modality.
+    For example, For a project called ABCD, it is grouped by modalities like T1, T2 etc.
+    So, each modality, say T1 will have multiple sessions. And each session
     can have multiple run where a run instance is a series of brain volumes
     """
     def __init__(self, name, path):
@@ -142,20 +175,22 @@ class Subject(Node):
         self.params = dict()
         self.path = Path(path).resolve()
         if not self.path.exists():
-            raise FileNotFoundError('Provide a valid /path/to/subject/')
+            raise FileNotFoundError('Provide a valid /path/to/session/')
 
     @property
     def runs(self):
         return self._children
 
     def add_run(self, new_run):
+        if not isinstance(new_run, Run):
+            raise TypeError("Expected argument of type <Run>, got {} instead".format(type(new_run)))
         self.__add__(new_run)
 
     def get_run(self, name):
         return self._get(name)
 
     def __str__(self):
-        return "Subject {} with {} runs".format(self.name, len(self.runs))
+        return "Session {} with {} runs".format(self.name, len(self.runs))
 
 
 class Run(Node):
@@ -167,7 +202,7 @@ class Run(Node):
     parameters at this level.
     """
     def __init__(self, name):
-        self.name = name
+        super().__init__(name)
         self.error = False
         self.params = dict()
         self.files = list()

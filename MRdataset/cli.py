@@ -1,8 +1,8 @@
 """Console script for MRdataset."""
 import argparse
-import logging
 import sys
 from pathlib import Path
+
 from MRdataset import create_dataset
 
 

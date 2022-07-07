@@ -10,8 +10,8 @@ TAGS = {
     "series_description": (0x08, 0x103E),
     "series_number": (0x20, 0x11),
     "protocol_name": (0x18, 0x1030),
-    "sequence_name": (0x18,0x24),
-    "image_type": (0x08,0x08),
+    "sequence_name": (0x18, 0x24),
+    "image_type": (0x08, 0x08),
     "echo_number": (0x18, 0x86),
     "te": [0x18, 0x81]
 }
@@ -71,12 +71,14 @@ ATDict = ["2D", "3D"]
 
 class MRException(Exception):
     """Custom error that is raised when some critical properties are not found in dicom file"""
+
     def __init__(self, message, **kwargs):
         super().__init__(message)
 
 
 class MRdatasetWarning(Exception):
     """Custom error that is raised when some critical properties are not found in dicom file"""
+
     def __init__(self, message, **kwargs):
         super().__init__(message)
 
@@ -106,9 +108,10 @@ class MultipleProjectsinDataset(MRException):
     Custom error that is raised when dcm files in directory have different study ids.
     Expected all dicom files belong to a single study id. Cross-Study is not supported.
     """
+
     def __init__(self, study_ids):
         super().__init__("Expected all the dicom files to be in the same project/study. "
-                         "Found study id(s) : ".format(len(study_ids)))
+                         "Found study id(s) : {}".format(len(study_ids)))
 
 
 def setup_logger(name, filename):

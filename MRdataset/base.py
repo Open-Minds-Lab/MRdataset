@@ -44,7 +44,7 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
         name = random_name()
 
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
-    logger = setup_logger('root', log_filename)
+    setup_logger('root', log_filename)
 
     dataset_class = find_dataset_using_style(style.lower())
     dataset = dataset_class(

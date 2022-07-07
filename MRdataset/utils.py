@@ -17,11 +17,14 @@ def safe_get(dictionary, keys, default=None):
     )
 
 
-def param_difference(dict1, dict2, ignore_params=[None]):
+def param_difference(dict1, dict2, ignore_params=None):
     if isinstance(dict1, dict) and isinstance(dict2, dict):
-        if isinstance(ignore_params, Iterable):
+        if ignore_params is None:
+            return list(dict_diff(dict1, dict2))
+        elif isinstance(ignore_params, Iterable):
             return list(dict_diff(dict1, dict2, ignore=set(ignore_params)))
-        raise TypeError("Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
+        raise TypeError(
+            "Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
     raise TypeError("Expected type 'dict', got {} instead".format(type(dict2)))
 
 
@@ -49,7 +52,7 @@ def flatten(arg):
 class DeepDefaultDict(defaultdict):
     def __init__(self, depth, default=list):
         if depth > 1:
-            defaultdict.__init__(self, lambda: DeepDefaultDict(depth-1, default))
+            defaultdict.__init__(self, lambda: DeepDefaultDict(depth - 1, default))
         else:
             defaultdict.__init__(self, default)
 

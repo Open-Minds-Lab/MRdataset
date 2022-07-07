@@ -109,15 +109,15 @@ class Node(ABC):
 
     def _add_compliant(self, other):
         for child in self._compliant_children:
-            if child.name == other.name:
+            if child == other:
                 return
         self._compliant_children.append(other)
 
     def _add_non_compliant(self, other):
         for child in self._compliant_children:
-            if child.name == other.name:
+            if child == other:
                 return
-        self._compliant_children.append(other)
+        self._non_compliant_children.append(other)
 
     def __repr__(self):
         return self.__str__()

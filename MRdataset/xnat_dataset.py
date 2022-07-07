@@ -46,17 +46,15 @@ class XnatDataset(Node):
         if not self.metadata_root.exists():
             raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
-        cache_path = self.metadata_root / "{}.pkl".format(self.name)
-        indexed = cache_path.exists()
-
+        self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
+        indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()
-            with open(cache_path, "wb") as f:
-                pickle.dump(self.__dict__, f)
+            self.save_dataset()
         else:
-            with open(cache_path, 'rb') as f:
-                temp_dict = pickle.load(f)
-                self.__dict__.update(temp_dict)
+            self.load_dataset()
+
+        print(self)
 
     @property
     def modalities(self):
@@ -67,6 +65,15 @@ class XnatDataset(Node):
 
     def get_modality(self, name):
         return self._get(name)
+
+    def save_dataset(self):
+        with open(self.cache_path, "wb") as f:
+            pickle.dump(self.__dict__, f)
+
+    def load_dataset(self):
+        with open(self.cache_path, 'rb') as f:
+            temp_dict = pickle.load(f)
+            self.__dict__.update(temp_dict)
 
     def walk(self):
         study_ids_found = set()

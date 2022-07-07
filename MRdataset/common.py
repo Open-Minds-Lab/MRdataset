@@ -102,8 +102,8 @@ def parse(dicom_path):
 
     params["is3d"] = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
     params["modality"] = "_".join([
-        str(get_header(dicom, "series_number")),
-        get_header(dicom, "series_description")]).replace(" ", "_")
+        str(get_tags_by_name(dicom, "series_number")),
+        get_tags_by_name(dicom, "series_description")]).replace(" ", "_")
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
     params["phase_encoding_direction"] = get_phase_encoding(dicom,
                                                             is3d=params['is3d'],
@@ -124,11 +124,13 @@ def get_header(dicom, name):
         return data.value
     return None
 
+
 def get_tags_by_name(dicom, name):
     data = dicom.get(config.TAGS[name], None)
     if data is None:
         return None
     return data.value
+
 
 def csa_parser(dicom):
     series_header = csareader.read(get_header(dicom, 'series_header_info'))

@@ -1,6 +1,6 @@
 import logging
 
-# Constant Dicom Identifiers
+# Constant Dicom Identifiers Used for dataset creation and manipulation
 TAGS = {
     "series_instance_uid": (0x20, 0x0e),
     "sequence": (0x18, 0x20),
@@ -12,11 +12,15 @@ TAGS = {
     "protocol_name": (0x18, 0x1030),
     "sequence_name": (0x18,0x24),
     "image_type": (0x08,0x08),
-    "echo_number": (0x18, 0x86)
+    "echo_number": (0x18, 0x86),
+    "te": [0x18, 0x81]
 }
 
 # Constant Paths
 CACHE_DIR = ".mrdataset"
+
+# Constant Dicom Identifiers used for protocol compliance. These are the parameters
+# which are compared in the final report
 PARAMETER_TAGS = {
     "manufacturer": [0x08, 0x70],
     "organ": [0x18, 0x15],
@@ -34,13 +38,11 @@ PARAMETER_TAGS = {
     "phase_encoding_direction": [0x18, 0x1312],
 
 }
+
+# Constant dicom Identifiers used to extract dicom headers
 HEADER_TAGS = {
     "image_header_info": [0x29, 0x1010],
     "series_header_info": [0x29, 0x1020],
-    "series_description": [0x08, 0x103E],
-    "series_number": [0x20, 0x11],
-    "protocol_name": [0x18, 0x1030],
-    "sequence_name": [0x18, 0x24]
 }
 SODict = {
     "1": "sequential",
@@ -67,12 +69,11 @@ SVDict = {
 ATDict = ["2D", "3D"]
 
 
-
-
 class MRException(Exception):
     """Custom error that is raised when some critical properties are not found in dicom file"""
     def __init__(self, message, **kwargs):
         super().__init__(message)
+
 
 class MRdatasetWarning(Exception):
     """Custom error that is raised when some critical properties are not found in dicom file"""

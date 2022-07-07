@@ -91,6 +91,8 @@ class Node(ABC):
     def __init__(self, name, **kwargs):
         self.name = name
         self._children = list()
+        self._compliant_children = list()
+        self._non_compliant_children = list()
 
     def __add__(self, other):
         for child in self._children:
@@ -104,6 +106,18 @@ class Node(ABC):
                 return child
         else:
             return None
+
+    def _add_compliant(self, other):
+        for child in self._compliant_children:
+            if child.name == other.name:
+                return
+        self._compliant_children.append(other)
+
+    def _add_non_compliant(self, other):
+        for child in self._compliant_children:
+            if child.name == other.name:
+                return
+        self._compliant_children.append(other)
 
     def __repr__(self):
         return self.__str__()
@@ -130,10 +144,24 @@ class Modality(Node):
     def subjects(self):
         return self._children
 
+    @property
+    def compliant_subjects(self):
+        return self._compliant_children
+
+    @property
+    def non_compliant_subjects(self):
+        return self._non_compliant_children
+
     def add_subject(self, new_subject):
         if not isinstance(new_subject, Subject):
             raise TypeError("Expected argument of type <Subject>, got {} instead".format(type(new_subject)))
         self.__add__(new_subject)
+
+    def add_compliant_subject(self, subject_name):
+        self._add_compliant(subject_name)
+
+    def add_non_compliant_subject(self, subject_name):
+        self._add_non_compliant(subject_name)
 
     def get_subject(self, name):
         return self._get(name)
@@ -172,6 +200,14 @@ class Subject(Node):
     def sessions(self):
         return self._children
 
+    @property
+    def compliant_sessions(self):
+        return self._compliant_children
+
+    @property
+    def non_compliant_sessions(self):
+        return self._non_compliant_children
+
     def add_session(self, new_session):
         if not isinstance(new_session, Session):
             raise TypeError("Expected argument of type <Session>, got {} instead".format(type(new_session)))
@@ -179,6 +215,12 @@ class Subject(Node):
 
     def get_session(self, name):
         return self._get(name)
+
+    def add_compliant_session(self, session_name):
+        self._add_compliant(session_name)
+
+    def add_non_compliant_session(self, session_name):
+        self._add_non_compliant(session_name)
 
     def __str__(self):
         return "Subject {} with {} sessions".format(self.name, len(self.sessions))

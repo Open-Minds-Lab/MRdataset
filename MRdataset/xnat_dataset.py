@@ -63,11 +63,25 @@ class XnatDataset(Node):
     def modalities(self):
         return self._children
 
+    @property
+    def compliant_modalities(self):
+        return self._compliant_children
+
+    @property
+    def non_compliant_modalities(self):
+        return self._non_compliant_children
+
     def add_modality(self, new_modality):
         self.__add__(new_modality)
 
     def get_modality(self, name):
         return self._get(name)
+
+    def add_compliant_modality(self, modality_name):
+        self._add_compliant(modality_name)
+
+    def add_non_compliant_modality(self, modality_name):
+        self._add_non_compliant(modality_name)
 
     def save_dataset(self):
         with open(self.cache_path, "wb") as f:

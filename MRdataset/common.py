@@ -2,33 +2,34 @@ import logging
 from collections import defaultdict
 from pathlib import Path
 
-
-import logging
 import dicom2nifti
-from MRdataset import common
 import pydicom
+from nibabel.nicom import csareader
+
+from MRdataset import common
 from MRdataset import config
 from MRdataset import utils
-from nibabel.nicom import csareader
+
+logger = logging.getLogger('root')
 
 
 def is_valid_file(filename, dicom):
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        logging.warning("Invalid file: %s" % filename)
+        logger.warning("Invalid file: %s" % filename)
         return False
 
     if not common.header_exists(dicom):
-        logging.warning("Header Absent: %s" % filename)
+        logger.warning("Header Absent: %s" % filename)
         return False
 
     # TODO: make the check more concrete. See dicom2nifti for details
     if 'local' in common.get_dicom_modality(dicom).lower():
-        logging.warning("Localizer: Skipping %s" % filename)
+        logger.warning("Localizer: Skipping %s" % filename)
         return False
 
     sid = common.get_subject(dicom)
     if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
-        logging.warning('ACR/Phantom: %s' % filename)
+        logger.warning('ACR/Phantom: %s' % filename)
         return False
 
     # TODO: Add checks to remove aahead_64ch_head_coil
@@ -66,7 +67,7 @@ def header_exists(dicom):
         series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
         return True
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
         return False
 
 

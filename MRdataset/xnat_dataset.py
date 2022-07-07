@@ -8,6 +8,9 @@ from MRdataset import config
 from MRdataset.base import Node, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference
 
+# Module-level logger
+logger = logging.getLogger('root')
+
 
 # TODO: check what if each variable is None. Apply try catch
 class XnatDataset(Node):
@@ -126,8 +129,8 @@ class XnatDataset(Node):
                     # Collect all unique study ids found in DICOM
                     study_ids_found.add(dcm_project_name)
 
-            except config.MRdatasetException as e:
-                logging.exception(e)
+            except config.MRException as e:
+                logger.exception(e)
         if len(study_ids_found) > 1:
             raise config.MultipleProjectsinDataset(study_ids_found)
 

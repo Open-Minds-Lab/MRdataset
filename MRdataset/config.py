@@ -1,3 +1,5 @@
+import logging
+
 # Constant Dicom Identifiers
 TAGS = {
     "series_instance_uid": (0x20, 0x0e),
@@ -65,6 +67,8 @@ SVDict = {
 ATDict = ["2D", "3D"]
 
 
+
+
 class MRException(Exception):
     """Custom error that is raised when some critical properties are not found in dicom file"""
     def __init__(self, message, **kwargs):
@@ -104,3 +108,14 @@ class MultipleProjectsinDataset(MRException):
     def __init__(self, study_ids):
         super().__init__("Expected all the dicom files to be in the same project/study. "
                          "Found study id(s) : ".format(len(study_ids)))
+
+
+def setup_logger(name, filename):
+    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+    handler = logging.FileHandler(filename)
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    return logger

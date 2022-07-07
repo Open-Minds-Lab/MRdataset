@@ -3,8 +3,8 @@ import warnings
 from abc import ABC
 from pathlib import Path
 
-from MRdataset.config import CACHE_DIR
-from MRdataset.utils import random_name
+from MRdataset.config import CACHE_DIR, setup_logger
+from MRdataset.utils import random_name, timestamp
 
 
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
@@ -29,17 +29,22 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
     :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
+
     if not Path(data_root).is_dir():
         raise OSError('Expected valid directory for --data_root argument, Got {0}'.format(data_root))
     data_root = Path(data_root).resolve()
 
     metadata_root = data_root / CACHE_DIR
     metadata_root.mkdir(exist_ok=True)
+
     if name is None:
         warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
                       'Using a random name. Use --name flag for persistent metadata',
                       stacklevel=2)
         name = random_name()
+
+    log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
+    logger = setup_logger('root', log_filename)
 
     dataset_class = find_dataset_using_style(style.lower())
     dataset = dataset_class(
@@ -143,7 +148,6 @@ class Subject(Node):
     """
     def __init__(self, name):
         super().__init__(name)
-        self.params = dict()
 
     @property
     def sessions(self):

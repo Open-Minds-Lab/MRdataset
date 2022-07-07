@@ -68,6 +68,11 @@ def is_hashable(value):
     return isinstance(value, Hashable)
 
 
+def timestamp():
+    time_string = time.strftime("%m_%d_%Y_%H_%M")
+    return time_string
+
+
 class Spinner:
     busy = False
     delay = 0.1

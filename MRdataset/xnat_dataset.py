@@ -18,6 +18,7 @@ class XnatDataset(Project):
                  name='mind',
                  data_root=None,
                  metadata_root=None,
+                 include_phantom=False,
                  reindex=False):
 
         """
@@ -33,7 +34,7 @@ class XnatDataset(Project):
         """
         super().__init__(name, data_root, metadata_root)
         self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
-
+        self.include_phantom = include_phantom
         indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()
@@ -48,7 +49,10 @@ class XnatDataset(Project):
                 if not dicom2nifti.common.is_dicom_file(filepath):
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
-                if common.is_valid_inclusion(filepath, dicom):
+                if common.is_valid_inclusion(filepath,
+                                             dicom,
+                                             self.include_phantom):
+
                     info = common.parse_study_information(dicom)
 
                     modality_obj = self.get_modality(info['modality'])

@@ -13,6 +13,7 @@ def create_dataset(data_root=None,
                    style='xnat',
                    name=None,
                    reindex=False,
+                   include_phantom=False,
                    verbose=False) -> "Project":
     """
     Create dataset as per arguments.
@@ -33,6 +34,7 @@ def create_dataset(data_root=None,
     @param reindex: optional flag, if true delete all associated metadata files
             and rebuilds index
     @param verbose: print more stuff
+    @param include_phantom: whether to include phantom/localizer/aahead_scout
     @rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
@@ -60,6 +62,7 @@ def create_dataset(data_root=None,
         name=name,
         data_root=data_root,
         metadata_root=metadata_root,
+        include_phantom=include_phantom,
         reindex=reindex,
     )
     if verbose:
@@ -297,9 +300,8 @@ class Session(Node):
 
     def add_run(self, new_run):
         if not isinstance(new_run, Run):
-            raise TypeError(
-                "Expected argument of type <Run>, got {} instead".format(
-                    type(new_run)))
+            raise TypeError("Expected type <Run>, got {} instead"
+                            .format(type(new_run)))
         self.__add__(new_run)
 
     def get_run(self, name):

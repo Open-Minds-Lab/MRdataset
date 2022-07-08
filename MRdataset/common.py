@@ -13,39 +13,50 @@ from typing import Union
 logger = logging.getLogger('root')
 
 
-def is_valid_inclusion(filename: str, dicom: pydicom.FileDataset) -> bool:
+def is_valid_inclusion(filename: str,
+                       dicom: pydicom.FileDataset,
+                       include_phantom=False) -> bool:
     """
     Function will do some basic checks to see if it is a valid imaging dicom
     @param filename: path for raising the warning
     @param dicom: pydicom.FileDataset instance returned
                   from pydicom.read_file
+    @param include_phantom: whether to include
+                            AAhead_coil/localizer/ACR/Phantom in report
     @return: bool
     """
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        logger.warning("Invalid file: %s" % filename)
+        config.warn_once(logger, "Invalid file: %s" % filename)
         return False
 
     if not common.header_exists(dicom):
-        logger.warning("Header Absent: %s" % filename)
+        config.warn_once(logger, "Header Absent: %s" % filename)
         return False
 
     # TODO: revisit whether to include localizer or not,
     #  it may have relationship with other modalities
     # TODO: make the check more concrete. See dicom2nifti for details
-    # if 'local' in common.get_dicom_modality(dicom).lower():
-    #     logger.warning("Localizer: Skipping %s" % filename)
-    #     return False
     # TODO: better check for phantom
-    # TODO: need to take option in MRdataset, exclude by default
     # check quality control subject
     # check sex
     # check sid, patient name
-    sid = common.get_subject(dicom)
-    if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
-        logger.warning('ACR/Phantom: %s' % filename)
-        return False
+    if not include_phantom:
+        series_desc = get_tags_by_name('series_description').lower()
+        if 'local' in series_desc:
+            config.warn_once(logger, "Localizer: Skipping %s" % filename)
+            return False
 
-    # TODO: Add checks to remove aahead_64ch_head_coil
+        if 'aahead' in series_desc:
+            config.warn_once(logger, "AAhead_Scout: Skipping %s" % filename)
+            return True
+
+        # Add sex and age
+        is_phantom = False
+        sid = common.get_subject(dicom)
+        if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
+            config.warn_once(logger, 'ACR/Phantom: %s' % filename)
+            return False
+
     return True
 
 

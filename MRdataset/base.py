@@ -100,23 +100,15 @@ class Node(ABC):
 
     def __init__(self, name: str, **kwargs) -> None:
         self.name = name
-        self._children = list()
+        self._children = dict()
         self._compliant_children = list()
         self._non_compliant_children = list()
 
     def __add__(self, other: "Node") -> None:
-        # TODO: improve logic , better dictionary
-        for child in self._children:
-            if child.name == other.name:
-                return
-        self._children.append(other)
+        self._children[other.name] = other
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
-        for child in self._children:
-            if child.name == name:
-                return child
-        else:
-            return None
+        return self._children.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:
         for name in self._compliant_children:
@@ -156,7 +148,7 @@ class Project(Node):
         self.cache_path = None
 
     @property
-    def modalities(self) -> List["Modality"]:
+    def modalities(self) -> Dict["Modality"]:
         return self._children
 
     @property
@@ -212,7 +204,7 @@ class Modality(Node):
         return self.reference[echo_number]
 
     @property
-    def subjects(self) -> List["Subject"]:
+    def subjects(self) -> Dict["Subject"]:
         return self._children
 
     @property
@@ -266,7 +258,7 @@ class Subject(Node):
         self.compliant = None
 
     @property
-    def sessions(self) -> List["Session"]:
+    def sessions(self) -> Dict["Session"]:
         return self._children
 
     def add_session(self, new_session) -> None:

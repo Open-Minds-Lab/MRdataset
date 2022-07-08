@@ -52,7 +52,6 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
         data_root=data_root,
         metadata_root=metadata_root,
         reindex=reindex,
-        verbose=verbose
     )
     if verbose:
         print(dataset)
@@ -254,15 +253,7 @@ class Subject(Node):
     def sessions(self):
         return self._children
 
-    @property
-    def compliant_sessions(self):
-        return self._compliant_children
-
-    @property
-    def non_compliant_sessions(self):
-        return self._non_compliant_children
-
-    def add_session(self, new_session):
+    def add_session(self, new_session) -> None:
         if not isinstance(new_session, Session):
             raise TypeError("Expected argument of type <Session>, got {} instead".format(type(new_session)))
         self.__add__(new_session)
@@ -270,13 +261,7 @@ class Subject(Node):
     def get_session(self, name):
         return self._get(name)
 
-    def add_compliant_session(self, session_name):
-        self._add_compliant(session_name)
-
-    def add_non_compliant_session(self, session_name):
-        self._add_non_compliant(session_name)
-
-    def __str__(self):
+    def __str__(self) -> str:
         return "Subject {} with {} sessions".format(self.name, len(self.sessions))
 
 

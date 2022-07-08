@@ -1,5 +1,4 @@
 import logging
-import pickle
 from pathlib import Path
 
 import dicom2nifti
@@ -20,8 +19,7 @@ class XnatDataset(Project):
                  name='mind',
                  data_root=None,
                  metadata_root=None,
-                 reindex=False,
-                 verbose=False):
+                 reindex=False):
 
         """
         Args:
@@ -44,7 +42,6 @@ class XnatDataset(Project):
             self.save_dataset()
         else:
             self.load_dataset()
-
 
     def walk(self):
         study_ids_found = set()

@@ -44,7 +44,7 @@ def get_dicom_modality(dicom):
     if property1 is None:
         property1 = get_tags_by_name(dicom, 'PROTOCOL_NAME')
 
-    # TODO need to decide on wether to use SERIES NUMBER as part of modality identification
+    # TODO need to decide on whether to use SERIES NUMBER as part of modality identification
     # property2 = get_tags_by_name(dicom, 'SERIES_NUMBER')
     # ret_string = "_".join([str(property2), property1.lower()])
     return property1.replace(" ", "_")

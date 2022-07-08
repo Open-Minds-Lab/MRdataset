@@ -228,14 +228,7 @@ class Modality(Node):
 
     # TODO : Check if function is even required, else delete
     def is_multi_echo(self):
-        if self.multi_echo_flag is None:
-            for subject in self.subjects:
-                for session in subject.sessions:
-                    if session.is_multi_echo():
-                        self.multi_echo_flag = True
-                        return self.multi_echo_flag
-            self.multi_echo_flag = False
-        return self.multi_echo_flag
+        return len(self.reference) > 1
 
 
 class Subject(Node):
@@ -298,9 +291,9 @@ class Session(Node):
 
     def __str__(self):
         return "Session {} with {} runs".format(self.name, len(self.runs))
-
-    def is_multi_echo(self):
-        return len(self.runs) > 1
+    #
+    # def is_multi_echo(self):
+    #     return len(self.runs) > 1
 
 
 class Run(Node):

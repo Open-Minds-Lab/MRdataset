@@ -48,15 +48,16 @@ def is_valid_inclusion(filename: str, dicom: pydicom.FileDataset) -> bool:
     return True
 
 
-def get_dicom_modality(dicom: pydicom.FileDataset) -> str:
+def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     property1 = get_tags_by_name(dicom, 'series_description')
 
     if property1 is None:
-        property1 = get_tags_by_name(dicom, 'SEQUENCE_NAME')
+        property1 = get_tags_by_name(dicom, 'sequence_name')
     if property1 is None:
-        property1 = get_tags_by_name(dicom, 'PROTOCOL_NAME')
+        property1 = get_tags_by_name(dicom, 'protocol_name')
 
-    # TODO need to decide on whether to use SERIES NUMBER as part of modality identification
+    # TODO: need to decide on whether to use SERIES NUMBER as part of modality
+    # identification
     # property2 = get_tags_by_name(dicom, 'SERIES_NUMBER')
     # ret_string = "_".join([str(property2), property1.lower()])
     return property1.replace(" ", "_")
@@ -81,6 +82,23 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
     except Exception as e:
         logger.exception(e)
         return False
+
+
+def parse_study_information(dicom):
+    info = dict()
+    info['echo_num'] = get_tags_by_name(dicom, 'echo_number')
+    info['project'] = get_tags_by_name(dicom, 'study_id')
+    info['modality'] = get_dicom_modality_tag(dicom)
+    info['subject_name'] = get_tags_by_name(dicom, 'patient_name')
+    info['session_name'] = get_tags_by_name(dicom, 'series_number')
+    info['series_uid'] = get_tags_by_name(dicom, 'series_instance_uid')
+    info['echo_time'] = get_tags_by_name(dicom, 'te')
+
+    # dcm2niix detected 2 different series in a single folder
+    # Even though Series Instance UID was same, there was
+    # a difference in echo number, for gre_field_mapping
+    info['run_name'] = info['series_uid'] + '_e' + str(info['echo_num'])
+    return info
 
 
 def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:

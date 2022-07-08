@@ -3,7 +3,6 @@ from pathlib import Path
 
 import dicom2nifti
 import pydicom
-
 from MRdataset import common
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
@@ -49,54 +48,41 @@ class XnatDataset(Project):
             try:
                 if not dicom2nifti.common.is_dicom_file(filepath):
                     continue
-                dicom = pydicom.read_file(filepath,
-                                          stop_before_pixels=True)
+                dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if common.is_valid_inclusion(filepath, dicom):
-                    # TODO: Parse study information
-                    dcm_echo_number = common.get_tags_by_name(dicom, 'echo_number')
-                    dcm_project_name = common.get_tags_by_name(dicom, 'study_id')
-                    dcm_modality_name = common.get_dicom_modality(dicom)
-                    dcm_subject_name = common.get_tags_by_name(dicom, 'patient_name')
-                    dcm_session_name = common.get_tags_by_name(dicom, 'series_number')
-                    dcm_series_instance_uid = common.get_tags_by_name(dicom, 'series_instance_uid')
-                    dcm_echo_time = common.get_tags_by_name(dicom, 'te')
+                    info = common.parse_study_information(dicom)
 
-                    modality_node = self.get_modality(dcm_modality_name)
-                    if modality_node is None:
-                        modality_node = Modality(dcm_modality_name)
+                    modality_obj = self.get_modality(info['modality'])
+                    if modality_obj is None:
+                        modality_obj = Modality(info['modality'])
 
-                    subject_node = modality_node.get_subject(dcm_subject_name)
-                    if subject_node is None:
-                        subject_node = Subject(dcm_subject_name)
+                    subject_obj = modality_obj.get_subject(info['subject_name'])
+                    if subject_obj is None:
+                        subject_obj = Subject(info['subject_name'])
 
-                    session_node = subject_node.get_session(dcm_session_name)
+                    session_node = subject_obj.get_session(info['session_name'])
                     if session_node is None:
-                        session_node = Session(dcm_session_name, Path(filepath).parent)
+                        session_node = Session(info['session_name'],
+                                               Path(filepath).parent)
 
-                    # dcm2niix detected 2 different series in a single folder
-                    # Even though Series Instance UID was same, there was
-                    # a difference in echo number, for gre_field_mapping
-                    run_name = dcm_series_instance_uid + '_e' + str(dcm_echo_number)
-
-                    run_node = session_node.get_run(run_name)
+                    run_node = session_node.get_run(info['run_name'])
                     if run_node is None:
-                        run_node = Run(run_name)
-                    run_node.echo_time = dcm_echo_time
+                        run_node = Run(info['run_name'])
+                        run_node.echo_time = info['echo_time']
 
-                    dcm_params = common.parse_imaging_params(filepath)
+                    dcm_img_params = common.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:
-                        run_node.params = dcm_params.copy()
-                    elif param_difference(dcm_params, run_node.params):
+                        run_node.params = dcm_img_params.copy()
+                    elif param_difference(dcm_img_params, run_node.params):
                         raise config.ChangingParamsinSeries(filepath)
 
                     session_node.add_run(run_node)
-                    subject_node.add_session(session_node)
-                    modality_node.add_subject(subject_node)
-                    self.add_modality(modality_node)
+                    subject_obj.add_session(session_node)
+                    modality_obj.add_subject(subject_obj)
+                    self.add_modality(modality_obj)
 
                     # Collect all unique study ids found in DICOM
-                    study_ids_found.add(dcm_project_name)
-
+                    study_ids_found.add(info['project'])
 
             except config.MRException as mrd_exc:
                 logger.exception(mrd_exc)
@@ -107,4 +93,5 @@ class XnatDataset(Project):
 
     def __str__(self):
         return 'XnatDataset {0} was created with {1} modalities\n' \
-               'Pass --name {0} to use generated cache\n'.format(self.name, len(self.modalities))
+               'Pass --name {0} to use generated cache\n'\
+               .format(self.name, len(self.modalities))

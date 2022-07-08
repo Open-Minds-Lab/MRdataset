@@ -107,15 +107,15 @@ class Node(ABC):
         else:
             return None
 
-    def _add_compliant(self, other) -> None:
-        for child in self._compliant_children:
-            if child == other:
+    def _add_compliant_name(self, other: str) -> None:
+        for name in self._compliant_children:
+            if name == other:
                 return
         self._compliant_children.append(other)
 
-    def _add_non_compliant(self, other) -> None:
-        for child in self._compliant_children:
-            if child == other:
+    def _add_non_compliant_name(self, other: str) -> None:
+        for name in self._non_compliant_children:
+            if name == other:
                 return
         self._non_compliant_children.append(other)
 
@@ -148,11 +148,11 @@ class Project(Node):
         return self._children
 
     @property
-    def compliant_modalities(self) -> List[str]:
+    def compliant_modality_names(self) -> List[str]:
         return self._compliant_children
 
     @property
-    def non_compliant_modalities(self) -> List[str]:
+    def non_compliant_modality_names(self) -> List[str]:
         return self._non_compliant_children
 
     def add_modality(self, new_modality: "Modality") -> None:
@@ -161,11 +161,11 @@ class Project(Node):
     def get_modality(self, name: str) -> Optional["Modality"]:
         return self._get(name)
 
-    def add_compliant_modality(self, modality_name: str) -> None:
-        self._add_compliant(modality_name)
+    def add_compliant_modality_name(self, modality_name: str) -> None:
+        self._add_compliant_name(modality_name)
 
-    def add_non_compliant_modality(self, modality_name: str) -> None:
-        self._add_non_compliant(modality_name)
+    def add_non_compliant_modality_name(self, modality_name: str) -> None:
+        self._add_non_compliant_name(modality_name)
 
     def save_dataset(self) -> None:
         with open(self.cache_path, "wb") as f:
@@ -199,11 +199,11 @@ class Modality(Node):
         return self._children
 
     @property
-    def compliant_subjects(self) -> List[str]:
+    def compliant_subject_names(self) -> List[str]:
         return self._compliant_children
 
     @property
-    def non_compliant_subjects(self) -> List[str]:
+    def non_compliant_subject_names(self) -> List[str]:
         return self._non_compliant_children
 
     def add_subject(self, new_subject) -> None:
@@ -211,11 +211,11 @@ class Modality(Node):
             raise TypeError("Expected argument of type <Subject>, got {} instead".format(type(new_subject)))
         self.__add__(new_subject)
 
-    def add_compliant_subject(self, subject_name: str) -> None:
-        self._add_compliant(subject_name)
+    def add_compliant_subject_name(self, subject_name: str) -> None:
+        self._add_compliant_name(subject_name)
 
-    def add_non_compliant_subject(self, subject_name) -> None:
-        self._add_non_compliant(subject_name)
+    def add_non_compliant_subject_name(self, subject_name) -> None:
+        self._add_non_compliant_name(subject_name)
 
     def get_subject(self, name) -> Optional["Subject"]:
         return self._get(name)

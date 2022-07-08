@@ -5,6 +5,7 @@ from pathlib import Path
 import pickle
 from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
+from typing import List, Optional, Type, Dict
 
 
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
@@ -59,7 +60,7 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
     return dataset
 
 
-def find_dataset_using_style(dataset_style):
+def find_dataset_using_style(dataset_style: str):
     """
     Import the module "data/{style}_dataset.py", which will instantiate
     {Style}Dataset(). For future, please ensure that any {Style}Dataset
@@ -87,38 +88,38 @@ class Node(ABC):
     An abstract class specifying a generic node in a neuroimaging experiment.
     It is inherited to create subclasses like ProjectNode, ModalityNode, SubjectNode etc.
     """
-    def __init__(self, name, **kwargs):
+    def __init__(self, name: str, **kwargs) -> None:
         self.name = name
         self._children = list()
         self._compliant_children = list()
         self._non_compliant_children = list()
 
-    def __add__(self, other):
+    def __add__(self, other: "Node") -> None:
         for child in self._children:
             if child.name == other.name:
                 return
         self._children.append(other)
 
-    def _get(self, name):
+    def _get(self, name: str) -> Optional[Type["Node"]]:
         for child in self._children:
             if child.name == name:
                 return child
         else:
             return None
 
-    def _add_compliant(self, other):
+    def _add_compliant(self, other) -> None:
         for child in self._compliant_children:
             if child == other:
                 return
         self._compliant_children.append(other)
 
-    def _add_non_compliant(self, other):
+    def _add_non_compliant(self, other) -> None:
         for child in self._compliant_children:
             if child == other:
                 return
         self._non_compliant_children.append(other)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
 
@@ -129,7 +130,7 @@ class Project(Node):
         A single project may contain multiple modalities, and each modality
         will have atleast single subject.
     """
-    def __init__(self, name, data_root, metadata_root):
+    def __init__(self, name, data_root, metadata_root, **kwargs):
         super().__init__(name)
         # Manage directories
         self.data_root = Path(data_root)
@@ -143,34 +144,34 @@ class Project(Node):
         self.cache_path = None
 
     @property
-    def modalities(self):
+    def modalities(self) -> List["Modality"]:
         return self._children
 
     @property
-    def compliant_modalities(self):
+    def compliant_modalities(self) -> List[str]:
         return self._compliant_children
 
     @property
-    def non_compliant_modalities(self):
+    def non_compliant_modalities(self) -> List[str]:
         return self._non_compliant_children
 
-    def add_modality(self, new_modality):
+    def add_modality(self, new_modality: "Modality") -> None:
         self.__add__(new_modality)
 
-    def get_modality(self, name):
+    def get_modality(self, name: str) -> Optional["Modality"]:
         return self._get(name)
 
-    def add_compliant_modality(self, modality_name):
+    def add_compliant_modality(self, modality_name: str) -> None:
         self._add_compliant(modality_name)
 
-    def add_non_compliant_modality(self, modality_name):
+    def add_non_compliant_modality(self, modality_name: str) -> None:
         self._add_non_compliant(modality_name)
 
-    def save_dataset(self):
+    def save_dataset(self) -> None:
         with open(self.cache_path, "wb") as f:
             pickle.dump(self.__dict__, f)
 
-    def load_dataset(self):
+    def load_dataset(self) -> None:
         with open(self.cache_path, 'rb') as f:
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
@@ -190,41 +191,42 @@ class Modality(Node):
         self.multi_echo_flag = None
         self.compliant = None
 
-    def get_reference(self, echo_number):
+    def get_reference(self, echo_number) -> Dict:
         return self.reference[echo_number]
 
     @property
-    def subjects(self):
+    def subjects(self) -> List["Subject"]:
         return self._children
 
     @property
-    def compliant_subjects(self):
+    def compliant_subjects(self) -> List[str]:
         return self._compliant_children
 
     @property
-    def non_compliant_subjects(self):
+    def non_compliant_subjects(self) -> List[str]:
         return self._non_compliant_children
 
-    def add_subject(self, new_subject):
+    def add_subject(self, new_subject) -> None:
         if not isinstance(new_subject, Subject):
             raise TypeError("Expected argument of type <Subject>, got {} instead".format(type(new_subject)))
         self.__add__(new_subject)
 
-    def add_compliant_subject(self, subject_name):
+    def add_compliant_subject(self, subject_name: str) -> None:
         self._add_compliant(subject_name)
 
-    def add_non_compliant_subject(self, subject_name):
+    def add_non_compliant_subject(self, subject_name) -> None:
         self._add_non_compliant(subject_name)
 
-    def get_subject(self, name):
+    def get_subject(self, name) -> Optional["Subject"]:
         return self._get(name)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Modality {} with {} subjects".format(self.name, len(self.subjects))
 
-    def set_reference(self, params, echo):
+    def set_reference(self, params: Dict, echo) -> None:
         self.reference[echo] = params.copy()
 
+    # TODO : Check if function is even required, else delete
     def is_multi_echo(self):
         if self.multi_echo_flag is None:
             for subject in self.subjects:
@@ -250,7 +252,7 @@ class Subject(Node):
         self.compliant = None
 
     @property
-    def sessions(self):
+    def sessions(self) -> List["Session"]:
         return self._children
 
     def add_session(self, new_session) -> None:
@@ -258,7 +260,7 @@ class Subject(Node):
             raise TypeError("Expected argument of type <Session>, got {} instead".format(type(new_session)))
         self.__add__(new_session)
 
-    def get_session(self, name):
+    def get_session(self, name) -> Optional["Session"]:
         return self._get(name)
 
     def __str__(self) -> str:

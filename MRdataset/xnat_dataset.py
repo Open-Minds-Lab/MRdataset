@@ -21,12 +21,11 @@ class XnatDataset(Project):
                  reindex=False):
 
         """
-        Args:
-            data_root: directory containing dataset with dicom files, supports nested hierarchies
-            metadata_root: directory to store metadata files
-            name:  an identifier/name for the dataset
-            reindex: overwrite existing metadata files
-            verbose: allow verbose output on console
+        @param data_root: directory containing dataset with dicom files,
+        supports nested hierarchies
+        @param metadata_root: directory to store metadata files
+        @param name:  an identifier/name for the dataset
+        @param reindex: overwrite existing metadata files
 
         Examples:
             >>> from MRdataset import xnat_dataset

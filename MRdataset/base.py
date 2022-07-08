@@ -7,8 +7,13 @@ from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
 from typing import List, Optional, Type, Dict
 
+
 # TODO:  include_phantom = False
-def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
+def create_dataset(data_root=None,
+                   style='xnat',
+                   name=None,
+                   reindex=False,
+                   verbose=False) -> "Project":
     """
     Create dataset as per arguments.
 
@@ -20,28 +25,31 @@ def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbo
     >>> from MRdataset import create_dataset
     >>> data = create_dataset('xnat', '/path/to/my/data/')
 
-    :param style: expects a string specifying the Dataset class.
+    @param style: expects a string specifying the Dataset class.
             Imports "data/{style}_dataset.py
-    :param data_root: /path/to/my/dataset containing .dcm files
-    :param name: optional identifier you may want to use,
+    @param data_root: /path/to/my/dataset containing .dcm files
+    @param name: optional identifier you may want to use,
             otherwise it uses project name from dicom properties
-    :param reindex: optional flag, if true delete all associated metadata files and rebuilds index
-    :param verbose: print more stuff
-    :rtype: dataset container :class:`Dataset <MRdataset.data.base>`
+    @param reindex: optional flag, if true delete all associated metadata files
+            and rebuilds index
+    @param verbose: print more stuff
+    @rtype: dataset container :class:`Dataset <MRdataset.data.base>`
 
     """
 
     if not Path(data_root).is_dir():
-        raise OSError('Expected valid directory for --data_root argument, Got {0}'.format(data_root))
+        raise OSError('Expected valid directory for --data_root argument,'
+                      ' Got {0}'.format(data_root))
     data_root = Path(data_root).resolve()
 
     metadata_root = data_root / CACHE_DIR
     metadata_root.mkdir(exist_ok=True)
 
     if name is None:
-        warnings.warn('Expected a unique identifier for caching data. Got NoneType. '
-                      'Using a random name. Use --name flag for persistent metadata',
-                      stacklevel=2)
+        warnings.warn(
+            'Expected a unique identifier for caching data. Got NoneType. '
+            'Using a random name. Use --name flag for persistent metadata',
+            stacklevel=2)
         name = random_name()
 
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
@@ -68,26 +76,28 @@ def find_dataset_using_style(dataset_style: str):
     """
 
     dataset_modulename = "MRdataset." + dataset_style + "_dataset"
-    datasetlib = importlib.import_module(dataset_modulename)
+    dataset_lib = importlib.import_module(dataset_modulename)
 
     dataset = None
-    target_dataset_class = dataset_style+'dataset'
-    for name, cls in datasetlib.__dict__.items():
-        if name.lower() == target_dataset_class.lower() \
-                and issubclass(cls, Project):
+    target_dataset_class = dataset_style + 'dataset'
+    for name, cls in dataset_lib.__dict__.items():
+        name_matched = name.lower() == target_dataset_class.lower()
+        if name_matched and issubclass(cls, Project):
             dataset = cls
 
     if dataset is None:
         raise NotImplementedError("Expected to find %s which is supposed  \
-        to be a subclass of base.Node in %s.py" % (target_dataset_class, dataset_modulename))
+        to be a subclass of base.Project in %s.py" % (target_dataset_class,
+                                                      dataset_modulename))
     return dataset
 
 
 class Node(ABC):
     """
     An abstract class specifying a generic node in a neuroimaging experiment.
-    It is inherited to create subclasses like ProjectNode, ModalityNode, SubjectNode etc.
+    It is inherited to create subclasses like Project, Modality, Subject etc.
     """
+
     def __init__(self, name: str, **kwargs) -> None:
         self.name = name
         self._children = list()
@@ -126,11 +136,12 @@ class Node(ABC):
 
 class Project(Node):
     """
-            Container to manage properties and issues at the project level.
-        Encapsulates all the details necessary for a complete project.
-        A single project may contain multiple modalities, and each modality
-        will have atleast single subject.
+    Container to manage properties and issues at the project level.
+    Encapsulates all the details necessary for a complete project.
+    A single project may contain multiple modalities, and each modality
+    will have atleast single subject.
     """
+
     def __init__(self, name, data_root, metadata_root, **kwargs):
         super().__init__(name)
         # Manage directories
@@ -157,6 +168,10 @@ class Project(Node):
         return self._non_compliant_children
 
     def add_modality(self, new_modality: "Modality") -> None:
+        if not isinstance(new_modality, Modality):
+            raise TypeError(
+                "Expected argument of type <Modality>, got {} instead".format(
+                    type(new_modality)))
         self.__add__(new_modality)
 
     def get_modality(self, name: str) -> Optional["Modality"]:
@@ -185,6 +200,7 @@ class Modality(Node):
     A single modality may contain multiple subjects, and each subject
     will have atleast single session.
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.reference = dict()
@@ -209,7 +225,9 @@ class Modality(Node):
 
     def add_subject(self, new_subject) -> None:
         if not isinstance(new_subject, Subject):
-            raise TypeError("Expected argument of type <Subject>, got {} instead".format(type(new_subject)))
+            raise TypeError(
+                "Expected argument of type <Subject>, got {} instead".format(
+                    type(new_subject)))
         self.__add__(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
@@ -222,7 +240,8 @@ class Modality(Node):
         return self._get(name)
 
     def __str__(self) -> str:
-        return "Modality {} with {} subjects".format(self.name, len(self.subjects))
+        return "Modality {} with {} subjects".format(self.name,
+                                                     len(self.subjects))
 
     def set_reference(self, params: Dict, echo) -> None:
         self.reference[echo] = params.copy()
@@ -237,10 +256,11 @@ class Subject(Node):
     Container to manage properties and issues at the subject level.
     Encapsulates all the details necessary for a subject.
     A single subject may contain multiple sessions for a single modality.
-    For example, For a project called ABCD, it is grouped by modalities like T1, T2 etc.
+    For a project called ABCD, it is grouped by modalities like T1, T2 etc.
     So, each modality, say T1 will have multiple subjects. And each subject
     can have multiple sessions.
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.compliant = None
@@ -251,26 +271,26 @@ class Subject(Node):
 
     def add_session(self, new_session) -> None:
         if not isinstance(new_session, Session):
-            raise TypeError("Expected argument of type <Session>, got {} instead"
-                            "".format(type(new_session)))
+            raise TypeError(
+                "Expected argument of type <Session>, got {} instead"
+                "".format(type(new_session)))
         self.__add__(new_session)
 
     def get_session(self, name) -> Optional["Session"]:
         return self._get(name)
 
     def __str__(self) -> str:
-        return "Subject {} with {} sessions".format(self.name, len(self.sessions))
+        return "Subject {} with {} sessions".format(self.name,
+                                                    len(self.sessions))
 
 
 class Session(Node):
     """
     Container to manage properties and issues at the session level.
     Encapsulates all the details necessary for a session.
-    A single session may contain multiple sessions for a single modality.
-    For example, For a project called ABCD, it is grouped by modalities like T1, T2 etc.
-    So, each modality, say T1 will have multiple sessions. And each session
-    can have multiple run where a run instance is a series of brain volumes
+    A single session may contain multiple runs
     """
+
     def __init__(self, name, path):
         super().__init__(name)
         self.params = dict()
@@ -285,7 +305,9 @@ class Session(Node):
 
     def add_run(self, new_run):
         if not isinstance(new_run, Run):
-            raise TypeError("Expected argument of type <Run>, got {} instead".format(type(new_run)))
+            raise TypeError(
+                "Expected argument of type <Run>, got {} instead".format(
+                    type(new_run)))
         self.__add__(new_run)
 
     def get_run(self, name):
@@ -293,19 +315,16 @@ class Session(Node):
 
     def __str__(self):
         return "Session {} with {} runs".format(self.name, len(self.runs))
-    #
-    # def is_multi_echo(self):
-    #     return len(self.runs) > 1
 
 
 class Run(Node):
     """
     Container to manage properties and issues at the run level.
-    Encapsulates all the details necessary for a run.
-    A run is a series of brain volumes.
-    This is the lowest level in the hierarchy. Individual .dcm files should have same
-    parameters at this level.
+    Encapsulates all the details necessary for a run. A run is a series of
+    brain volumes. This is the lowest level in the hierarchy. Individual .dcm
+    files should have same parameters at this level.
     """
+
     def __init__(self, name):
         super().__init__(name)
         self.echo_time = 0
@@ -315,15 +334,3 @@ class Run(Node):
 
     def __str__(self):
         return "Run {}".format(self.name)
-
-# class Slice(Node):
-#     def __init__(self, name, filepath):
-#         super.__init__(name)
-#         self.path = filepath
-#
-#     def parse_params(self):
-#         from common import parse
-#         self.params = parse(self.path)
-#
-#     def __str__(self):
-#         return "Slice {}".format(self.name)

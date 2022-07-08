@@ -19,7 +19,8 @@ TAGS = {
 # Constant Paths
 CACHE_DIR = ".mrdataset"
 
-# Constant Dicom Identifiers used for protocol compliance. These are the parameters
+# Constant Dicom Identifiers used for protocol compliance.
+# These are the parameters
 # which are compared in the final report
 PARAMETER_TAGS = {
     "manufacturer": [0x08, 0x70],
@@ -70,14 +71,20 @@ ATDict = ["2D", "3D"]
 
 
 class MRException(Exception):
-    """Custom error that is raised when some critical properties are not found in dicom file"""
+    """
+    Custom error that is raised when some critical properties are not found
+    in dicom file
+    """
 
     def __init__(self, message, **kwargs):
         super().__init__(message)
 
 
 class MRdatasetWarning(Exception):
-    """Custom error that is raised when some critical properties are not found in dicom file"""
+    """
+    Custom error that is raised when some critical properties are not found
+    in dicom file
+    """
 
     def __init__(self, message, **kwargs):
         super().__init__(message)
@@ -105,17 +112,19 @@ class ChangingParamsinSeries(MRException):
 
 class MultipleProjectsinDataset(MRException):
     """
-    Custom error that is raised when dcm files in directory have different study ids.
-    Expected all dicom files belong to a single study id. Cross-Study is not supported.
+    Custom error that is raised when dcm files in directory have
+    different study ids. Expected all dicom files belong to a single study
+    id. Cross-Study is not supported.
     """
 
     def __init__(self, study_ids):
-        super().__init__("Expected all the dicom files to be in the same project/study. "
-                         "Found study id(s) : {}".format(len(study_ids)))
+        super().__init__("Expected all dicom files to be in the same project"
+                         "/study. Found study id(s): {}".format(len(study_ids)))
 
 
 def setup_logger(name, filename):
-    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+    format_string = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+    formatter = logging.Formatter(fmt=format_string)
     handler = logging.FileHandler(filename)
     handler.setFormatter(formatter)
 

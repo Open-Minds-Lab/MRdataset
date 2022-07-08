@@ -17,7 +17,8 @@ def is_valid_inclusion(filename: str, dicom: pydicom.FileDataset) -> bool:
     """
     Function will do some basic checks to see if it is a valid imaging dicom
     @param filename: path for raising the warning
-    @param dicom: pydicom.FileDataset instance returned from pydicom.read_file or pydicom.dcmread
+    @param dicom: pydicom.FileDataset instance returned
+                  from pydicom.read_file
     @return: bool
     """
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
@@ -28,8 +29,8 @@ def is_valid_inclusion(filename: str, dicom: pydicom.FileDataset) -> bool:
         logger.warning("Header Absent: %s" % filename)
         return False
 
-    # TODO: revisit whether to include localizer or not, it may have relationship
-    # with other modalities
+    # TODO: revisit whether to include localizer or not,
+    #  it may have relationship with other modalities
     # TODO: make the check more concrete. See dicom2nifti for details
     # if 'local' in common.get_dicom_modality(dicom).lower():
     #     logger.warning("Localizer: Skipping %s" % filename)
@@ -73,7 +74,8 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         image = get_header(dicom, 'image_header_info')
         series_header = csareader.read(series)
 
-        # just try reading these values, to bypass any errors, don't need these values now
+        # just try reading these values, to bypass any errors,
+        # don't need these values now
         # image_header = \
         csareader.read(image)
         # items = \
@@ -103,10 +105,10 @@ def parse_study_information(dicom):
 
 def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     """
-    Given a filepath to a .dcm file, the function reader DICOM metadata and extracts
-    relevant parameter values for checking compliance.
+    Given a filepath to a .dcm file, the function reader DICOM metadata
+    and extracts relevant parameter values for checking compliance.
     @param dicom_path:
-    @return:
+    @return: dict
     """
     filepath = Path(dicom_path)
     params = defaultdict()
@@ -135,13 +137,16 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     params["slice_order"] = config.SODict[csa_values['so']]
     params['ipat'] = csa_values['ipat']
     params['shim'] = csa_values['shim']
-    params['echo_train_length'] = get_param_value_by_name(dicom, "echo_train_length")
-    params["is3d"] = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
-    params["modality"] = get_tags_by_name(dicom, "series_description").replace(" ", "_")
+    params['echo_train_length'] = get_param_value_by_name(dicom,
+                                                          "echo_train_length")
+
+    is3d = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
+    params["is3d"] = is3d
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
-    params["phase_encoding_direction"] = get_phase_encoding(dicom,
-                                                            is3d=params['is3d'],
-                                                            echo_train_length=params['echo_train_length'])
+    params["phase_encoding_direction"] = get_phase_encoding(
+                                dicom,
+                                is3d=params['is3d'],
+                                echo_train_length=params['echo_train_length'])
     return params
 
 
@@ -199,9 +204,12 @@ def csa_parser(dicom):
 
 def effective_echo_spacing(dicom):
     # if self.get("echo_train_length") > 1: # Check if etl == pel
-    #     check = (self.get("echo_train_length") == self.get("phase_encoding_lines"))
-    #     if not check:
-    #         print("PhaseEncodingLines is not equal to EchoTrainLength : {0}".format(self.filepath))
+    # check =
+    # (self.get("echo_train_length") == self.get("phase_encoding_lines"))
+    # if not check:
+    # print("PhaseEncodingLines is not equal to EchoTrainLength
+    # : {0}".format(self.filepath))
+
     bwp_phase_encode = get_param_value_by_name(dicom, 'bwp_phase_encode')
     phase_encoding = get_param_value_by_name(dicom, 'phase_encoding_lines')
 
@@ -225,9 +233,10 @@ def get_phase_encoding(dicom, is3d, echo_train_length, is_flipy=True):
     if echo_train_length > 1:
         is_skip = False
     image_header = get_header(dicom, 'image_header_info')
-    phvalue = utils.safe_get(image_header, 'tags.PhaseEncodingDirectionPositive.items')
-    if phvalue:
-        phpos = phvalue[0]
+    phase_value = utils.safe_get(image_header,
+                                 'tags.PhaseEncodingDirectionPositive.items')
+    if phase_value:
+        phpos = phase_value[0]
     else:
         return None
 

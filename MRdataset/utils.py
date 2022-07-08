@@ -15,34 +15,42 @@ def safe_get(dictionary: dict, keys: str, default=None):
     @return: object
 
     Examples:
-    To get value, dictonary[tag1][tag2][tag3], if KeyError returns argument default
+    To get value, dictonary[tag1][tag2][tag3],
+    if KeyError: return default
     >>>     items = safe_get(dictionary, 'tags1.tag2.tag3')
 
     """
     return functools.reduce(
-        lambda d, key: d.get(key, default) if isinstance(d, dict) else default, keys.split("."),
+        lambda d, key: d.get(key, default) if isinstance(d, dict) else default,
+        keys.split("."),
         dictionary
     )
 
 
-def param_difference(dict1: dict, dict2: dict, ignore_params: Iterable = None) -> List[Iterable]:
+def param_difference(dict1: dict,
+                     dict2: dict,
+                     ignore: Iterable = None) -> List[Iterable]:
     """
-    A helper function to calculate differences between 2 dictionaries, dict1 and dict2. Returns
-    an iterator with differences between 2 dictionaries. The diff result consist of
-    multiple items, which represent addition/deletion/change and the item value is a deep copy
-    from the corresponding source and destination objects. See https://dictdiffer.readthedocs.io/en/latest/
+    A helper function to calculate differences between 2 dictionaries,
+    dict1 and dict2. Returns an iterator with differences between 2
+    dictionaries. The diff result consist of multiple items, which represent
+    addition/deletion/change and the item value is a deep copy from the
+    corresponding source and destination objects.
+    See https://dictdiffer.readthedocs.io/en/latest/
+
     @param dict1: source dict
     @param dict2: destination dict
-    @param ignore_params: keys which should be ignored while calculating the difference
+    @param ignore: dictionary keys which should be ignored
     @return: list of items representing addition/deletion/change
     """
     if isinstance(dict1, dict) and isinstance(dict2, dict):
-        if ignore_params is None:
+        if ignore is None:
             return list(dict_diff(dict1, dict2))
-        elif isinstance(ignore_params, Iterable):
-            return list(dict_diff(dict1, dict2, ignore=set(ignore_params)))
+        elif isinstance(ignore, Iterable):
+            return list(dict_diff(dict1, dict2, ignore=set(ignore)))
         raise TypeError(
-            "Expected type 'iterable', got {} instead. Pass a list of parameters.".format(type(ignore_params)))
+            "Expected type 'iterable', got {} instead. "
+            "Pass a list of parameters.".format(type(ignore)))
     raise TypeError("Expected type 'dict', got {} instead".format(type(dict2)))
 
 

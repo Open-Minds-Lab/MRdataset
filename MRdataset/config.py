@@ -1,4 +1,6 @@
 import logging
+from functools import lru_cache
+
 
 # Constant Dicom Identifiers Used for dataset creation and manipulation
 TAGS = {
@@ -120,6 +122,12 @@ class MultipleProjectsinDataset(MRException):
     def __init__(self, study_ids):
         super().__init__("Expected all dicom files to be in the same project"
                          "/study. Found study id(s): {}".format(len(study_ids)))
+
+
+# Suppress duplicated warnings
+@lru_cache(None)
+def warn_once(logger: logging.Logger, msg: str):
+    logger.warning(msg)
 
 
 def setup_logger(name, filename):

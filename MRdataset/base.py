@@ -7,7 +7,7 @@ from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
 from typing import List, Optional, Type, Dict
 
-
+# TODO:  include_phantom = False
 def create_dataset(data_root=None, style='xnat', name=None, reindex=False, verbose=False):
     """
     Create dataset as per arguments.
@@ -95,6 +95,7 @@ class Node(ABC):
         self._non_compliant_children = list()
 
     def __add__(self, other: "Node") -> None:
+        # TODO: improve logic , better dictionary
         for child in self._children:
             if child.name == other.name:
                 return
@@ -250,7 +251,8 @@ class Subject(Node):
 
     def add_session(self, new_session) -> None:
         if not isinstance(new_session, Session):
-            raise TypeError("Expected argument of type <Session>, got {} instead".format(type(new_session)))
+            raise TypeError("Expected argument of type <Session>, got {} instead"
+                            "".format(type(new_session)))
         self.__add__(new_session)
 
     def get_session(self, name) -> Optional["Session"]:

@@ -48,10 +48,11 @@ class XnatDataset(Project):
         for filepath in self.data_root.glob('**/*.dcm'):
             try:
                 if not dicom2nifti.common.is_dicom_file(filepath):
-                    return False
+                    continue
                 dicom = pydicom.read_file(filepath,
                                           stop_before_pixels=True)
-                if common.is_valid_file(filepath, dicom):
+                if common.is_valid_inclusion(filepath, dicom):
+                    # TODO: Parse study information
                     dcm_echo_number = common.get_tags_by_name(dicom, 'echo_number')
                     dcm_project_name = common.get_tags_by_name(dicom, 'study_id')
                     dcm_modality_name = common.get_dicom_modality(dicom)
@@ -82,7 +83,7 @@ class XnatDataset(Project):
                         run_node = Run(run_name)
                     run_node.echo_time = dcm_echo_time
 
-                    dcm_params = common.parse(filepath)
+                    dcm_params = common.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_params.copy()
                     elif param_difference(dcm_params, run_node.params):
@@ -96,8 +97,11 @@ class XnatDataset(Project):
                     # Collect all unique study ids found in DICOM
                     study_ids_found.add(dcm_project_name)
 
-            except config.MRException as e:
-                logger.exception(e)
+
+            except config.MRException as mrd_exc:
+                logger.exception(mrd_exc)
+            except Exception as exc:
+                raise exc
         if len(study_ids_found) > 1:
             raise config.MultipleProjectsinDataset(study_ids_found)
 

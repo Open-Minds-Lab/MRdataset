@@ -101,9 +101,7 @@ def parse(dicom_path):
     params['shim'] = csa_values['shim']
 
     params["is3d"] = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
-    params["modality"] = "_".join([
-        str(get_tags_by_name(dicom, "series_number")),
-        get_tags_by_name(dicom, "series_description")]).replace(" ", "_")
+    params["modality"] = get_tags_by_name(dicom, "series_description").replace(" ", "_")
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
     params["phase_encoding_direction"] = get_phase_encoding(dicom,
                                                             is3d=params['is3d'],

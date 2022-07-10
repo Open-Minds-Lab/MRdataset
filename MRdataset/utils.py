@@ -38,6 +38,12 @@ def param_difference(dict1: dict,
     corresponding source and destination objects.
     See https://dictdiffer.readthedocs.io/en/latest/
 
+    TODO: Notes for future reference:
+    1. Allowing a range of values for a single parameter
+    2. Maybe even more different type of checks
+    3. Will be helpful in hierarchical checks (e.g. within modality within
+    session)
+
     @param dict1: source dict
     @param dict2: destination dict
     @param ignore: dictionary keys which should be ignored

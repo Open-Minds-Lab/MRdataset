@@ -24,9 +24,9 @@ class XnatDataset(Project):
         """
         @param data_root: directory containing dataset with dicom files,
         supports nested hierarchies
-        @param metadata_root: directory to store metadata files
+        @param metadata_root: directory to store cache
         @param name:  an identifier/name for the dataset
-        @param reindex: overwrite existing metadata files
+        @param reindex: overwrite existing cache
 
         Examples:
             >>> from MRdataset import xnat_dataset

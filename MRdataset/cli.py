@@ -28,6 +28,9 @@ def main():
                           help='overwrite existing metadata files')
     optional.add_argument('-v', '--verbose', action='store_true',
                           help='allow verbose output on console')
+    optional.add_argument('--include_phantom', action='store_true',
+                          help='whether to include phantom, localizer, '
+                               'aahead_scout')
 
     args = parser.parse_args()
     if not Path(args.data_root).is_dir():
@@ -38,6 +41,7 @@ def main():
                              style=args.style,
                              name=args.name,
                              reindex=args.reindex,
+                             include_phantom=args.include_phantom,
                              verbose=args.verbose)
     return dataset
 

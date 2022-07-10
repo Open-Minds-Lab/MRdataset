@@ -1,7 +1,6 @@
 import logging
 from functools import lru_cache
 
-
 # Constant Dicom Identifiers Used for dataset creation and manipulation
 TAGS = {
     "series_instance_uid": (0x20, 0x0e),
@@ -15,7 +14,9 @@ TAGS = {
     "sequence_name": (0x18, 0x24),
     "image_type": (0x08, 0x08),
     "echo_number": (0x18, 0x86),
-    "te": [0x18, 0x81]
+    "te": [0x18, 0x81],
+    "patient_sex": [0x10, 0x40],
+    "patient_age": [0x10, 0x1010],
 }
 
 # Constant Paths

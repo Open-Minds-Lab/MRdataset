@@ -36,12 +36,10 @@ def is_valid_inclusion(filename: str,
     # TODO: revisit whether to include localizer or not,
     #  it may have relationship with other modalities
     # TODO: make the check more concrete. See dicom2nifti for details
-    # TODO: better check for phantom
-    # check quality control subject
-    # check sex
-    # check sid, patient name
+
+    # check quality control subject :  Not present dicom headers
     if not include_phantom:
-        series_desc = get_tags_by_name('series_description').lower()
+        series_desc = get_tags_by_name(dicom, 'series_description').lower()
         if 'local' in series_desc:
             config.warn_once(logger, "Localizer: Skipping %s" % filename)
             return False
@@ -50,14 +48,32 @@ def is_valid_inclusion(filename: str,
             config.warn_once(logger, "AAhead_Scout: Skipping %s" % filename)
             return True
 
-        # Add sex and age
-        is_phantom = False
-        sid = common.get_subject(dicom)
-        if ('acr' in sid.lower()) or ('phantom' in sid.lower()):
+        if is_phantom(dicom):
             config.warn_once(logger, 'ACR/Phantom: %s' % filename)
             return False
 
     return True
+
+
+def is_phantom(dicom: pydicom.FileDataset) -> bool:
+    """
+    Implements a heuristic to detect a phantom. Checks patient's name,
+    sex and age, to discriminate a phantom from a real person. It is very
+    unlikely that a patient's name is phantom, or age is 1 day.
+    @param dicom: dicom object read from pydicom.read_file
+    @return: boolean indicating if .dcm file belongs to a phantom
+    """
+
+    sid = str(get_tags_by_name(dicom, 'patient_name')).lower()
+    sex = str(get_tags_by_name(dicom, 'patient_sex')).lower()
+    age = str(get_tags_by_name(dicom, 'patient_age'))
+    if 'phantom' in sid:
+        return True
+    if sex == 'o':
+        return True
+    if age == '001D':
+        return True
+    return False
 
 
 def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
@@ -73,10 +89,6 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     # property2 = get_tags_by_name(dicom, 'SERIES_NUMBER')
     # ret_string = "_".join([str(property2), property1.lower()])
     return property1.replace(" ", "_")
-
-
-def get_subject(dicom: pydicom.FileDataset) -> str:
-    return str(get_tags_by_name(dicom, 'patient_name'))
 
 
 def header_exists(dicom: pydicom.FileDataset) -> bool:
@@ -238,40 +250,40 @@ def get_phase_encoding(dicom, is3d, echo_train_length, is_flipy=True):
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
     """
-    is_skip = False
-    if is3d:
-        is_skip = True
-    if echo_train_length > 1:
-        is_skip = False
-    image_header = get_header(dicom, 'image_header_info')
-    phase_value = utils.safe_get(image_header,
-                                 'tags.PhaseEncodingDirectionPositive.items')
-    if phase_value:
-        phpos = phase_value[0]
-    else:
-        return None
+    # is_skip = False
+    # if is3d:
+    #     is_skip = True
+    # if echo_train_length > 1:
+    #     is_skip = False
+    # image_header = csareader.read(get_header(dicom, 'image_header_info'))
+    # phase_value = utils.safe_get(image_header,
+    #                              'tags.PhaseEncodingDirectionPositive.items')
+    # if phase_value:
+    #     phpos = phase_value[0]
+    # else:
+    #     return None
 
     ped_dcm = get_param_value_by_name(dicom, "phase_encoding_direction")
-
-    ped = ""
-    assert ped_dcm in ["COL", "ROW"]
-    if not is_skip and ped_dcm == "COL":
-        ped = "j"
-    elif not is_skip and ped_dcm == "ROW":
-        ped = "i"
-    if phpos >= 0 and not is_skip:
-        if phpos == 0 and ped_dcm == 'ROW':
-            ped += "-"
-        elif ped_dcm == "COL" and phpos == 1 and is_flipy:
-            ped += "-"
-        elif ped_dcm == "COL" and phpos == 0 and not is_flipy:
-            ped += "-"
-        ped_dict = {
-            'i': 'Left-Right',
-            'i-': 'Right-Left',
-            'j-': 'Anterior-Posterior',
-            'j': 'Posterior-Anterior'
-        }
-        return ped_dict[ped]
-    else:
-        return None
+    return ped_dcm
+    # ped = ""
+    # assert ped_dcm in ["COL", "ROW"]
+    # if not is_skip and ped_dcm == "COL":
+    #     ped = "j"
+    # elif not is_skip and ped_dcm == "ROW":
+    #     ped = "i"
+    # if phpos >= 0 and not is_skip:
+    #     if phpos == 0 and ped_dcm == 'ROW':
+    #         ped += "-"
+    #     elif ped_dcm == "COL" and phpos == 1 and is_flipy:
+    #         ped += "-"
+    #     elif ped_dcm == "COL" and phpos == 0 and not is_flipy:
+    #         ped += "-"
+    #     ped_dict = {
+    #         'i': 'Left-Right',
+    #         'i-': 'Right-Left',
+    #         'j-': 'Anterior-Posterior',
+    #         'j': 'Posterior-Anterior'
+    #     }
+    #     return ped_dict[ped]
+    # else:
+    #     return None

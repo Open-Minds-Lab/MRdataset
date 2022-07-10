@@ -206,6 +206,7 @@ class Modality(Node):
         # multi_echo is not set
         self.multi_echo_flag = None
         self.compliant = None
+        self.reasons_non_compliance = set()
 
     def get_reference(self, echo_number) -> dict:
         return self.reference[echo_number]

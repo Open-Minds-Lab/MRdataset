@@ -107,6 +107,10 @@ class Node(ABC):
         self._compliant_children = list()
         self._non_compliant_children = list()
 
+    @property
+    def children(self):
+        return list(self._children.values())
+
     def __add__(self, other: "Node") -> None:
         self._children[other.name] = other
 
@@ -151,8 +155,8 @@ class Project(Node):
         self.cache_path = None
 
     @property
-    def modalities(self) -> Dict["Modality"]:
-        return self._children
+    def modalities(self) -> List["Modality"]:
+        return self.children
 
     @property
     def compliant_modality_names(self) -> List[str]:
@@ -203,12 +207,12 @@ class Modality(Node):
         self.multi_echo_flag = None
         self.compliant = None
 
-    def get_reference(self, echo_number) -> Dict:
+    def get_reference(self, echo_number) -> dict:
         return self.reference[echo_number]
 
     @property
-    def subjects(self) -> Dict["Subject"]:
-        return self._children
+    def subjects(self) -> List["Subject"]:
+        return self.children
 
     @property
     def compliant_subject_names(self) -> List[str]:
@@ -238,7 +242,7 @@ class Modality(Node):
         return "Modality {} with {} subjects".format(self.name,
                                                      len(self.subjects))
 
-    def set_reference(self, params: Dict, echo) -> None:
+    def set_reference(self, params: dict, echo) -> None:
         self.reference[echo] = params.copy()
 
     # TODO : Check if function is even required, else delete
@@ -261,8 +265,8 @@ class Subject(Node):
         self.compliant = None
 
     @property
-    def sessions(self) -> Dict["Session"]:
-        return self._children
+    def sessions(self) -> List["Session"]:
+        return self.children
 
     def add_session(self, new_session) -> None:
         if not isinstance(new_session, Session):
@@ -296,7 +300,7 @@ class Session(Node):
 
     @property
     def runs(self):
-        return self._children
+        return self.children
 
     def add_run(self, new_run):
         if not isinstance(new_run, Run):

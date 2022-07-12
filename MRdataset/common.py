@@ -157,9 +157,13 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         params[k] = value
 
     csa_values = csa_parser(dicom)
-    params["slice_order"] = config.SODict[csa_values['so']]
-    params['ipat'] = csa_values['ipat']
-    params['shim'] = csa_values['shim']
+    try:
+        params["slice_order"] = config.SODict[csa_values['so']]
+    except KeyError:
+        params["slice_order"] = None
+
+    params['ipat'] = csa_values.get('ipat', None)
+    params['shim'] = csa_values.get('shim', None)
     params['echo_train_length'] = get_param_value_by_name(dicom,
                                                           "echo_train_length")
 

@@ -92,7 +92,7 @@ class XnatDataset(Project):
             except Exception as exc:
                 raise exc
         if len(study_ids_found) > 1:
-            raise config.MultipleProjectsinDataset(study_ids_found)
+            logger.warning(config.MultipleProjectsinDataset(study_ids_found))
 
     def __str__(self):
         return 'XnatDataset {0} was created with {1} modalities\n' \

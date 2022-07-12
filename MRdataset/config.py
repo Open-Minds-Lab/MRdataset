@@ -33,7 +33,7 @@ PARAMETER_TAGS = {
     "b0": [0x18, 0x87],
     "flip_angle": [0x18, 0x1314],
     "bwpx": [0x18, 0x95],
-    "echo_train_length": [0x18, 0x91],
+    "echo_train_length": [0x18, 0x0091],
     "scanning_sequence": [0x18, 0x20],
     "sequence_variant": [0x18, 0x21],
     "mr_acquisition_type": [0x18, 0x23],
@@ -42,6 +42,22 @@ PARAMETER_TAGS = {
     "phase_encoding_direction": [0x18, 0x1312],
 
 }
+PARAMETER_NAMES = [
+    'Manufacturer',
+    'BodyPartExamined',
+    'EchoTime',
+    'RepetitionTime',
+    'MagneticFieldStrength',
+    'FlipAngle',
+    'InPlanePhaseEncodingDirection',
+    'EchoTrainLength',
+    'PixelBandwidth',
+    'ScanningSequence',
+    'SequenceVariant',
+    'MRAcquisitionType',
+    'NumberOfPhaseEncodingSteps',
+]
+#Check  QualityControlSubject
 
 # Constant dicom Identifiers used to extract dicom headers
 HEADER_TAGS = {
@@ -122,11 +138,11 @@ class MultipleProjectsinDataset(MRException):
 
     def __init__(self, study_ids):
         super().__init__("Expected all dicom files to be in the same project"
-                         "/study. Found study id(s): {}".format(len(study_ids)))
+                         "/study. Found study id(s): {}".format(study_ids))
 
 
 # Suppress duplicated warnings
-@lru_cache(None)
+@lru_cache(1)
 def warn_once(logger: logging.Logger, msg: str):
     logger.warning(msg)
 

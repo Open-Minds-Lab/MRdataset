@@ -96,7 +96,7 @@ class XnatDataset(Project):
                     self.add_modality(modality_obj)
 
                     # Collect all unique study ids found in DICOM
-                    study_ids_found.add(info['project'])
+                    study_ids_found.add(str(dicom.StudyID))
 
             except config.MRException as mrd_exc:
                 logger.exception(mrd_exc)

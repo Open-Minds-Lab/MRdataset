@@ -88,7 +88,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     # identification
     # property2 = get_tags_by_name(dicom, 'SERIES_NUMBER')
     # ret_string = "_".join([str(property2), property1.lower()])
-    return property1.replace(" ", "_")
+    return str(property1.replace(" ", "_"))
 
 
 def header_exists(dicom: pydicom.FileDataset) -> bool:

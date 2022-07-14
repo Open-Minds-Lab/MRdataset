@@ -91,7 +91,7 @@ class XnatDataset(Project):
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
                     elif param_difference(dcm_img_params, run_node.params):
-                        raise config.ChangingParamsinSeries(filepath)
+                        raise config.ChangingParamsInSeries(filepath)
 
                     session_node.add_run(run_node)
                     subject_obj.add_session(session_node)
@@ -106,7 +106,7 @@ class XnatDataset(Project):
             except Exception as exc:
                 raise exc
         if len(study_ids_found) > 1:
-            logger.warning(config.MultipleProjectsinDataset(study_ids_found))
+            logger.warning(config.MultipleProjectsInDataset(study_ids_found))
 
     def __str__(self):
         return 'XnatDataset {0} was created with {1} modalities\n' \

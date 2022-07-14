@@ -119,8 +119,7 @@ class MRdatasetWarning(Exception):
 #     """"""
 #     pass
 
-
-class ChangingParamsinSeries(MRException):
+class ChangingParamsInSeries(MRException):
     """Custom error that is raised when parameter values are different for
     different slices even though the SeriesInstanceUID is same."""
 
@@ -129,7 +128,57 @@ class ChangingParamsinSeries(MRException):
                          "Got changing parameters : {}".format(filepath))
 
 
-class MultipleProjectsinDataset(MRException):
+class SlicesNotStacked(MRException):
+    """Custom error that is raised when parameter values are different for
+    different slices even though the SeriesInstanceUID is same."""
+
+    def __init__(self, filepath, parameter_name):
+        super().__init__(
+            "Expected all dicom slices to have same {0}.".format(parameter_name,
+                                                                 filepath))
+
+
+class OrientationVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Orientation")
+
+
+class AcquisitionNumberVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Acquisition Number")
+
+
+class EchoTimeVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Echo Time")
+
+
+class SliceDimensionVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Slice Dimension")
+
+
+class StudyDateTimeVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Study Date/Time")
+
+
+class PhaseVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Phase [Real/Imaginary]")
+
+
+class CoilVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Coil")
+
+
+class StudyIdVaries(SlicesNotStacked):
+    def __init__(self, filepath):
+        super().__init__(filepath, "Study ID/Description")
+
+
+class MultipleProjectsInDataset(MRException):
     """
     Custom error that is raised when dcm files in directory have
     different study ids. Expected all dicom files belong to a single study

@@ -57,7 +57,7 @@ PARAMETER_NAMES = [
     'MRAcquisitionType',
     'NumberOfPhaseEncodingSteps',
 ]
-#Check  QualityControlSubject
+# Check  QualityControlSubject
 
 # Constant dicom Identifiers used to extract dicom headers
 HEADER_TAGS = {
@@ -87,6 +87,27 @@ SVDict = {
     "NONE": "no sequence variant"
 }
 ATDict = ["2D", "3D"]
+
+
+# Suppress duplicated warnings
+@lru_cache(1)
+def warn_once(logger: logging.Logger, msg: str):
+    logger.warning(msg)
+
+
+def setup_logger(name, filename):
+    format_string = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+    formatter = logging.Formatter(fmt=format_string)
+    handler = logging.FileHandler(filename)
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(handler)
+    return logger
+
+
+
 
 
 class MRException(Exception):
@@ -190,19 +211,3 @@ class MultipleProjectsInDataset(MRException):
                          "/study. Found study id(s): {}".format(study_ids))
 
 
-# Suppress duplicated warnings
-@lru_cache(1)
-def warn_once(logger: logging.Logger, msg: str):
-    logger.warning(msg)
-
-
-def setup_logger(name, filename):
-    format_string = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
-    formatter = logging.Formatter(fmt=format_string)
-    handler = logging.FileHandler(filename)
-    handler.setFormatter(formatter)
-
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
-    return logger

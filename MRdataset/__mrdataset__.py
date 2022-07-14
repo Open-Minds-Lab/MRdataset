@@ -8,7 +8,7 @@ else:
 
 
 def main():
-    """Entry point"""
+    """Entry point."""
     cli.main()
 
 

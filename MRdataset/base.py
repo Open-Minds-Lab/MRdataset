@@ -5,7 +5,7 @@ from pathlib import Path
 import pickle
 from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
-from typing import List, Optional, Type, Dict
+from typing import List, Optional, Type
 
 
 def import_dataset(data_root=None,
@@ -14,8 +14,7 @@ def import_dataset(data_root=None,
                    reindex=False,
                    include_phantom=False,
                    verbose=False) -> "Project":
-    """
-    Create dataset as per arguments.
+    """Create dataset as per arguments.
 
     This function acts as a Wrapper class for base.Dataset.
     This is the main interface between this package and your analysis
@@ -35,7 +34,6 @@ def import_dataset(data_root=None,
     @param verbose: print more stuff
     @param include_phantom: whether to include phantom/localizer/aahead_scout
     @rtype: dataset container :class:`Dataset <MRdataset.data.base>`
-
     """
 
     if not Path(data_root).is_dir():

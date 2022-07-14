@@ -22,15 +22,26 @@ class XnatDataset(Project):
                  reindex=False):
 
         """
-        @param data_root: directory containing dataset with dicom files,
+                @param data_root: directory containing dataset with dicom files,
         supports nested hierarchies
         @param metadata_root: directory to store cache
         @param name:  an identifier/name for the dataset
         @param reindex: overwrite existing cache
 
-        Examples:
-            >>> from MRdataset import xnat_dataset
-            >>> dataset = xnat_dataset.XnatDataset()
+
+
+        Parameters
+        ----------
+        name
+        data_root
+        metadata_root
+        include_phantom
+        reindex
+
+        Examples
+        --------
+        >>> from MRdataset import xnat_dataset
+        >>> dataset = xnat_dataset.XnatDataset()
         """
         super().__init__(name, data_root, metadata_root)
         self.cache_path = self.metadata_root / "{}.pkl".format(self.name)

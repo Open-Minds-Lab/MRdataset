@@ -64,25 +64,28 @@ class XnatDataset(Project):
                                              dicom,
                                              self.include_phantom):
 
-                    info = common.parse_study_information(dicom)
-
-                    modality_obj = self.get_modality(info['modality'])
+                    # info = common.parse_study_information(dicom)
+                    modality_name = common.get_dicom_modality_tag(dicom)
+                    modality_obj = self.get_modality(modality_name)
                     if modality_obj is None:
-                        modality_obj = Modality(info['modality'])
+                        modality_obj = Modality(modality_name)
 
-                    subject_obj = modality_obj.get_subject(info['subject_name'])
+                    patient_name = str(dicom.PatientName)
+                    subject_obj = modality_obj.get_subject(patient_name)
                     if subject_obj is None:
-                        subject_obj = Subject(info['subject_name'])
+                        subject_obj = Subject(patient_name)
 
-                    session_node = subject_obj.get_session(info['session_name'])
+                    series_uid = str(dicom.SeriesInstanceUID)
+                    session_node = subject_obj.get_session(series_uid)
                     if session_node is None:
-                        session_node = Session(info['session_name'],
+                        session_node = Session(series_uid,
                                                Path(filepath).parent)
 
-                    run_node = session_node.get_run(info['run_name'])
+                    run_name = series_uid + '_e' + str(dicom.EchoNumbers)
+                    run_node = session_node.get_run(run_name)
                     if run_node is None:
-                        run_node = Run(info['run_name'])
-                        run_node.echo_time = info['echo_time']
+                        run_node = Run(run_name)
+                        run_node.echo_time = dicom.EchoTime
 
                     dcm_img_params = common.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:

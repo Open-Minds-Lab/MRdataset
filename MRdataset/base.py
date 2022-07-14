@@ -187,7 +187,7 @@ class Project(Node):
             raise TypeError(
                 "Expected argument of type <Modality>, got {} instead".format(
                     type(new_modality)))
-        self.__add__(new_modality)
+        self.add(new_modality)
 
     def get_modality(self, name: str) -> Optional["Modality"]:
         return self._get(name)
@@ -244,7 +244,7 @@ class Modality(Node):
             raise TypeError(
                 "Expected argument of type <Subject>, got {} instead".format(
                     type(new_subject)))
-        self.__add__(new_subject)
+        self.add(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
         self._add_compliant_name(subject_name)
@@ -290,7 +290,7 @@ class Subject(Node):
             raise TypeError(
                 "Expected argument of type <Session>, got {} instead"
                 "".format(type(new_session)))
-        self.__add__(new_session)
+        self.add(new_session)
 
     def get_session(self, name) -> Optional["Session"]:
         return self._get(name)
@@ -323,7 +323,7 @@ class Session(Node):
         if not isinstance(new_run, Run):
             raise TypeError("Expected type <Run>, got {} instead"
                             .format(type(new_run)))
-        self.__add__(new_run)
+        self.add(new_run)
 
     def get_run(self, name):
         return self._get(name)

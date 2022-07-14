@@ -99,6 +99,10 @@ class Node(ABC):
     """
 
     def __init__(self, name: str, **kwargs) -> None:
+        """Constructor
+        @param name: identifier for instance. For example : name or id
+        @param kwargs: Additional keyword arguments passed to Node
+        """
         self.name = name
         self._children = dict()
         self._compliant_children = list()
@@ -106,12 +110,27 @@ class Node(ABC):
 
     @property
     def children(self):
+        """ Each node can be connected to several children, generally
+        subcomponents of Node
+        """
         return list(self._children.values())
 
-    def __add__(self, other: "Node") -> None:
+    def add(self, other: "Node") -> None:
+        """
+        Adds a child node to self._children dict, if already present
+        updates it
+        @param other:  Another node, which has to added as a child node
+        @return: None
+        """
         self._children[other.name] = other
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
+        """
+        Fetches a child node which has the same key as "name". If key is not
+        available, returns None
+        @param name: Key/Identifier to be searched in the dictionary
+        @return: Returns value for given key
+        """
         return self._children.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:

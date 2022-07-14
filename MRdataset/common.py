@@ -253,41 +253,28 @@ def effective_echo_spacing(dicom):
 def get_phase_encoding(dicom, is3d, echo_train_length, is_flipy=True):
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
+    https://neurostars.org/t/determining-bids-phaseencodingdirection-from-dicom/612/6 # noqa
+    Following code only for SEIMENS, Look into above links for GE, Philips etc.
     """
     # is_skip = False
     # if is3d:
     #     is_skip = True
     # if echo_train_length > 1:
     #     is_skip = False
-    # image_header = csareader.read(get_header(dicom, 'image_header_info'))
-    # phase_value = utils.safe_get(image_header,
-    #                              'tags.PhaseEncodingDirectionPositive.items')
-    # if phase_value:
-    #     phpos = phase_value[0]
-    # else:
-    #     return None
+    image_header = csareader.read(get_header(dicom, 'image_header_info'))
+    phase_value = utils.safe_get(image_header,
+                                 'tags.PhaseEncodingDirectionPositive.items')
+    if phase_value:
+        phase = phase_value[0]
+        ped_value = get_param_value_by_name(dicom, "phase_encoding_direction")
+        if ped_value in ['ROW', 'COL']:
+            ped = ped_value
+        else:
+            return None
 
-    ped_dcm = get_param_value_by_name(dicom, "phase_encoding_direction")
-    return ped_dcm
-    # ped = ""
-    # assert ped_dcm in ["COL", "ROW"]
-    # if not is_skip and ped_dcm == "COL":
-    #     ped = "j"
-    # elif not is_skip and ped_dcm == "ROW":
-    #     ped = "i"
-    # if phpos >= 0 and not is_skip:
-    #     if phpos == 0 and ped_dcm == 'ROW':
-    #         ped += "-"
-    #     elif ped_dcm == "COL" and phpos == 1 and is_flipy:
-    #         ped += "-"
-    #     elif ped_dcm == "COL" and phpos == 0 and not is_flipy:
-    #         ped += "-"
-    #     ped_dict = {
-    #         'i': 'Left-Right',
-    #         'i-': 'Right-Left',
-    #         'j-': 'Anterior-Posterior',
-    #         'j': 'Posterior-Anterior'
-    #     }
-    #     return ped_dict[ped]
-    # else:
-    #     return None
+        niftidim = {'COL': 'i', 'ROW': 'j'}
+        ped_to_sign = {0: '-', 1: ''}
+        ij = niftidim[ped]
+        sign = ped_to_sign[phase]
+        return '{}{}'.format(ij, sign)
+    return None

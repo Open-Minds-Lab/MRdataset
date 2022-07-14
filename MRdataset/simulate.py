@@ -33,11 +33,6 @@ def get_test_dataset(num_subjects,
         dicom.EchoTime = echo_time
         dicom.FlipAngle = flip_angle
 
-        if phase_enc_direction not in ['ROW', 'COL']:
-            raise ValueError('Expected phase_enc_direction to be either '
-                             'ROW or COL, Got {} instead'.
-                             format(phase_enc_direction))
-        dicom.InPlanePhaseEncodingDirection = phase_enc_direction
         export_file(dicom, filepath, dest_dir)
         subject_names.add(dicom.PatientName)
         i += 1

@@ -3,7 +3,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from MRdataset import create_dataset
+from MRdataset import import_dataset
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
         raise OSError('Expected valid directory for --data_root argument, '
                       'Got {}'.format(args.data_root))
 
-    dataset = create_dataset(data_root=args.data_root,
+    dataset = import_dataset(data_root=args.data_root,
                              style=args.style,
                              name=args.name,
                              reindex=args.reindex,

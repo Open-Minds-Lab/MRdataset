@@ -8,8 +8,7 @@ from MRdataset.utils import random_name, timestamp
 from typing import List, Optional, Type, Dict
 
 
-# TODO:  include_phantom = False
-def create_dataset(data_root=None,
+def import_dataset(data_root=None,
                    style='xnat',
                    name=None,
                    reindex=False,
@@ -23,8 +22,8 @@ def create_dataset(data_root=None,
 
     Usage::
 
-    >>> from MRdataset import create_dataset
-    >>> data = create_dataset('xnat', '/path/to/my/data/')
+    >>> from MRdataset import import_dataset
+    >>> data = import_dataset('xnat', '/path/to/my/data/')
 
     @param style: expects a string specifying the Dataset class.
             Imports "data/{style}_dataset.py

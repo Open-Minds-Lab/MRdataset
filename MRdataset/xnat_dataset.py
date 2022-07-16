@@ -14,6 +14,9 @@ logger = logging.getLogger('root')
 
 # TODO: check what if each variable is None. Apply try catch
 class XnatDataset(Project):
+    """
+
+    """
     def __init__(self,
                  name='mind',
                  data_root=None,
@@ -22,8 +25,7 @@ class XnatDataset(Project):
                  reindex=False):
 
         """
-                @param data_root: directory containing dataset with dicom files,
-        supports nested hierarchies
+                @param data_root:
         @param metadata_root: directory to store cache
         @param name:  an identifier/name for the dataset
         @param reindex: overwrite existing cache
@@ -33,7 +35,9 @@ class XnatDataset(Project):
         Parameters
         ----------
         name
-        data_root
+        data_root : Path
+            directory containing dataset with dicom files;
+            supports nested hierarchies
         metadata_root
         include_phantom
         reindex
@@ -54,6 +58,8 @@ class XnatDataset(Project):
             self.load_dataset()
 
     def walk(self):
+        """parses the file tree to populate them in a desirable hierarchy"""
+
         study_ids_found = set()
         for filepath in self.data_root.glob('**/*.dcm'):
             try:
@@ -70,10 +76,10 @@ class XnatDataset(Project):
                     if modality_obj is None:
                         modality_obj = Modality(modality_name)
 
-                    patient_name = str(dicom.PatientName)
-                    subject_obj = modality_obj.get_subject(patient_name)
+                    patient_id = str(dicom.PatientID)
+                    subject_obj = modality_obj.get_subject(patient_id)
                     if subject_obj is None:
-                        subject_obj = Subject(patient_name)
+                        subject_obj = Subject(patient_id)
 
                     series_uid = str(dicom.SeriesInstanceUID)
                     session_node = subject_obj.get_session(series_uid)
@@ -90,6 +96,9 @@ class XnatDataset(Project):
                     dcm_img_params = common.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
+                        run_node.reference = dicom
+                    # elif is_same_set(dicom, run_node.reference, self.include_phantom):
+                    #     raise config.SlicesNotStacked(filepath)
                     elif param_difference(dcm_img_params, run_node.params):
                         raise config.ChangingParamsInSeries(filepath)
 

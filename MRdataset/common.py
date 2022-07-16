@@ -64,7 +64,7 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     @return: boolean indicating if .dcm file belongs to a phantom
     """
 
-    sid = str(get_tags_by_name(dicom, 'patient_name')).lower()
+    sid = str(get_tags_by_name(dicom, 'patient_id')).lower()
     sex = str(get_tags_by_name(dicom, 'patient_sex')).lower()
     age = str(get_tags_by_name(dicom, 'patient_age'))
     if 'phantom' in sid:
@@ -114,7 +114,7 @@ def parse_study_information(dicom):
     info['echo_num'] = get_tags_by_name(dicom, 'echo_number')
     info['project'] = get_tags_by_name(dicom, 'study_id')
     info['modality'] = get_dicom_modality_tag(dicom)
-    info['subject_name'] = get_tags_by_name(dicom, 'patient_name')
+    info['subject_id'] = get_tags_by_name(dicom, 'patient_id')
     info['session_name'] = get_tags_by_name(dicom, 'series_number')
     info['series_uid'] = get_tags_by_name(dicom, 'series_instance_uid')
     info['echo_time'] = get_tags_by_name(dicom, 'te')

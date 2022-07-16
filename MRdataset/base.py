@@ -158,15 +158,19 @@ class Node:
         return self._children.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:
-        for name in self._compliant_children:
-            if name == other:
-                return
+        if not isinstance(other, str):
+            raise TypeError('Expected argument of type str, Got {} '
+                            'instead'.format(type(other)))
+        if other in self._compliant_children:
+            return
         self._compliant_children.append(other)
 
     def _add_non_compliant_name(self, other: str) -> None:
-        for name in self._non_compliant_children:
-            if name == other:
-                return
+        if not isinstance(other, str):
+            raise TypeError('Expected argument of type str, Got {} '
+                            'instead'.format(type(other)))
+        if other in self._non_compliant_children:
+            return
         self._non_compliant_children.append(other)
 
     def __repr__(self) -> str:

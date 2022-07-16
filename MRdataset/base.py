@@ -14,26 +14,38 @@ def import_dataset(data_root=None,
                    reindex=False,
                    include_phantom=False,
                    verbose=False) -> "Project":
-    """Create dataset as per arguments.
+    """
+    Create dataset as per arguments. This function acts as a Wrapper class for
+    base.Dataset. This is the main interface between this package and your
+    analysis.
 
-    This function acts as a Wrapper class for base.Dataset.
-    This is the main interface between this package and your analysis
+    Parameters
+    ----------
+    data_root : str
+        path/to/my/dataset containing .dcm files
+    style : str
+        Specify dataset type. Imports the module "{style}_dataset.py",
+        which will instantiate {Style}Dataset().
+    name : str
+        Identifier for the dataset, like ADNI. The name used to save cached
+        results
+    reindex : bool
+        Similar to --no-cache. Rejects all cached files and rebuilds index.
+    include_phantom
+        Whether to include non-subject scans like localizer, acr/phantom,
+        aahead_scout
+    verbose :
+        The flag allows you to change the verbosity of execution
 
-    Usage::
+    Returns
+    -------
+    dataset : MRdataset.base.Project()
+        dataset container class
 
+    Examples
+    --------
     >>> from MRdataset import import_dataset
     >>> data = import_dataset('xnat', '/path/to/my/data/')
-
-    @param style: expects a string specifying the Dataset class.
-            Imports "data/{style}_dataset.py
-    @param data_root: /path/to/my/dataset containing .dcm files
-    @param name: optional identifier you may want to use,
-            otherwise it uses project name from dicom properties
-    @param reindex: optional flag, if true delete all associated metadata files
-            and rebuilds index
-    @param verbose: print more stuff
-    @param include_phantom: whether to include phantom/localizer/aahead_scout
-    @rtype: dataset container :class:`Dataset <MRdataset.data.base>`
     """
 
     if not Path(data_root).is_dir():

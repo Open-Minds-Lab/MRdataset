@@ -107,9 +107,9 @@ def find_dataset_using_style(dataset_style: str):
             dataset = cls
 
     if dataset is None:
-        raise NotImplementedError("Expected to find %s which is supposed  \
-        to be a subclass of base.Project in %s.py" % (target_dataset_class,
-                                                      dataset_modulename))
+        raise NotImplementedError(
+            "Expected %s to be a subclass of MRdataset.base.Project in % s.py."
+            % (target_dataset_class, dataset_modulename))
     return dataset
 
 

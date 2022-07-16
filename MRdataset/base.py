@@ -113,10 +113,7 @@ def find_dataset_using_style(dataset_style: str):
     return dataset
 
 
-class Node(ABC):
-    """
-    An abstract class specifying a generic node in a neuroimaging experiment.
-    It is inherited to create subclasses like Project, Modality, Subject etc.
+class Node:
     """
 
     def __init__(self, name: str, **kwargs) -> None:

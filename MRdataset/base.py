@@ -120,9 +120,15 @@ class Node(ABC):
     """
 
     def __init__(self, name: str, **kwargs) -> None:
-        """Constructor
-        @param name: identifier for instance. For example : name or id
-        @param kwargs: Additional keyword arguments passed to Node
+        """
+        Constructor
+
+        Parameters
+        ----------
+        name : str
+            identifier for instance. For example : name or id
+        kwargs : dict
+            Additional keyword arguments passed to Node
         """
         self.name = name
         self._children = dict()

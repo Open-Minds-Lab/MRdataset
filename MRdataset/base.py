@@ -82,11 +82,20 @@ def import_dataset(data_root=None,
 
 def find_dataset_using_style(dataset_style: str):
     """
-    Import the module "data/{style}_dataset.py", which will instantiate
+    Imports the module "{style}_dataset.py", which will instantiate
     {Style}Dataset(). For future, please ensure that any {Style}Dataset
     is a subclass of MRdataset.base.Dataset
-    """
 
+    Parameters
+    ----------
+    dataset_style : str
+        Specify the type of dataset
+
+    Returns
+    -------
+    dataset: MRdataset.base.Project()
+        dataset container class
+    """
     dataset_modulename = "MRdataset." + dataset_style + "_dataset"
     dataset_lib = importlib.import_module(dataset_modulename)
 

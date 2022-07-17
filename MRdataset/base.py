@@ -331,7 +331,7 @@ class Project(Node):
 
     def add_compliant_modality_name(self, modality_name: str) -> None:
         """
-                Add modality name (which is fully compliant) to the list
+        Add modality name (which is fully compliant) to the list
         Parameters
         ----------
         modality_name : str
@@ -369,9 +369,47 @@ class Modality(Node):
     Encapsulates all the details necessary for a modality.
     A single modality may contain multiple subjects, and each subject
     will have atleast single session.
+
+    Attributes
+    ----------
+    name : str
+        Identifier/name for the node
+    compliant: bool
+        If the modality is fully compliant
+    reasons_non_compliance: List[str]
+        Parameters which were found to be non-compliant
+
+    Methods
+    -------
+    subjects : List[Subject]
+        Collection of Subject Nodes in the Modality
+    compliant_subject_names : List[str]
+        List of subject names which are compliant
+    non_compliant_subject_names : List[str]
+        List of subject names which are not compliant
+    add_subject
+        Add a new Subject Node to list of subjects in the Modality
+    get_subject
+        Fetch a Subject Node searching by its name
+    add_compliant_subject_names
+        Add subject name (which is fully compliant) to the list
+    add_non_compliant_subject_names
+        Add subject name (which is not compliant) to the list
+    get_reference
+        Get the reference protocol used to check compliance
+    set_reference
+        Sets the reference protocol to check compliance
+    is_multi_echo : bool
+        If the modality is multi-echo modality
     """
 
     def __init__(self, name):
+        """Constructor
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the modality. e.g. DTI-RL, fMRI
+        """
         super().__init__(name)
         self._reference = dict()
         # multi_echo is not set
@@ -380,16 +418,28 @@ class Modality(Node):
         self.reasons_non_compliance = set()
 
     def get_reference(self, echo_time=None) -> dict:
+        """
+        Get the reference protocol used to check compliance
+
+        Parameters
+        ----------
+        echo_time : float
+            Unique echo-time for a multi-echo modality
+
+        Returns
+        -------
+        dict
+            Key, Value pairs specifying the reference protocol
+        """
         keys = list(self._reference.keys())
         if self.is_multi_echo:
             if echo_time is None:
                 raise LookupError("Specify echo_time for a multi-echo "
-                                  "reference")
+                                  "reference. Try one of {}".format(keys))
             reference = self._reference.get(echo_time, None)
             if reference is None:
-                raise KeyError("Echo time {} not present in reference. Try "
-                               "one of {}".format(echo_time,
-                                                  keys))
+                raise KeyError("Echo time {} absent. "
+                               "Try one of {}".format(echo_time, keys))
             else:
                 return reference
         else:
@@ -398,17 +448,27 @@ class Modality(Node):
 
     @property
     def subjects(self) -> List["Subject"]:
+        """Collection of Subject Nodes in the Modality"""
         return self.children
 
     @property
     def compliant_subject_names(self) -> List[str]:
+        """List of subject names which are compliant"""
         return self._compliant_children
 
     @property
     def non_compliant_subject_names(self) -> List[str]:
+        """List of subject names which are not compliant"""
         return self._non_compliant_children
 
     def add_subject(self, new_subject) -> None:
+        """Add a new Subject Node to list of subjects in the Modality
+
+        Parameters
+        ----------
+        new_subject : base.Subject
+            new subject node added to the Modality
+        """
         if not isinstance(new_subject, Subject):
             raise TypeError(
                 "Expected argument of type <Subject>, got {} instead".format(
@@ -416,18 +476,33 @@ class Modality(Node):
         self.add(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
+        """Add subject name (which is compliant) to the list"""
         self._add_compliant_name(subject_name)
 
     def add_non_compliant_subject_name(self, subject_name) -> None:
+        """Add subject name (which is not compliant) to the list"""
         self._add_non_compliant_name(subject_name)
 
     def get_subject(self, name) -> Optional["Subject"]:
+        """
+        Fetch a Subject Node searching by its name
+
+        Parameters
+        ----------
+        name : str
+
+        Returns
+        -------
+        None or Subject
+            value specified for key if key is in self._children
+        """
         return self._get(name)
 
     def set_reference(self, params: dict, echo) -> None:
         self._reference[echo] = params.copy()
 
     def is_multi_echo(self):
+        """If the modality is multi-echo modality"""
         return len(self._reference) > 1
 
 

@@ -158,6 +158,8 @@ class Node:
         other : Node
             another Node object that must be added to list of children
         """
+        if not isinstance(other, Node):
+            raise TypeError("must be base.Node, not {}".format(type(other)))
         self._children[other.name] = other
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
@@ -190,8 +192,7 @@ class Node:
         None
         """
         if not isinstance(other, str):
-            raise TypeError('Expected argument of type str, Got {} '
-                            'instead'.format(type(other)))
+            raise TypeError('must be str, not {} '.format(type(other)))
         if other in self._compliant_children:
             return
         self._compliant_children.append(other)
@@ -209,8 +210,7 @@ class Node:
         None
         """
         if not isinstance(other, str):
-            raise TypeError('Expected argument of type str, Got {} '
-                            'instead'.format(type(other)))
+            raise TypeError('must be str, not {}'.format(type(other)))
         if other in self._non_compliant_children:
             return
         self._non_compliant_children.append(other)

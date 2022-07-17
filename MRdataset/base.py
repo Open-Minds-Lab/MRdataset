@@ -123,6 +123,7 @@ class Node:
     name : str
         Identifier/name for the node
     """
+
     def __init__(self, name: str, **kwargs) -> None:
         """
         Constructor
@@ -141,7 +142,8 @@ class Node:
 
     @property
     def children(self):
-        """ Each node can be connected to several children, generally
+        """
+        Each node can be connected to several children, generally
         subcomponents of Node
         """
         return list(self._children.values())
@@ -150,8 +152,11 @@ class Node:
         """
         Adds a child node to self._children dict, if already present
         updates it
-        @param other:  Another node, which has to added as a child node
-        @return: None
+
+        Parameters
+        ----------
+        other : Node
+            another Node object that must be added to list of children
         """
         self._children[other.name] = other
 
@@ -159,12 +164,31 @@ class Node:
         """
         Fetches a child node which has the same key as "name". If key is not
         available, returns None
-        @param name: Key/Identifier to be searched in the dictionary
-        @return: Returns value for given key
+
+        Parameters
+        ----------
+        name : str
+            Key/Identifier to be searched in the dictionary
+
+        Returns
+        -------
+        None or Node
+            value specified for key if key is in self._children
         """
         return self._children.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:
+        """
+        Add a name to list of compliant children
+        Parameters
+        ----------
+        other : str
+            Name to be added to list of compliant children
+
+        Returns
+        -------
+        None
+        """
         if not isinstance(other, str):
             raise TypeError('Expected argument of type str, Got {} '
                             'instead'.format(type(other)))
@@ -173,6 +197,17 @@ class Node:
         self._compliant_children.append(other)
 
     def _add_non_compliant_name(self, other: str) -> None:
+        """
+        Add a name to list of non-compliant children
+        Parameters
+        ----------
+        other : str
+            Name to be added to list of non-compliant children
+
+        Returns
+        -------
+        None
+        """
         if not isinstance(other, str):
             raise TypeError('Expected argument of type str, Got {} '
                             'instead'.format(type(other)))

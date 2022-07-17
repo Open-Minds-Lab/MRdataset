@@ -221,9 +221,49 @@ class Project(Node):
     Encapsulates all the details necessary for a complete project.
     A single project may contain multiple modalities, and each modality
     will have atleast single subject.
+
+    Attributes
+    ----------
+    name : str
+        Identifier/name for the node
+    modalities : List[Modality]
+        Collection of Modality Nodes in the Project
+    compliant_modality_names : List[str]
+        List of modality names which are compliant
+    non_compliant_modality_names : List[str]
+        List of modality names which are not compliant
+
+    Methods
+    -------
+    add_modality
+        Add a new Modality Node to list of modalities in the Project
+    get_modality
+        Fetch a Modality Node searching by its name
+    add_compliant_modality_names
+        Add modality name (which is fully compliant) to the list
+    add_non_compliant_modality_names
+        Add modality name (which is not compliant) to the list
+    save_dataset
+        Saves dataset cache to disk for faster reloading
+    load_dataset
+        Loads dataset cache from disk
     """
 
     def __init__(self, name, data_root, metadata_root, **kwargs):
+        """
+        Constructor
+
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the node
+        data_root : str or Path
+            directory containing dataset with dicom files
+        metadata_root : str or Path
+            directory to store cache
+        kwargs : dict
+            Additional keyword arguments passed to Project
+        """
         super().__init__(name)
         # Manage directories
         self.data_root = Path(data_root)
@@ -238,17 +278,27 @@ class Project(Node):
 
     @property
     def modalities(self) -> List["Modality"]:
+        """Collection of all Modality Nodes in the Project"""
         return self.children
 
     @property
     def compliant_modality_names(self) -> List[str]:
+        """List of modality names which are compliant"""
         return self._compliant_children
 
     @property
     def non_compliant_modality_names(self) -> List[str]:
+        """List of modality names which are not compliant"""
         return self._non_compliant_children
 
     def add_modality(self, new_modality: "Modality") -> None:
+        """Add a new Modality Node to list of modalities in the Project
+
+        Parameters
+        ----------
+        new_modality : base.Modality
+            new modality node added to the Project
+        """
         if not isinstance(new_modality, Modality):
             raise TypeError(
                 "Expected argument of type <Modality>, got {} instead".format(
@@ -256,15 +306,43 @@ class Project(Node):
         self.add(new_modality)
 
     def get_modality(self, name: str) -> Optional["Modality"]:
+        """Fetch a Modality Node searching by its name. If name not found,
+        returns None
+
+        Parameters
+        ----------
+        name : str
+            Key/Identifier to be searched in the dictionary
+
+        Returns
+        -------
+        None or Modality
+            value specified for key if key is in self._children
+        """
         return self._get(name)
 
     def add_compliant_modality_name(self, modality_name: str) -> None:
+        """
+                Add modality name (which is fully compliant) to the list
+        Parameters
+        ----------
+        modality_name : str
+            Name to be added to list of compliant children
+        """
         self._add_compliant_name(modality_name)
 
     def add_non_compliant_modality_name(self, modality_name: str) -> None:
+        """Add modality name (which is not compliant) to the list
+
+        Parameters
+        ----------
+        modality_name : str
+            Name to be added to list of non compliant modalities
+        """
         self._add_non_compliant_name(modality_name)
 
     def save_dataset(self) -> None:
+        """Saves dataset cache to disk for faster reloading"""
         with open(self.cache_path, "wb") as f:
             pickle.dump(self.__dict__, f)
 

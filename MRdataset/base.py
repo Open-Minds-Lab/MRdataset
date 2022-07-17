@@ -1,6 +1,5 @@
 import importlib
 import warnings
-from abc import ABC
 from pathlib import Path
 import pickle
 from MRdataset.config import CACHE_DIR, setup_logger
@@ -216,7 +215,10 @@ class Node:
         self._non_compliant_children.append(other)
 
     def __repr__(self) -> str:
-        return self.__str__()
+        return "Node({})".format(self.name)
+
+    def __str__(self):
+        return "{} node with {} children".format(self.name, len(self.children))
 
 
 class Project(Node):

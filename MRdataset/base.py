@@ -412,8 +412,6 @@ class Modality(Node):
         """
         super().__init__(name)
         self._reference = dict()
-        # multi_echo is not set
-        self.multi_echo_flag = None
         self.compliant = None
         self.reasons_non_compliance = set()
 

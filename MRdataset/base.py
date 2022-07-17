@@ -373,14 +373,28 @@ class Modality(Node):
 
     def __init__(self, name):
         super().__init__(name)
-        self.reference = dict()
+        self._reference = dict()
         # multi_echo is not set
         self.multi_echo_flag = None
         self.compliant = None
         self.reasons_non_compliance = set()
 
-    def get_reference(self, echo_number) -> dict:
-        return self.reference[echo_number]
+    def get_reference(self, echo_time=None) -> dict:
+        keys = list(self._reference.keys())
+        if self.is_multi_echo:
+            if echo_time is None:
+                raise LookupError("Specify echo_time for a multi-echo "
+                                  "reference")
+            reference = self._reference.get(echo_time, None)
+            if reference is None:
+                raise KeyError("Echo time {} not present in reference. Try "
+                               "one of {}".format(echo_time,
+                                                  keys))
+            else:
+                return reference
+        else:
+            _echo_time = keys[0]
+            return self._reference[_echo_time]
 
     @property
     def subjects(self) -> List["Subject"]:
@@ -411,11 +425,10 @@ class Modality(Node):
         return self._get(name)
 
     def set_reference(self, params: dict, echo) -> None:
-        self.reference[echo] = params.copy()
+        self._reference[echo] = params.copy()
 
-    # TODO : Check if function is even required, else delete
     def is_multi_echo(self):
-        return len(self.reference) > 1
+        return len(self._reference) > 1
 
 
 class Subject(Node):

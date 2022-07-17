@@ -121,6 +121,8 @@ class Node:
     ----------
     name : str
         Identifier/name for the node
+    children : list
+        Collection of children nodes
     """
 
     def __init__(self, name: str, **kwargs) -> None:
@@ -185,10 +187,6 @@ class Node:
         ----------
         other : str
             Name to be added to list of compliant children
-
-        Returns
-        -------
-        None
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {} '.format(type(other)))
@@ -203,10 +201,6 @@ class Node:
         ----------
         other : str
             Name to be added to list of non-compliant children
-
-        Returns
-        -------
-        None
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {}'.format(type(other)))

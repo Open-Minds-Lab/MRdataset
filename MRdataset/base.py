@@ -496,8 +496,29 @@ class Modality(Node):
         """
         return self._get(name)
 
-    def set_reference(self, params: dict, echo) -> None:
-        self._reference[echo] = params.copy()
+    def set_reference(self, params: dict, echo_time=None, force=False) -> None:
+        """Sets the reference protocol to check compliance
+
+        Parameters
+        ----------
+        params : dict
+            <Key, Value> pairs for parameters. e.g. Manufacturer : Siemens
+        echo_time : float
+            echo time to store different references for multi-echo modalities
+        force : bool
+            just do it
+        """
+        if not force:
+            if echo_time is None:
+                raise ValueError("Echo time required to store multiple "
+                                 "references for multi-echo modalities. Set "
+                                 "force to override and store single reference")
+            else:
+                self._reference[echo_time] = params.copy()
+        else:
+            echo_time = 1.0
+            warnings.warn("Using a default value of 1.0 for echo time.")
+            self._reference[echo_time] = params.copy()
 
     def is_multi_echo(self):
         """If the modality is multi-echo modality"""

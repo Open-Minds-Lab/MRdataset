@@ -209,10 +209,18 @@ class Node:
         self._non_compliant_children.append(other)
 
     def __repr__(self) -> str:
-        return "Node({})".format(self.name)
+        return "<class MRdataset.base.{}({})>".format(self.__class__.__name__,
+                                                     self.name)
 
     def __str__(self):
-        return "{} node with {} children".format(self.name, len(self.children))
+        if len(self.children) > 0:
+            return "{} {} with {} {}".format(
+                self.__class__.__name__,
+                self.name,
+                len(self.children),
+                self.children[0].__class__.__name__)
+        else:
+            return "{} {}".format(self.__class__.__name__, self.name)
 
 
 class Project(Node):
@@ -402,10 +410,6 @@ class Modality(Node):
     def get_subject(self, name) -> Optional["Subject"]:
         return self._get(name)
 
-    def __str__(self) -> str:
-        return "Modality {} with {} subjects".format(self.name,
-                                                     len(self.subjects))
-
     def set_reference(self, params: dict, echo) -> None:
         self.reference[echo] = params.copy()
 
@@ -442,10 +446,6 @@ class Subject(Node):
     def get_session(self, name) -> Optional["Session"]:
         return self._get(name)
 
-    def __str__(self) -> str:
-        return "Subject {} with {} sessions".format(self.name,
-                                                    len(self.sessions))
-
 
 class Session(Node):
     """
@@ -475,9 +475,6 @@ class Session(Node):
     def get_run(self, name):
         return self._get(name)
 
-    def __str__(self):
-        return "Session {} with {} runs".format(self.name, len(self.runs))
-
 
 class Run(Node):
     """
@@ -493,6 +490,3 @@ class Run(Node):
         self.error = False
         self.params = dict()
         self.delta = None
-
-    def __str__(self):
-        return "Run {}".format(self.name)

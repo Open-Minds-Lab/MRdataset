@@ -274,7 +274,7 @@ class Project(Node):
         if not self.metadata_root.exists():
             raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
-        self.cache_path = None
+        self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
 
     @property
     def modalities(self) -> List["Modality"]:
@@ -347,6 +347,9 @@ class Project(Node):
             pickle.dump(self.__dict__, f)
 
     def load_dataset(self) -> None:
+        """Loads dataset cache from disk"""
+        if not self.cache_path.exists():
+            raise FileNotFoundError('Provide a valid /path/to/cache/dir/')
         with open(self.cache_path, 'rb') as f:
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)

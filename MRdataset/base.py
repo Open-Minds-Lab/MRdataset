@@ -651,8 +651,16 @@ class Run(Node):
     """
 
     def __init__(self, name):
+        """Constructor
+
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the Run
+        """
         super().__init__(name)
         self.echo_time = 0
+        # TODO: check if self.error is required
         self.error = False
         self.params = dict()
         self.delta = None

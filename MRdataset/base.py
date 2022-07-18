@@ -422,6 +422,9 @@ class Modality(Node):
         self.compliant = None
         self.reasons_non_compliance = set()
 
+    def get_echo_times(self):
+        return list(self._reference.keys())
+
     def get_reference(self, echo_time=None) -> dict:
         """
         Get the reference protocol used to check compliance
@@ -436,7 +439,7 @@ class Modality(Node):
         dict
             Key, Value pairs specifying the reference protocol
         """
-        keys = list(self._reference.keys())
+        keys = self.get_echo_times()
         if self.is_multi_echo:
             if echo_time is None:
                 raise LookupError("Specify echo_time for a multi-echo "

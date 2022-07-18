@@ -77,12 +77,13 @@ class XnatDataset(Project):
                     if subject_obj is None:
                         subject_obj = Subject(patient_id)
 
-                    series_uid = str(dicom.SeriesInstanceUID)
-                    session_node = subject_obj.get_session(series_uid)
+                    series_num = str(dicom.SeriesNumber)
+                    session_node = subject_obj.get_session(series_num)
                     if session_node is None:
-                        session_node = Session(series_uid,
+                        session_node = Session(series_num,
                                                Path(filepath).parent)
 
+                    series_uid = dicom.SeriesInstanceUID
                     run_name = series_uid + '_e' + str(dicom.EchoNumbers)
                     run_node = session_node.get_run(run_name)
                     if run_node is None:

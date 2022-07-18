@@ -17,13 +17,20 @@ def is_valid_inclusion(filename: str,
                        dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:
     """
-    Function will do some basic checks to see if it is a valid imaging dicom
-    @param filename: path for raising the warning
-    @param dicom: pydicom.FileDataset instance returned
-                  from pydicom.read_file
-    @param include_phantom: whether to include
-                            AAhead_coil/localizer/ACR/Phantom in report
-    @return: bool
+        Function will do some basic checks to see if it is a valid imaging dicom
+
+    Parameters
+    ----------
+    filename : str or Path
+        path for raising the warning
+    dicom : pydicom.FileDataset
+        dicom object returned by pydicom.dcmread or pydicom.read_file
+    include_phantom : bool
+        whether to include AAhead_coil/localizer/ACR/Phantom
+
+    Returns
+    -------
+    bool
     """
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
         config.warn_once(logger, "Invalid file: %s" % filename)

@@ -31,7 +31,8 @@ def main():
     optional.add_argument('--include_phantom', action='store_true',
                           help='whether to include phantom, localizer, '
                                'aahead_scout')
-
+    optional.add_argument('--metadata_root', type=str, required=False,
+                          help='directory to store cache')
     args = parser.parse_args()
     if not Path(args.data_root).is_dir():
         raise OSError('Expected valid directory for --data_root argument, '
@@ -42,7 +43,8 @@ def main():
                              name=args.name,
                              reindex=args.reindex,
                              include_phantom=args.include_phantom,
-                             verbose=args.verbose)
+                             verbose=args.verbose,
+                             metadata_root=args.metadata_root)
     return dataset
 
 

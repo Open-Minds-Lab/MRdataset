@@ -12,7 +12,8 @@ def import_dataset(data_root=None,
                    name=None,
                    reindex=False,
                    include_phantom=False,
-                   verbose=False) -> "Project":
+                   verbose=False,
+                   metadata_root=None) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
     base.Dataset. This is the main interface between this package and your
@@ -52,8 +53,14 @@ def import_dataset(data_root=None,
                       ' Got {0}'.format(data_root))
     data_root = Path(data_root).resolve()
 
-    metadata_root = data_root / CACHE_DIR
-    metadata_root.mkdir(exist_ok=True)
+    if not metadata_root:
+        metadata_root = data_root / CACHE_DIR
+        metadata_root.mkdir(exist_ok=True)
+
+    if not Path(metadata_root).is_dir():
+        raise OSError('Expected valid directory for --metadata_root argument,'
+                      ' Got {0}'.format(metadata_root))
+    metadata_root = Path(metadata_root).resolve()
 
     if name is None:
         warnings.warn(

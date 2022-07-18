@@ -533,6 +533,22 @@ class Subject(Node):
     For a project called ABCD, it is grouped by modalities like T1, T2 etc.
     So, each modality, say T1 will have multiple subjects. And each subject
     can have multiple sessions.
+
+    Attributes
+    ----------
+    name : str
+        Identifier/name for the node
+    compliant: bool
+        If the subject is compliant
+
+    Methods
+    -------
+    sessions : List[Session]
+        Collection of Session Nodes in the Subject
+    add_session
+        Add a new Session Node to list of sessions in the Subject
+    get_session
+        Fetch a session Node searching by its name
     """
 
     def __init__(self, name):
@@ -541,9 +557,17 @@ class Subject(Node):
 
     @property
     def sessions(self) -> List["Session"]:
+        """Collection of Session Nodes in the Subject"""
         return self.children
 
     def add_session(self, new_session) -> None:
+        """Add a new Session Node to list of sessions in the Subject
+
+        Parameters
+        ----------
+        new_session : base.Session
+            new session node added to the Subject
+        """
         if not isinstance(new_session, Session):
             raise TypeError(
                 "Expected argument of type <Session>, got {} instead"
@@ -551,6 +575,7 @@ class Subject(Node):
         self.add(new_session)
 
     def get_session(self, name) -> Optional["Session"]:
+        """        Fetch a Subject Node searching by its name"""
         return self._get(name)
 
 

@@ -44,7 +44,7 @@ class XnatDataset(Project):
         >>> dataset = xnat_dataset.XnatDataset()
         """
         super().__init__(name, data_root, metadata_root)
-        self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
+
         self.include_phantom = include_phantom
         indexed = self.cache_path.exists()
         if not indexed or reindex:

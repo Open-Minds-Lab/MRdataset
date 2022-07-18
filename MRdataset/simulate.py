@@ -58,12 +58,10 @@ def copyeverything(src, dst):
             raise
 
 
-def make_non_compliant_test_dataset_w_info(
-    num_noncompliant_subjects,
-    repetition_time,
-    echo_train_length,
-    flip_angle
-):
+def make_test_dataset(num_noncompliant_subjects,
+                      repetition_time,
+                      echo_train_length,
+                      flip_angle):
     src_dir, dest_dir = setup_directories(compl_data_dir)  # noqa
     print()
     copyeverything(src_dir, dest_dir)
@@ -75,7 +73,7 @@ def make_non_compliant_test_dataset_w_info(
     for i, modality in enumerate(modalities):
         count = num_noncompliant_subjects[i]
         non_compliant_subjects = set()
-        subject_paths = [s for s in (src_dir/modality).iterdir()]
+        subject_paths = [s for s in (src_dir / modality).iterdir()]
 
         for j in range(count):
             sub_path = subject_paths[j]

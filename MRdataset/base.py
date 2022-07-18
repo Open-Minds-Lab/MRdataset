@@ -54,7 +54,7 @@ def import_dataset(data_root=None,
     data_root = Path(data_root).resolve()
 
     if not metadata_root:
-        metadata_root = data_root / CACHE_DIR
+        metadata_root = Path.home() / CACHE_DIR
         metadata_root.mkdir(exist_ok=True)
 
     if not Path(metadata_root).is_dir():

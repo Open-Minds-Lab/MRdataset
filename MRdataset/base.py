@@ -217,7 +217,7 @@ class Node:
 
     def __repr__(self) -> str:
         return "<class MRdataset.base.{}({})>".format(self.__class__.__name__,
-                                                     self.name)
+                                                      self.name)
 
     def __str__(self):
         if len(self.children) > 0:

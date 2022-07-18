@@ -96,9 +96,6 @@ class XnatDataset(Project):
                     dcm_img_params = common.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
-                        run_node.reference = dicom
-                    # elif is_same_set(dicom, run_node.reference, self.include_phantom):
-                    #     raise config.SlicesNotStacked(filepath)
                     elif param_difference(dcm_img_params, run_node.params):
                         raise config.ChangingParamsInSeries(filepath)
 

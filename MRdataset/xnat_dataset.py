@@ -25,22 +25,18 @@ class XnatDataset(Project):
                  reindex=False):
 
         """
-                @param data_root:
-        @param metadata_root: directory to store cache
-        @param name:  an identifier/name for the dataset
-        @param reindex: overwrite existing cache
-
-
-
         Parameters
         ----------
-        name
-        data_root : Path
-            directory containing dataset with dicom files;
-            supports nested hierarchies
-        metadata_root
-        include_phantom
-        reindex
+        name : str
+            an identifier/name for the dataset
+        data_root : Path or str
+            directory containing dicom files, supports nested hierarchies
+        metadata_root : str or Path
+            directory to store cache
+        include_phantom : bool
+            whether to include localizer/aahead_scout/phantom/acr
+        reindex : bool
+            If true, rejects stored cache and rebuilds index
 
         Examples
         --------

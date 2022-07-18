@@ -584,27 +584,61 @@ class Session(Node):
     Container to manage properties and issues at the session level.
     Encapsulates all the details necessary for a session.
     A single session may contain multiple runs
+
+    Attributes
+    ----------
+    name : str
+        Identifier/name for the Session
+    path : str or Path
+        filepath specifying the session directory
+    params : dict
+        Key, value pairs specifying the parameters for checking compliance
+    Methods
+    -------
+    runs : List[Run]
+        Collection of Run Nodes in the Session
+    add_run
+        Add a new Run Node to list of runs in the Session
+    get_run
+        Fetch a Run Node searching by its name
     """
 
     def __init__(self, name, path):
+        """Constructor
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the Session, default : dicom.SeriesInstanceUID
+            TODO : Consider SeriesNumber
+        path : str or Path
+            filepath specifying the Session directory
+        """
         super().__init__(name)
         self.params = dict()
         self.path = Path(path).resolve()
-        self.compliant = None
         if not self.path.exists():
             raise FileNotFoundError('Provide a valid /path/to/session/')
 
     @property
     def runs(self):
+        """Collection of Run Nodes in the Session"""
         return self.children
 
     def add_run(self, new_run):
+        """Add a new Run Node to list of runs in the Session
+
+        Parameters
+        ----------
+        new_run : base.Run
+            new run node added to the session
+        """
         if not isinstance(new_run, Run):
             raise TypeError("Expected type <Run>, got {} instead"
                             .format(type(new_run)))
         self.add(new_run)
 
     def get_run(self, name):
+        """Fetch a Run Node searching by its name"""
         return self._get(name)
 
 

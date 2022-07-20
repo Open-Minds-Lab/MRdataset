@@ -99,12 +99,12 @@ def warn_once(logger: logging.Logger, msg: str):
 def setup_logger(name, filename):
     format_string = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
     formatter = logging.Formatter(fmt=format_string)
-    handler = logging.FileHandler(filename)
-    handler.setFormatter(formatter)
+    # handler = logging.FileHandler(filename)
+    # handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(handler)
+    # logger.addHandler(handler)
     return logger
 
 

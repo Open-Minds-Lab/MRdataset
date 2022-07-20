@@ -32,12 +32,14 @@ def is_valid_inclusion(filename: str,
     -------
     bool
     """
+    filename = Path(filename).resolve()
+
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        config.warn_once(logger, "Invalid file: %s" % filename)
+        logger.warning("Invalid file: %s" % filename)
         return False
 
-    if not common.header_exists(dicom):
-        config.warn_once(logger, "Header Absent: %s" % filename)
+    if not header_exists(dicom):
+        logger.warning("Header Absent: %s" % filename)
         return False
 
     # TODO: revisit whether to include localizer or not,
@@ -48,15 +50,15 @@ def is_valid_inclusion(filename: str,
     if not include_phantom:
         series_desc = get_tags_by_name(dicom, 'series_description').lower()
         if 'local' in series_desc:
-            config.warn_once(logger, "Localizer: Skipping %s" % filename)
+            logger.warning("Localizer: Skipping %s" % filename.parent)
             return False
 
         if 'aahead' in series_desc:
-            config.warn_once(logger, "AAhead_Scout: Skipping %s" % filename)
+            logger.warning("AAhead_Scout: Skipping %s" % filename.parent)
             return True
 
         if is_phantom(dicom):
-            config.warn_once(logger, 'ACR/Phantom: %s' % filename)
+            logger.warning('ACR/Phantom: %s' % filename.parent)
             return False
 
     return True

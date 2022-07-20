@@ -550,8 +550,7 @@ class Subject(Node):
     ----------
     name : str
         Identifier/name for the node
-    compliant: bool
-        If the subject is compliant
+
 
     Methods
     -------
@@ -565,7 +564,6 @@ class Subject(Node):
 
     def __init__(self, name):
         super().__init__(name)
-        self.compliant = None
 
     @property
     def sessions(self) -> List["Session"]:

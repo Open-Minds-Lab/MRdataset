@@ -613,21 +613,21 @@ class Session(Node):
         Fetch a Run Node searching by its name
     """
 
-    def __init__(self, name, path):
+    def __init__(self, name, path=None):
         """Constructor
         Parameters
         ----------
         name : str
-            Identifier/name for the Session, default : dicom.SeriesInstanceUID
-            TODO : Consider SeriesNumber
+            Identifier/name for the Session
         path : str or Path
             filepath specifying the Session directory
         """
         super().__init__(name)
         self.params = dict()
-        self.path = Path(path).resolve()
-        if not self.path.exists():
-            raise FileNotFoundError('Provide a valid /path/to/session/')
+        if path:
+            self.path = Path(path).resolve()
+            if not self.path.exists():
+                raise FileNotFoundError('Provide a valid /path/to/session/')
 
     @property
     def runs(self):

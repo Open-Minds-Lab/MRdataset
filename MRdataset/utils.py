@@ -1,8 +1,11 @@
 import functools
+import json
 import time
 import uuid
 from collections.abc import Hashable, Iterable
 from typing import List
+
+from MRdataset.config import PARAMETER_NAMES
 from dictdiffer import diff as dict_diff
 
 
@@ -84,3 +87,16 @@ def timestamp() -> str:
     """
     time_string = time.strftime("%m_%d_%Y_%H_%M")
     return time_string
+
+
+def select_parameters(filepath):
+    with open(filepath, "r") as read_file:
+        parameters = json.load(read_file)
+
+    selected_params = dict()
+    for key in parameters:
+        for entry in PARAMETER_NAMES:
+            if entry.lower() in key.lower():
+                selected_params[key] = parameters[key]
+
+    return selected_params

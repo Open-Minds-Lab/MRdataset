@@ -1,11 +1,10 @@
-import json
 import logging
 from pathlib import Path
 
+from MRdataset.utils import select_parameters
 from bids import BIDSLayout
 
 from MRdataset.base import Project, Run, Modality, Subject, Session
-from MRdataset.config import PARAMETER_NAMES
 
 # Module-level logger
 logger = logging.getLogger('root')

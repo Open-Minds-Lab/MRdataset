@@ -50,13 +50,13 @@ PARAMETER_NAMES = [
     'RepetitionTime',
     'MagneticFieldStrength',
     'FlipAngle',
-    'InPlanePhaseEncodingDirection',
+    'PhaseEncodingDirection',
     'EchoTrainLength',
     'PixelBandwidth',
     'ScanningSequence',
     'SequenceVariant',
     'MRAcquisitionType',
-    'NumberOfPhaseEncodingSteps',
+    'PhaseEncodingSteps',
 ]
 # Check  QualityControlSubject
 

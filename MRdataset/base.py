@@ -288,7 +288,8 @@ class Project(Node):
 
         self.metadata_root = Path(metadata_root)
         if not self.metadata_root.exists():
-            raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
+            self.metadata_root.mkdir(exist_ok=True)
+            # raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
         self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
 

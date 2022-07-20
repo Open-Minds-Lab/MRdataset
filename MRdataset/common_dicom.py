@@ -6,7 +6,6 @@ import dicom2nifti
 import pydicom
 from nibabel.nicom import csareader
 
-from MRdataset import common
 from MRdataset import config
 from MRdataset import utils
 from typing import Union

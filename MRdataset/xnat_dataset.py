@@ -3,7 +3,7 @@ from pathlib import Path
 
 import dicom2nifti
 import pydicom
-from MRdataset import common
+from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference
@@ -62,12 +62,12 @@ class XnatDataset(Project):
                 if not dicom2nifti.common.is_dicom_file(filepath):
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
-                if common.is_valid_inclusion(filepath,
+                if common_dicom.is_valid_inclusion(filepath,
                                              dicom,
                                              self.include_phantom):
 
                     # info = common.parse_study_information(dicom)
-                    modality_name = common.get_dicom_modality_tag(dicom)
+                    modality_name = common_dicom.get_dicom_modality_tag(dicom)
                     modality_obj = self.get_modality(modality_name)
                     if modality_obj is None:
                         modality_obj = Modality(modality_name)
@@ -90,7 +90,7 @@ class XnatDataset(Project):
                         run_node = Run(run_name)
                         run_node.echo_time = dicom.EchoTime
 
-                    dcm_img_params = common.parse_imaging_params(filepath)
+                    dcm_img_params = common_dicom.parse_imaging_params(filepath)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
                     elif param_difference(dcm_img_params, run_node.params):

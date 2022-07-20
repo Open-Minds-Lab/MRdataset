@@ -36,7 +36,8 @@ def import_dataset(data_root=None,
         aahead_scout
     verbose :
         The flag allows you to change the verbosity of execution
-
+    metadata_root :
+        change the default cache directory
     Returns
     -------
     dataset : MRdataset.base.Project()

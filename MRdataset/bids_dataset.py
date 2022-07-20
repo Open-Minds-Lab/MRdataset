@@ -60,6 +60,7 @@ class BidsDataset(Project):
             modality_obj = self.get_modality(datatype)
             if modality_obj is None:
                 modality_obj = Modality(datatype)
+
             layout_subjects = bids_layout.get_subjects()
             if not layout_subjects:
                 raise EOFError("No Subjects found in dataset")
@@ -67,16 +68,46 @@ class BidsDataset(Project):
                 subject_obj = modality_obj.get_subject(nSub)
                 if subject_obj is None:
                     subject_obj = Subject(nSub)
-                layout_sessions = bids_layout.get_sessions(subject=nSub)
-                if not layout_sessions:
-                    logger.info("No sessions found! Using a default name")
 
+                layout_sessions = bids_layout.get_sessions(subject=nSub)
+                layout_runs = bids_layout.get_runs(subject=nSub)
+
+                if not layout_sessions:
+                    session_node = subject_obj.get_session('1')
+                    if session_node is None:
+                        session_node = Session('1')
+
+                    if not layout_runs:
+                        logger.info("No sessions/runs found for Subject {}! "
+                                    "Using '1' as name")
+                    else:
+                        logger.info("No sessions found for Subject {}! Using "
+                                    "'1' as session name.")
+                        raise NotImplementedError('Runs exist but not '
+                                                  'sessions!')
+
+                    filters = {'subject': nSub,
+                               'datatype': datatype,
+                               'extension': 'json'}
+                    files = bids_layout.get(**filters)
+                    if not files:
+                        continue
+                    run_node = session_node.get_run('1')
+                    if run_node is None:
+                        run_node = Run('1')
+
+                    parameters = select_parameters(files[0])
+                    run_node.params = parameters.copy()
+                    run_node.echo_time = parameters.get('EchoTime', 1.0)
+                    session_node.add_run(run_node)
+                    subject_obj.add_session(session_node)
                 else:
                     # If there are sessions
                     for nSess in layout_sessions:
                         session_node = subject_obj.get_session(nSess)
                         if session_node is None:
                             session_node = Session(nSess)
+
                         for nRun in bids_layout.get_runs(subject=nSub,
                                                          session=nSess):
                             run_node = session_node.get_run(nRun)
@@ -91,26 +122,16 @@ class BidsDataset(Project):
 
                             if not files:
                                 continue
-                            with open(files[0], "r") as read_file:
-                                parameters = json.load(read_file)
 
-                            # TODO files is a list, what if there are differences??
-                            # default = None
-                            # for file in files:
-                            #     with open(file, "r") as read_file:
-                            #         parameters = json.load(read_file)
-                            #     if not default:
-                            #         default = parameters.copy()
-                            #     else:
-                            selected_params = dict()
-                            for key in parameters:
-                                for entry in PARAMETER_NAMES:
-                                    if entry.lower() in key.lower():
-                                        selected_params[key] = parameters[key]
-
-                            run_node.params = selected_params.copy()
+                            parameters = select_parameters(files[0])
+                            run_node.params = parameters.copy()
                             run_node.echo_time = parameters.get('EchoTime', 1.0)
                             session_node.add_run(run_node)
+                        if len(session_node.runs) > 0:
                             subject_obj.add_session(session_node)
-                            modality_obj.add_subject(subject_obj)
-                            self.add_modality(modality_obj)
+                if len(subject_obj.sessions) > 0:
+                    modality_obj.add_subject(subject_obj)
+            if len(modality_obj.subjects) > 0:
+                self.add_modality(modality_obj)
+
+

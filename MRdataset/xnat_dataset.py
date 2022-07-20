@@ -55,9 +55,11 @@ class XnatDataset(Project):
 
     def walk(self):
         """parses the file tree to populate them in a desirable hierarchy"""
-
+        no_files_found = True
         study_ids_found = set()
+
         for filepath in self.data_root.glob('**/*.dcm'):
+            no_files_found = False
             try:
                 if not dicom2nifti.common.is_dicom_file(filepath):
                     continue
@@ -108,6 +110,8 @@ class XnatDataset(Project):
                 logger.exception(mrd_exc)
             except Exception as exc:
                 raise exc
+        if no_files_found:
+            raise EOFError("Read 0 files at {}".format(self.data_root))
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))
 

@@ -442,7 +442,7 @@ class Modality(Node):
             Key, Value pairs specifying the reference protocol
         """
         keys = self.get_echo_times()
-        if self.is_multi_echo:
+        if self.is_multi_echo():
             if echo_time is None:
                 raise LookupError("Specify echo_time for a multi-echo "
                                   "reference. Try one of {}".format(keys))

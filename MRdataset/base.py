@@ -103,11 +103,11 @@ def find_dataset_using_style(dataset_style: str):
     dataset: MRdataset.base.Project()
         dataset container class
     """
-    dataset_modulename = "MRdataset." + dataset_style
+    dataset_modulename = "MRdataset.{}_dataset".format(dataset_style)
     dataset_lib = importlib.import_module(dataset_modulename)
 
     dataset = None
-    target_dataset_class = dataset_style + 'dataset'
+    target_dataset_class = '{}dataset'.format(dataset_style)
     for name, cls in dataset_lib.__dict__.items():
         name_matched = name.lower() == target_dataset_class.lower()
         if name_matched and issubclass(cls, Project):

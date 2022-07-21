@@ -39,7 +39,7 @@ class BIDSDataset(Project):
 
         Examples
         --------
-        >>> from MRdataset.bids import BIDSDataset
+        >>> from MRdataset.bids_dataset import BIDSDataset
         >>> dataset = BIDSDataset()
         """
 

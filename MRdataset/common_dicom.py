@@ -1,14 +1,19 @@
 import logging
+import warnings
 from collections import defaultdict
 from pathlib import Path
+from typing import Union
 
 import dicom2nifti
 import pydicom
-from nibabel.nicom import csareader
-
 from MRdataset import config
 from MRdataset import utils
-from typing import Union
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore")
+    from nibabel.nicom import csareader
+
+
 logger = logging.getLogger('root')
 
 

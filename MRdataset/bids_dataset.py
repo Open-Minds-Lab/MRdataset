@@ -78,6 +78,8 @@ class BIDSDataset(Project):
                 layout_sessions = bids_layout.get_sessions(subject=nSub)
 
                 if not layout_sessions:
+                    logger.info("No sessions found. '1' is default "
+                                "session name")
                     session_node = subject_obj.get_session('1')
                     if session_node is None:
                         session_node = Session('1')

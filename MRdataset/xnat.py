@@ -40,8 +40,8 @@ class XnatDataset(Project):
 
         Examples
         --------
-        >>> from MRdataset import xnat_dataset
-        >>> dataset = xnat_dataset.XnatDataset()
+        >>> from MRdataset import xnat
+        >>> dataset = xnat.XnatDataset()
         """
         super().__init__(name, data_root, metadata_root)
 

@@ -11,7 +11,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class BidsDataset(Project):
+class BIDSDataset(Project):
     """
 
     """
@@ -39,8 +39,8 @@ class BidsDataset(Project):
 
         Examples
         --------
-        >>> from MRdataset.bids_dataset import BidsDataset
-        >>> dataset = BidsDataset()
+        >>> from MRdataset.bids import BIDSDataset
+        >>> dataset = BIDSDataset()
         """
 
         super().__init__(name, data_root, metadata_root)

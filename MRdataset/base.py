@@ -103,7 +103,7 @@ def find_dataset_using_style(dataset_style: str):
     dataset: MRdataset.base.Project()
         dataset container class
     """
-    dataset_modulename = "MRdataset." + dataset_style + "_dataset"
+    dataset_modulename = "MRdataset." + dataset_style
     dataset_lib = importlib.import_module(dataset_modulename)
 
     dataset = None

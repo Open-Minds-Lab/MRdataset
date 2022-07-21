@@ -56,6 +56,12 @@ class BIDSDataset(Project):
     def walk(self):
         """parses the file tree to populate them in a desirable hierarchy"""
         bids_layout = BIDSLayout(self.data_root)
+
+        filters = {'extension': 'json'}
+        if not bids_layout.get(**filters):
+            raise EOFError('No JSON files found at --data_root {}'.format(
+                self.data_root))
+
         for datatype in datatypes:
             modality_obj = self.get_modality(datatype)
             if modality_obj is None:

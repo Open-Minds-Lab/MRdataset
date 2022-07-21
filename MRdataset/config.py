@@ -58,6 +58,20 @@ PARAMETER_NAMES = [
     'MRAcquisitionType',
     'PhaseEncodingSteps',
 ]
+
+datatypes = [
+    'anat',
+    'beh',
+    'dwi',
+    'eeg',
+    'fmap',
+    'func',
+    'ieeg',
+    'meg',
+    'micr',
+    'perf',
+    'pet'
+]
 # Check  QualityControlSubject
 
 # Constant dicom Identifiers used to extract dicom headers

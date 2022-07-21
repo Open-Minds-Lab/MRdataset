@@ -56,7 +56,7 @@ class BidsDataset(Project):
     def walk(self):
         """parses the file tree to populate them in a desirable hierarchy"""
         bids_layout = BIDSLayout(self.data_root)
-        for datatype in ('anat', 'func', 'dwi'):
+        for datatype in datatypes:
             modality_obj = self.get_modality(datatype)
             if modality_obj is None:
                 modality_obj = Modality(datatype)

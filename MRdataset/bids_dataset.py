@@ -76,68 +76,51 @@ class BIDSDataset(Project):
                     subject_obj = Subject(nSub)
 
                 layout_sessions = bids_layout.get_sessions(subject=nSub)
-                layout_runs = bids_layout.get_runs(subject=nSub)
 
                 if not layout_sessions:
                     session_node = subject_obj.get_session('1')
                     if session_node is None:
                         session_node = Session('1')
 
-                    if not layout_runs:
-                        logger.info("No sessions/runs found for Subject {}! "
-                                    "Using '1' as name")
-                    else:
-                        logger.info("No sessions found for Subject {}! Using "
-                                    "'1' as session name.")
-                        raise NotImplementedError('Runs exist but not '
-                                                  'sessions!')
-
                     filters = {'subject': nSub,
                                'datatype': datatype,
                                'extension': 'json'}
-                    files = bids_layout.get(**filters)
-                    if not files:
-                        continue
-                    run_node = session_node.get_run('1')
-                    if run_node is None:
-                        run_node = Run('1')
-
-                    parameters = select_parameters(files[0])
-                    run_node.params = parameters.copy()
-                    run_node.echo_time = parameters.get('EchoTime', 1.0)
-                    session_node.add_run(run_node)
-                    subject_obj.add_session(session_node)
+                    session_node = self.parse_json(session_node,
+                                                   filters,
+                                                   bids_layout)
+                    if session_node.runs:
+                        subject_obj.add_session(session_node)
                 else:
                     # If there are sessions
                     for nSess in layout_sessions:
                         session_node = subject_obj.get_session(nSess)
                         if session_node is None:
                             session_node = Session(nSess)
-
-                        for nRun in bids_layout.get_runs(subject=nSub,
-                                                         session=nSess):
-                            run_node = session_node.get_run(nRun)
-                            if run_node is None:
-                                run_node = Run(nRun)
                             filters = {'subject': nSub,
                                        'session': nSess,
-                                       'run': nRun,
                                        'datatype': datatype,
                                        'extension': 'json'}
-                            files = bids_layout.get(**filters)
-
-                            if not files:
-                                continue
-
-                            parameters = select_parameters(files[0])
-                            run_node.params = parameters.copy()
-                            run_node.echo_time = parameters.get('EchoTime', 1.0)
-                            session_node.add_run(run_node)
-                        if len(session_node.runs) > 0:
+                            session_node = self.parse_json(session_node,
+                                                           filters,
+                                                           bids_layout)
+                        if session_node.runs:
                             subject_obj.add_session(session_node)
-                if len(subject_obj.sessions) > 0:
+                if subject_obj.sessions:
                     modality_obj.add_subject(subject_obj)
-            if len(modality_obj.subjects) > 0:
+            if modality_obj.subjects:
                 self.add_modality(modality_obj)
+        if not self.modalities:
+            raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
-
+    def parse_json(self, session_node, filters, bids_layout):
+        files = bids_layout.get(**filters)
+        for file in files:
+            filename = file.filename
+            run_node = session_node.get_run(filename)
+            if run_node is None:
+                run_node = Run(filename)
+            parameters = select_parameters(file.path)
+            run_node.params = parameters.copy()
+            run_node.echo_time = parameters.get('EchoTime', 1.0)
+            session_node.add_run(run_node)
+        return session_node

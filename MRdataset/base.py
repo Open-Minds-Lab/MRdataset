@@ -423,6 +423,7 @@ class Modality(Node):
         self._reference = dict()
         self.compliant = None
         self.reasons_non_compliance = set()
+        self.delta = dict()
 
     def get_echo_times(self):
         return list(self._reference.keys())
@@ -674,3 +675,17 @@ class Run(Node):
         self.error = False
         self.params = dict()
         self.delta = None
+
+
+class Reason:
+    def __init__(self, name, ref_value, new_value):
+        self.name = name
+        self.ref_value = ref_value
+        self.new_value = new_value
+        self.subjects = set()
+
+    def add(self, other):
+        self.subjects.add(other)
+
+    def __eq__(self, other):
+        return self.name == other.name

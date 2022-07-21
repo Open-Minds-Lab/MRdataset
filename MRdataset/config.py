@@ -111,18 +111,26 @@ def warn_once(logger: logging.Logger, msg: str):
 
 
 def setup_logger(name, filename):
-    format_string = '%(asctime)s - %(levelname)s - %(module)s - %(message)s'
+    format_string = '%(asctime)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(fmt=format_string)
-    # handler = logging.FileHandler(filename)
-    # handler.setFormatter(formatter)
-
+    handler = logging.StreamHandler()
+    dup_filter = DuplicateFilter()
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    # logger.addHandler(handler)
+    handler.addFilter(dup_filter)
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
     return logger
 
 
+class DuplicateFilter(object):
+    def __init__(self):
+        self.msgs = set()
 
+    def filter(self, record):
+        rv = record.msg not in self.msgs
+        self.msgs.add(record.msg)
+        return rv
 
 
 class MRException(Exception):

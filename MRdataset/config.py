@@ -41,23 +41,23 @@ PARAMETER_TAGS = {
     "phase_encoding_lines": [0x18, 0x89],
     "bwp_phase_encode": [0x19, 0x1028],
     "phase_encoding_direction": [0x18, 0x1312],
-
 }
-PARAMETER_NAMES = [
-    'Manufacturer',
-    'BodyPartExamined',
-    'EchoTime',
-    'RepetitionTime',
-    'MagneticFieldStrength',
-    'FlipAngle',
-    'PhaseEncodingDirection',
-    'EchoTrainLength',
-    'PixelBandwidth',
-    'ScanningSequence',
-    'SequenceVariant',
-    'MRAcquisitionType',
-    'PhaseEncodingSteps',
-]
+
+PARAMETER_NAMES = {
+    'Manufacturer': [0x08, 0x70],
+    'BodyPartExamined': [0x18, 0x15],
+    'EchoTime': [0x18, 0x81],
+    'RepetitionTime': [0x18, 0x80],
+    'MagneticFieldStrength': [0x18, 0x87],
+    'FlipAngle': [0x18, 0x1314],
+    'PhaseEncodingDirection': [0x18, 0x1312],
+    'EchoTrainLength': [0x18, 0x0091],
+    'PixelBandwidth': [0x18, 0x95],
+    'ScanningSequence': [0x18, 0x20],
+    'SequenceVariant': [0x18, 0x21],
+    'MRAcquisitionType': [0x18, 0x23],
+    'PhaseEncodingSteps': [0x18, 0x89]
+}
 
 datatypes = [
     'anat',

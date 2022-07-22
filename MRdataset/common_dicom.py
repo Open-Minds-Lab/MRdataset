@@ -162,7 +162,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
             "Unable to read dicom file from disk : {0}".format(filepath)
         )
 
-    for k in config.PARAMETER_TAGS.keys():
+    for k in config.PARAMETER_NAMES.keys():
         value = get_param_value_by_name(dicom, k)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
@@ -194,7 +194,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
 
 
 def get_param_value_by_name(dicom, name):
-    data = dicom.get(config.PARAMETER_TAGS[name], None)
+    data = dicom.get(config.PARAMETER_NAMES[name], None)
     if data:
         return data.value
     return None

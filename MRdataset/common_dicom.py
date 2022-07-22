@@ -8,6 +8,7 @@ import dicom2nifti
 import pydicom
 from MRdataset import config
 from MRdataset import utils
+from collections.abc import Iterable
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
@@ -165,7 +166,9 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         value = get_param_value_by_name(dicom, k)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
-        if not utils.is_hashable(value):
+        if isinstance(value, Iterable):
+            value = '_'.join(value)
+        elif not utils.is_hashable(value):
             value = str(value)
         params[k] = value
 

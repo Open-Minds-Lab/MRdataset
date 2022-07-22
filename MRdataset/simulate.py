@@ -1,12 +1,14 @@
+import errno
 import shutil
 import tempfile
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+import json
 import pydicom
-import errno
+from bids import BIDSLayout
 
-anon_data_dir = '/home/sinhah/datasets/anonymous_data'
-compl_data_dir = '/home/sinhah/datasets/compliant_data'
+from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
+    compl_data_bids
 
 
 def make_compliant_test_dataset(num_subjects,
@@ -62,7 +64,7 @@ def make_test_dataset(num_noncompliant_subjects,
                       repetition_time,
                       echo_train_length,
                       flip_angle):
-    src_dir, dest_dir = setup_directories(compl_data_dir)  # noqa
+    src_dir, dest_dir = setup_directories(compl_data_xnat)  # noqa
     print()
     copyeverything(src_dir, dest_dir)
     dataset_info = defaultdict(set)
@@ -72,7 +74,6 @@ def make_test_dataset(num_noncompliant_subjects,
 
     for i, modality in enumerate(modalities):
         count = num_noncompliant_subjects[i]
-        non_compliant_subjects = set()
         subject_paths = [s for s in (src_dir / modality).iterdir()]
 
         for j in range(count):

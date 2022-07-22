@@ -97,3 +97,75 @@ def export_file(dicom, filepath, out_dir):
     output_path = out_dir / series_desc / patient_id
     output_path.mkdir(exist_ok=True, parents=True)
     dicom.save_as(output_path / filepath.name)
+
+
+def make_bids_test_dataset(num_noncompliant_subjects,
+                           repetition_time,
+                           magnetic_field_strength,
+                           flip_angle):
+    src_dir, dest_dir = setup_directories(compl_data_bids)  # noqa
+    copyeverything(src_dir, dest_dir)
+    dataset_info = defaultdict(set)
+
+    layout = BIDSLayout(dest_dir.as_posix())
+    subjects = [f for f in dest_dir.iterdir() if f.name.startswith("sub")]
+    modalities = set()
+    for i, subject in enumerate(subjects):
+        for session in subject.iterdir():
+            for datatype in session.iterdir():
+                modalities.add(datatype)
+
+    for i, modality in enumerate(modalities):
+        count = num_noncompliant_subjects[i]
+        non_compliant_subjects = set()
+        for sub in subjects:
+
+            filters = {'subject': sub,
+                       'datatype': modality,
+                       'extension': 'json'}
+            files = layout.get(**filters)
+            for bidsfile in files:
+                with open(bidsfile.filepath, "r") as read_file:
+                    parameters = json.load(read_file)
+                parameters['RepetitionTime'] = repetition_time
+                parameters['MagneticFieldStrength'] = magnetic_field_strength
+                parameters['FlipAngle'] = flip_angle
+                with open(bidsfile.filepath, 'w') as fh:
+                    json.dump(parameters, fh)
+            dataset_info[modality].add(sub)
+    return dest_dir, dataset_info
+
+
+def make_toy_bids_dataset(path):
+    src_dir = Path(path).resolve()
+    if not src_dir.exists():
+        raise FileNotFoundError("input directory not found")
+    dest_dir = src_dir.parent / 'toy_dataset'
+
+    copyeverything(src_dir, dest_dir)
+
+    # Delete all nii.gz files
+    for filepath in dest_dir.glob('**/*.nii.gz'):
+        filepath.unlink()
+
+    # Delete all tsv files
+    for filepath in dest_dir.glob('**/*.tsv'):
+        filepath.unlink()
+
+    # Delete a folder named 'sourcedata'. Not required
+    # shutil.rmtree(Path(dest_dir/'sourcedata')
+
+    # Create new subjects
+    for k in range(2):
+        subjects = [f for f in dest_dir.iterdir() if f.name.startswith("sub")]
+        for i, subject in enumerate(subjects):
+            new_sub_name = '-'.join(
+                ['sub', str(len(subjects) + i + 1).zfill(2)])
+            for session in subject.iterdir():
+                for datatype in session.iterdir():
+                    for file in datatype.iterdir():
+                        name = str(file.name).split('_')[1:]
+                        new_filename = '_'.join([new_sub_name] + name)
+                        out_path = dest_dir / new_sub_name / session.name / datatype.name
+                        out_path.mkdir(parents=True, exist_ok=True)
+                        shutil.copy(file, out_path / new_filename)

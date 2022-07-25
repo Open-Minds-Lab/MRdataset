@@ -22,12 +22,12 @@ def is_valid_inclusion(filename: str,
                        dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:
     """
-        Function will do some basic checks to see if it is a valid imaging dicom
+    Function will do some basic checks to see if it is a valid imaging dicom
 
     Parameters
     ----------
     filename : str or Path
-        path for raising the warning
+        filename for raising the warning
     dicom : pydicom.FileDataset
         dicom object returned by pydicom.dcmread or pydicom.read_file
     include_phantom : bool

@@ -53,7 +53,7 @@ def is_valid_inclusion(filename: str,
 
     # check quality control subject :  Not present dicom headers
     if not include_phantom:
-        series_desc = get_tags_by_name(dicom, 'series_description').lower()
+        series_desc = dicom.SeriesDescription.lower()
         if 'local' in series_desc:
             logger.info("Localizer: Skipping %s" % filename.parent)
             return False
@@ -84,9 +84,9 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     bool
     """
 
-    sid = str(get_tags_by_name(dicom, 'patient_id')).lower()
-    sex = str(get_tags_by_name(dicom, 'patient_sex')).lower()
-    age = str(get_tags_by_name(dicom, 'patient_age'))
+    sid = str(dicom.PatientId).lower()
+    sex = str(dicom.PatientSex).lower()
+    age = str(dicom.PatientAge)
     if 'phantom' in sid:
         return True
     if sex == 'o':
@@ -114,14 +114,9 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     property1 = dicom.SeriesDescription
 
     if property1 is None:
-        property1 = get_tags_by_name(dicom, 'sequence_name')
+        property1 = dicom.SequenceName
     if property1 is None:
-        property1 = get_tags_by_name(dicom, 'protocol_name')
-
-    # TODO: need to decide on whether to use SERIES NUMBER as part of modality
-    # identification
-    # property2 = get_tags_by_name(dicom, 'SERIES_NUMBER')
-    # ret_string = "_".join([str(property2), property1.lower()])
+        property1 = dicom.ProtocolName
     return str(property1.replace(" ", "_"))
 
 
@@ -266,11 +261,28 @@ def get_header(dicom, name):
     return None
 
 
-def get_tags_by_name(dicom, name):
-    data = dicom.get(config.TAGS[name], None)
-    if data is None:
-        return None
-    return data.value
+# def get_tags_by_name(dicom, name):
+#     """
+#     Extracts value from dicom metadata looking up the corresponding HEX tag
+#     in config.PARAMETER_NAMES
+#
+#     Parameters
+#     ----------
+#     dicom : pydicom.FileDataset
+#         dicom object read from pydicom.read_file
+#
+#     name : str
+#         parameter name such as MagneticFieldStrength or Manufacturer
+#
+#     Returns
+#     -------
+#     This method return a value for the given key. If key is not available,
+#     then returns default value None.
+#     """
+#     data = dicom.get(config.TAGS[name], None)
+#     if data is None:
+#         return None
+#     return data.value
 
 
 def csa_parser(dicom):

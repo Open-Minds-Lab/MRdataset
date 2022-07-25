@@ -79,7 +79,7 @@ HEADER_TAGS = {
     "image_header_info": [0x29, 0x1010],
     "series_header_info": [0x29, 0x1020],
 }
-SODict = {
+SLICE_MODE = {
     "1": "sequential",
     "2": "interleaved",
     "4": "singleshot"

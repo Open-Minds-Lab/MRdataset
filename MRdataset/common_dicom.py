@@ -317,7 +317,7 @@ def csa_parser(dicom):
             start = True
 
     slice_code = props.get("sKSpace.ucMultiSliceMode", None)
-    slice_mode = config.SLICE_ORDER.get(slice_code, None)
+    slice_mode = config.SLICE_MODE.get(slice_code, None)
 
     ipat_code = props.get("sPat.ucPATMode", None)
     ipat = config.PAT.get(ipat_code, None)

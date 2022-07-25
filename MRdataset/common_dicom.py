@@ -185,10 +185,11 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         value = get_param_value_by_name(dicom, k)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
-        if isinstance(value, Iterable):
-            value = '_'.join(value)
-        elif not utils.is_hashable(value):
-            value = str(value)
+        if not isinstance(value, str):
+            if isinstance(value, Iterable):
+                value = '_'.join(value)
+            elif not utils.is_hashable(value):
+                value = str(value)
         params[k] = value
 
     csa_values = csa_parser(dicom)

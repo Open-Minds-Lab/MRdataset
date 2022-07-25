@@ -26,22 +26,22 @@ CACHE_DIR = ".mrdataset"
 # Constant Dicom Identifiers used for protocol compliance.
 # These are the parameters
 # which are compared in the final report
-PARAMETER_TAGS = {
-    "manufacturer": [0x08, 0x70],
-    "organ": [0x18, 0x15],
-    "te": [0x18, 0x81],
-    "tr": [0x18, 0x80],
-    "b0": [0x18, 0x87],
-    "flip_angle": [0x18, 0x1314],
-    "bwpx": [0x18, 0x95],
-    "echo_train_length": [0x18, 0x0091],
-    "scanning_sequence": [0x18, 0x20],
-    "sequence_variant": [0x18, 0x21],
-    "mr_acquisition_type": [0x18, 0x23],
-    "phase_encoding_lines": [0x18, 0x89],
-    "bwp_phase_encode": [0x19, 0x1028],
-    "phase_encoding_direction": [0x18, 0x1312],
-}
+# PARAMETER_TAGS = {
+#     "manufacturer": [0x08, 0x70],
+#     "organ": [0x18, 0x15],
+#     "te": [0x18, 0x81],
+#     "tr": [0x18, 0x80],
+#     "b0": [0x18, 0x87],
+#     "flip_angle": [0x18, 0x1314],
+#     "bwpx": [0x18, 0x95],
+#     "echo_train_length": [0x18, 0x0091],
+#     "scanning_sequence": [0x18, 0x20],
+#     "sequence_variant": [0x18, 0x21],
+#     "mr_acquisition_type": [0x18, 0x23],
+#     "phase_encoding_lines": [0x18, 0x89],
+#     "bwp_phase_encode": [0x19, 0x1028],
+#     "phase_encoding_direction": [0x18, 0x1312],
+# }
 
 PARAMETER_NAMES = {
     'Manufacturer': [0x08, 0x70],

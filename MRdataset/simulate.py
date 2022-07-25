@@ -109,31 +109,30 @@ def make_bids_test_dataset(num_noncompliant_subjects,
     dataset_info = defaultdict(set)
 
     layout = BIDSLayout(dest_dir.as_posix())
-    subjects = [f for f in dest_dir.iterdir() if f.name.startswith("sub")]
-    modalities = set()
-    for i, subject in enumerate(subjects):
-        for session in subject.iterdir():
-            for datatype in session.iterdir():
-                modalities.add(datatype)
+    subjects = layout.get_subjects()
 
-    for i, modality in enumerate(modalities):
+    for i, modality in enumerate(MRdataset.config.datatypes):
         count = num_noncompliant_subjects[i]
         non_compliant_subjects = set()
         for sub in subjects:
-
+            if count < 1:
+                break
             filters = {'subject': sub,
                        'datatype': modality,
                        'extension': 'json'}
             files = layout.get(**filters)
             for bidsfile in files:
-                with open(bidsfile.filepath, "r") as read_file:
+                with open(bidsfile.path, "r") as read_file:
                     parameters = json.load(read_file)
                 parameters['RepetitionTime'] = repetition_time
                 parameters['MagneticFieldStrength'] = magnetic_field_strength
                 parameters['FlipAngle'] = flip_angle
-                with open(bidsfile.filepath, 'w') as fh:
+                with open(bidsfile.path, 'w') as fh:
                     json.dump(parameters, fh)
-            dataset_info[modality].add(sub)
+            if files:
+                dataset_info[modality].add(sub)
+                if len(dataset_info[modality]) >= count:
+                    break
     return dest_dir, dataset_info
 
 

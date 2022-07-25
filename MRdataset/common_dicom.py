@@ -126,6 +126,20 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
 
 
 def header_exists(dicom: pydicom.FileDataset) -> bool:
+    """
+    Check if the private SIEMENS header exists in the file or not. Some
+    parameters like effective_echo_spacing and shim method need the dicom
+    header to be present.
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    bool
+    """
     try:
         series = get_header(dicom, 'series_header_info')
         image = get_header(dicom, 'image_header_info')

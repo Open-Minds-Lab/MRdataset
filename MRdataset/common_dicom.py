@@ -316,11 +316,17 @@ def csa_parser(dicom):
         if e[:17] == '### ASCCONV BEGIN':
             start = True
 
-    so = props.get("sKSpace.ucMultiSliceMode", None)
-    ipat = props.get("sPat.lAccelFactPE", None)
-    shim = props.get("sAdjData.uiAdjShimMode", None)
+    slice_code = props.get("sKSpace.ucMultiSliceMode", None)
+    slice_mode = config.SLICE_ORDER.get(slice_code, None)
+
+    ipat_code = props.get("sPat.ucPATMode", None)
+    ipat = config.PAT.get(ipat_code, None)
+
+    shim_code = int(props.get("sAdjData.uiAdjShimMode", None))
+    shim = config.SHIM.get(shim_code, None)
+
     return {
-        'so': so,
+        'slice_mode': slice_mode,
         'ipat': ipat,
         'shim': shim
     }

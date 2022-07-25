@@ -282,6 +282,20 @@ def get_header(dicom, name):
 
 
 def csa_parser(dicom):
+    """
+    Handles the private CSA header from Siemens formatted raw scanner.
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    dict
+        Contains multi-slice mode, iPAT and shim_mode
+
+    """
     series_header = csareader.read(get_header(dicom, 'series_header_info'))
     items = utils.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
     if items:

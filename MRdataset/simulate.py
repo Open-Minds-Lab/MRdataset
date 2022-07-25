@@ -157,16 +157,16 @@ def make_toy_bids_dataset(path):
     # shutil.rmtree(Path(dest_dir/'sourcedata')
 
     # Create new subjects
-    for k in range(2):
-        subjects = [f for f in dest_dir.iterdir() if f.name.startswith("sub")]
-        for i, subject in enumerate(subjects):
-            new_sub_name = '-'.join(
-                ['sub', str(len(subjects) + i + 1).zfill(2)])
-            for session in subject.iterdir():
-                for datatype in session.iterdir():
-                    for file in datatype.iterdir():
-                        name = str(file.name).split('_')[1:]
-                        new_filename = '_'.join([new_sub_name] + name)
-                        out_path = dest_dir / new_sub_name / session.name / datatype.name
-                        out_path.mkdir(parents=True, exist_ok=True)
-                        shutil.copy(file, out_path / new_filename)
+    # for k in range(2):
+    subjects = [f for f in dest_dir.iterdir() if f.name.startswith("sub")]
+    for i, subject in enumerate(subjects):
+        new_sub_name = '-'.join(
+            ['sub', str(len(subjects) + i + 1).zfill(2)])
+        for session in subject.iterdir():
+            for datatype in session.iterdir():
+                for file in datatype.iterdir():
+                    name = str(file.name).split('_')[1:]
+                    new_filename = '_'.join([new_sub_name] + name)
+                    out_path = dest_dir / new_sub_name / session.name / datatype.name
+                    out_path.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(file, out_path / new_filename)

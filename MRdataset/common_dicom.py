@@ -157,23 +157,6 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         return False
 
 
-# def parse_study_information(dicom):
-#     info = dict()
-#     info['echo_num'] = get_tags_by_name(dicom, 'echo_number')
-#     info['project'] = get_tags_by_name(dicom, 'study_id')
-#     info['modality'] = get_dicom_modality_tag(dicom)
-#     info['subject_id'] = get_tags_by_name(dicom, 'patient_id')
-#     info['session_name'] = get_tags_by_name(dicom, 'series_number')
-#     info['series_uid'] = get_tags_by_name(dicom, 'series_instance_uid')
-#     info['echo_time'] = get_tags_by_name(dicom, 'te')
-#
-#     # dcm2niix detected 2 different series in a single folder
-#     # Even though Series Instance UID was same, there was
-#     # a difference in echo number, for gre_field_mapping
-#     info['run_name'] = info['series_uid'] + '_e' + str(info['echo_num'])
-#     return info
-
-
 def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     """
     Given a filepath to a .dcm file, the function reader DICOM metadata

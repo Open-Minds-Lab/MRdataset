@@ -287,7 +287,7 @@ def csa_parser(dicom):
     if items:
         text = items[0].split("\n")
     else:
-        raise FileNotFoundError
+        raise AttributeError('CSA Header exists, but xProtocol is missing')
 
     start = False
     end = False

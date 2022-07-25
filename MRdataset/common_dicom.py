@@ -243,6 +243,23 @@ def get_param_value_by_name(dicom, name):
 
 
 def get_header(dicom, name):
+    """
+    Extracts value from dicom headers looking up the corresponding HEX tag
+    in config.HEADER_TAGS
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    name : str
+        parameter name such as ImageHeader or SeriesHeader
+
+    Returns
+    -------
+    This method return a value for the given key. If key is not available,
+    then returns default value None.
+    """
     data = dicom.get(config.HEADER_TAGS[name], None)
     if data:
         return data.value

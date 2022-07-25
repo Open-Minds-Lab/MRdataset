@@ -84,7 +84,7 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     bool
     """
 
-    sid = str(dicom.PatientId).lower()
+    sid = str(dicom.PatientID).lower()
     sex = str(dicom.PatientSex).lower()
     age = str(dicom.PatientAge)
     if 'phantom' in sid:

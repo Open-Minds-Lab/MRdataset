@@ -195,16 +195,13 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     params['multi_slice_mode'] = csa_values.get('slice_mode', None)
     params['ipat'] = csa_values.get('ipat', None)
     params['shim'] = csa_values.get('shim', None)
-    params['echo_train_length'] = get_param_value_by_name(dicom,
-                                                          "echo_train_length")
-
-    is3d = get_param_value_by_name(dicom, "mr_acquisition_type") == '3D'
+    is3d = params['MRAcquisitionType'] == '3D'
     params["is3d"] = is3d
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
     params["phase_encoding_direction"] = get_phase_encoding(
                                 dicom,
                                 is3d=params['is3d'],
-                                echo_train_length=params['echo_train_length'])
+                                echo_train_length=params['EchoTrainLength'])
     return params
 
 
@@ -340,8 +337,8 @@ def effective_echo_spacing(dicom):
     # print("PhaseEncodingLines is not equal to EchoTrainLength
     # : {0}".format(self.filepath))
 
-    bwp_phase_encode = get_param_value_by_name(dicom, 'bwp_phase_encode')
-    phase_encoding = get_param_value_by_name(dicom, 'phase_encoding_lines')
+    bwp_phase_encode = get_param_value_by_name(dicom, 'PixelBandwidth')
+    phase_encoding = get_param_value_by_name(dicom, 'PhaseEncodingSteps')
 
     if (bwp_phase_encode is None) or (phase_encoding is None):
         return None
@@ -371,7 +368,7 @@ def get_phase_encoding(dicom, is3d, echo_train_length):
                                  'tags.PhaseEncodingDirectionPositive.items')
     if phase_value:
         phase = phase_value[0]
-        ped_value = get_param_value_by_name(dicom, "phase_encoding_direction")
+        ped_value = get_param_value_by_name(dicom, "PhaseEncodingDirection")
         if ped_value in ['ROW', 'COL']:
             ped = ped_value
         else:

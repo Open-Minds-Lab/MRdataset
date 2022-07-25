@@ -354,7 +354,7 @@ class Project(Node):
         Parameters
         ----------
         modality_name : str
-            Name to be added to list of non compliant modalities
+            Name to be added to list of non-compliant modalities
         """
         self._add_non_compliant_name(modality_name)
 

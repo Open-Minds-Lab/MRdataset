@@ -137,7 +137,3 @@ class XnatDataset(Project):
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))
 
-    # def __str__(self):
-    #     return 'XnatDataset {0} was created with {1} modalities\n' \
-    #            'Pass --name {0} to use generated cache\n'\
-    #            .format(self.name, len(self.modalities))

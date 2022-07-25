@@ -355,7 +355,7 @@ def effective_echo_spacing(dicom):
         return value / 1000
 
 
-def get_phase_encoding(dicom, is3d, echo_train_length, is_flipy=True):
+def get_phase_encoding(dicom, is3d, echo_train_length):
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
     https://neurostars.org/t/determining-bids-phaseencodingdirection-from-dicom/612/6 # noqa

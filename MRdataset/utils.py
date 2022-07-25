@@ -3,10 +3,20 @@ import json
 import time
 import uuid
 from collections.abc import Hashable, Iterable
+from pathlib import Path
 from typing import List
 
 from MRdataset.config import PARAMETER_NAMES
 from dictdiffer import diff as dict_diff
+
+
+def files_under_folder(path):
+    if not Path(path).exists():
+        raise FileNotFoundError("Folder doesn't exist")
+    folder_path = Path(path).resolve()
+    for file in folder_path.rglob('*'):
+        if file.is_file():
+            yield file
 
 
 def safe_get(dictionary: dict, keys: str, default=None):

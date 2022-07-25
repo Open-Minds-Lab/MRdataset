@@ -15,8 +15,30 @@ logger = logging.getLogger('root')
 # TODO: check what if each variable is None. Apply try catch
 class XnatDataset(Project):
     """
+    Container to manage properties and issues of a dataset downloaded from
+    XNAT. Expects the data_root to be collection of dicom files, which may
+    belong to different subjects, modalities, sessions or runs.
 
+    Attributes
+    ----------
+    name : str
+        Identifier/name for the node
+    data_root : str or Path
+        directory containing dataset with dicom files
+    metadata_root : str or Path
+        directory to store cache
+    include_phantom
+        Whether to include non-subject scans like localizer, acr/phantom,
+        head_scout
+
+    Methods
+    -------
+    walk
+        generates filenames in the directory tree, verifies if it is dicom
+        file, extracts relevant parameters and stores it in project. Creates
+        a desirable hierarchy for a neuroimaging experiment
     """
+
     def __init__(self,
                  name='mind',
                  data_root=None,

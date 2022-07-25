@@ -6,7 +6,7 @@ import pydicom
 from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
-from MRdataset.utils import param_difference
+from MRdataset.utils import param_difference, files_under_folder
 
 # Module-level logger
 logger = logging.getLogger('root')
@@ -87,8 +87,8 @@ class XnatDataset(Project):
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if common_dicom.is_valid_inclusion(filepath,
-                                             dicom,
-                                             self.include_phantom):
+                                                   dicom,
+                                                   self.include_phantom):
 
                     # info = common.parse_study_information(dicom)
                     modality_name = common_dicom.get_dicom_modality_tag(dicom)

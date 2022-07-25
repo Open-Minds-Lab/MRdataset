@@ -346,9 +346,11 @@ def effective_echo_spacing(dicom):
     if (bwp_phase_encode is None) or (phase_encoding is None):
         return None
     else:
-        value = 1000 / (
-            bwp_phase_encode * phase_encoding)
-
+        try:
+            value = 1000 / (bwp_phase_encode * phase_encoding)
+        except ZeroDivisionError as exc:
+            logger.exception(exc)
+            return None
         # Match value to output of dcm2niix
         return value / 1000
 

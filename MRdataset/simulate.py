@@ -1,14 +1,15 @@
 import errno
+import json
 import shutil
 import tempfile
 from collections import defaultdict
 from pathlib import Path
-import json
-import pydicom
-from bids import BIDSLayout
 
+import MRdataset.config
+import pydicom
 from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
     compl_data_bids
+from bids import BIDSLayout
 
 
 def make_compliant_test_dataset(num_subjects,

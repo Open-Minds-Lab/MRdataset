@@ -5,11 +5,9 @@
 import shutil
 
 import hypothesis.strategies as st
-from hypothesis import given, settings, assume
-
 from MRdataset import import_dataset
-from MRdataset.simulate import make_compliant_test_dataset, \
-    make_non_compliant_test_dataset
+from MRdataset.simulate import make_compliant_test_dataset
+from hypothesis import given, settings
 
 
 @settings(max_examples=50, deadline=None)

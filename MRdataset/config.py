@@ -101,6 +101,19 @@ SVDict = {
     "OSP": "oversampling phase",
     "NONE": "no sequence variant"
 }
+
+PAT = {
+    1: 'None',
+    2: 'Grappa',
+    3: 'Sense'
+}
+
+SHIM = {
+    1: 'tune_up',
+    2: 'standard',
+    4: 'advanced'
+}
+
 ATDict = ["2D", "3D"]
 
 
@@ -232,5 +245,3 @@ class MultipleProjectsInDataset(MRException):
     def __init__(self, study_ids):
         super().__init__("Expected all dicom files to be in the same project"
                          "/study. Found study id(s): {}".format(study_ids))
-
-

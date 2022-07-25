@@ -218,6 +218,24 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
 
 
 def get_param_value_by_name(dicom, name):
+    """
+    Extracts value from dicom metadata looking up the corresponding HEX tag
+    in config.PARAMETER_NAMES
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    name : str
+        parameter name such as MagneticFieldStrength or Manufacturer
+
+    Returns
+    -------
+    This method return a value for the given key. If key is not available,
+    then returns default value None.
+    """
+    # TODO: consider name.lower()
     data = dicom.get(config.PARAMETER_NAMES[name], None)
     if data:
         return data.value

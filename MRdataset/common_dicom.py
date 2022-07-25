@@ -161,8 +161,15 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     """
     Given a filepath to a .dcm file, the function reader DICOM metadata
     and extracts relevant parameter values for checking compliance.
-    @param dicom_path:
-    @return: dict
+    The parameters are selected if it is present in config.PARAMETER_NAMES
+    Parameters
+    ----------
+    dicom_path: str or Path
+        filepath for .dcm file
+    Returns
+    -------
+    dict
+        contains key, value pairs for relevant parameters
     """
     filepath = Path(dicom_path)
     params = defaultdict()

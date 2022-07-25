@@ -242,6 +242,10 @@ class Project(Node):
     ----------
     name : str
         Identifier/name for the node
+    data_root : str or Path
+        directory containing dataset with dicom files
+    metadata_root : str or Path
+        directory to store cache
     modalities : List[Modality]
         Collection of Modality Nodes in the Project
     compliant_modality_names : List[str]

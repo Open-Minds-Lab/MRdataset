@@ -320,7 +320,7 @@ def csa_parser(dicom):
     ipat_code = props.get("sPat.ucPATMode", None)
     ipat = config.PAT.get(ipat_code, None)
 
-    shim_code = int(props.get("sAdjData.uiAdjShimMode", None))
+    shim_code = props.get("sAdjData.uiAdjShimMode", None)
     shim = config.SHIM.get(shim_code, None)
 
     return {

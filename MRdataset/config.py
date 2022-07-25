@@ -103,15 +103,15 @@ SVDict = {
 }
 
 PAT = {
-    1: 'None',
-    2: 'Grappa',
-    3: 'Sense'
+    "1": 'None',
+    "2": 'Grappa',
+    "3": 'Sense'
 }
 
 SHIM = {
-    1: 'tune_up',
-    2: 'standard',
-    4: 'advanced'
+    "1": 'tune_up',
+    "2": 'standard',
+    "4": 'advanced'
 }
 
 ATDict = ["2D", "3D"]

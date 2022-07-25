@@ -74,8 +74,14 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     Implements a heuristic to detect a phantom. Checks patient's name,
     sex and age, to discriminate a phantom from a real person. It is very
     unlikely that a patient's name is phantom, or age is 1 day.
-    @param dicom: dicom object read from pydicom.read_file
-    @return: boolean indicating if .dcm file belongs to a phantom
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    bool
     """
 
     sid = str(get_tags_by_name(dicom, 'patient_id')).lower()

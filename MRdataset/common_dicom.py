@@ -97,7 +97,21 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
 
 
 def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
-    property1 = get_tags_by_name(dicom, 'series_description')
+    """
+    Infer modality through dicom tags. In most cases series_description
+    should explain the modality of the volume, otherwise either use sequence
+    name or protocol name from DICOM metadata
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    str
+    """
+    property1 = dicom.SeriesDescription
 
     if property1 is None:
         property1 = get_tags_by_name(dicom, 'sequence_name')

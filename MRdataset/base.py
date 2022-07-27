@@ -544,6 +544,29 @@ class Modality(Node):
         """If the modality is multi-echo modality"""
         return len(self._reference) > 1
 
+    def update_reason(self, param, te, ref, value, sub):
+        query = [param, te, ref, value, sub]
+        matches = (self.data == query).all(axis=1).any()
+        if not matches:
+            self.data.loc[len(self.data)] = query
+
+    def query_reason(self, parameter, echo_time, column_name):
+        # Do not remove brackets, seems redundant but code may break
+        # See https://stackoverflow.com/a/57897625
+        query_str = "(parameter==@parameter) & (echo_time==@echo_time)"
+        db = self.data.query(query_str)
+        colnames = list(self.data.columns)
+        if column_name not in colnames:
+            print(column_name)
+            raise AttributeError('Expected one of {}. '
+                                 'Got {}'.format(colnames, column_name))
+        if 'ref_value' in column_name:
+            return db[column_name].unique().item()
+        elif 'new_value' in column_name:
+            return db[column_name].unique()
+        else:
+            return db[column_name].values
+
 
 class Subject(Node):
     """

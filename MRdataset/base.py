@@ -542,6 +542,9 @@ class Modality(Node):
 
     def is_multi_echo(self):
         """If the modality is multi-echo modality"""
+        if len(self._reference) == 0:
+            raise ValueError("Reference for modality not set. Use "
+                             "set_reference first!")
         return len(self._reference) > 1
 
     def update_reason(self, param, te, ref, value, sub):

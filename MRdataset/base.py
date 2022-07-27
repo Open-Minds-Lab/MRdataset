@@ -5,6 +5,7 @@ import pickle
 from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
 from typing import List, Optional, Type
+import pandas as pd
 
 
 def import_dataset(data_root=None,
@@ -427,7 +428,9 @@ class Modality(Node):
         self._reference = dict()
         self.compliant = None
         self.reasons_non_compliance = set()
-        self.delta = dict()
+
+        cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
+        self.data = pd.DataFrame(columns=cols)
 
     def get_echo_times(self):
         return list(self._reference.keys())

@@ -427,7 +427,6 @@ class Modality(Node):
         super().__init__(name)
         self._reference = dict()
         self.compliant = None
-        self.reasons_non_compliance = set()
 
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.data = pd.DataFrame(columns=cols)
@@ -546,6 +545,14 @@ class Modality(Node):
             raise ValueError("Reference for modality not set. Use "
                              "set_reference first!")
         return len(self._reference) > 1
+
+    def reasons_non_compliance(self, echo_time=None):
+        if echo_time:
+            query_str = "(echo_time==@echo_time)"
+            db = self.data.query(query_str)
+            return db['parameter'].unique()
+        else:
+            return self.data['parameter'].unique()
 
     def update_reason(self, param, te, ref, value, sub):
         query = [param, te, ref, value, sub]

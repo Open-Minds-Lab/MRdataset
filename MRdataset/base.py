@@ -572,12 +572,7 @@ class Modality(Node):
             print(column_name)
             raise AttributeError('Expected one of {}. '
                                  'Got {}'.format(colnames, column_name))
-        if 'ref_value' in column_name:
-            return db[column_name].unique().item()
-        elif 'new_value' in column_name:
-            return db[column_name].unique()
-        else:
-            return db[column_name].values
+        return db[column_name].unique()
 
 
 class Subject(Node):

@@ -44,7 +44,7 @@ CACHE_DIR = ".mrdataset"
 # }
 
 PARAMETER_NAMES = {
-    'Manufacturer': [0x08, 0x70],
+    # 'Manufacturer': [0x08, 0x70],
     'BodyPartExamined': [0x18, 0x15],
     'EchoTime': [0x18, 0x81],
     'RepetitionTime': [0x18, 0x80],

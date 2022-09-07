@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/raamana/MRdataset
+    $ git clone git://github.com/Open-Minds-Lab/MRdataset
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl -OJL https://github.com/raamana/MRdataset/tarball/master
+    $ curl -OJL https://github.com/Open-Minds-Lab/MRdataset/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/raamana/MRdataset
-.. _tarball: https://github.com/raamana/MRdataset/tarball/master
+.. _Github repo: https://github.com/Open-Minds-Lab/MRdataset
+.. _tarball: https://github.com/Open-Minds-Lab/MRdataset/tarball/master

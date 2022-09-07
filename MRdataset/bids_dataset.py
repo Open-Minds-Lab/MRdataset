@@ -118,11 +118,12 @@ class BIDSDataset(Project):
         files = bids_layout.get(**filters)
         for file in files:
             filename = file.filename
-            run_node = session_node.get_run(filename)
-            if run_node is None:
-                run_node = Run(filename)
             parameters = select_parameters(file.path)
-            run_node.params = parameters.copy()
-            run_node.echo_time = parameters.get('EchoTime', 1.0)
-            session_node.add_run(run_node)
+            if parameters:
+                run_node = session_node.get_run(filename)
+                if run_node is None:
+                    run_node = Run(filename)
+                run_node.params = parameters.copy()
+                run_node.echo_time = parameters.get('EchoTime', 1.0)
+                session_node.add_run(run_node)
         return session_node

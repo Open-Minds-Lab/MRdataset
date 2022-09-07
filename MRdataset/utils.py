@@ -64,7 +64,7 @@ def param_difference(dict1: dict,
     """
     if isinstance(dict1, dict) and isinstance(dict2, dict):
         if ignore is None:
-            return list(dict_diff(dict1, dict2))
+            return list(dict_diff(dict1, dict2, tolerance=0.01))
         elif isinstance(ignore, Iterable):
             return list(dict_diff(dict1, dict2, ignore=set(ignore)))
         raise TypeError(

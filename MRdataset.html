@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; MRdataset 0+untagged.238.gba16fc2.dirty documentation</title>
+  <title>API Reference &mdash; MRdataset 0+untagged.246.gbf0fa67.dirty documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0+untagged.238.gba16fc2.dirty
+                0+untagged.246.gbf0fa67.dirty
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -53,10 +53,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-MRdataset.base">MRdataset.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-MRdataset.bids_dataset">MRdataset.bids_dataset module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-MRdataset.xnat_dataset">MRdataset.xnat_dataset module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#high-level-api">High level API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#core-api">Core API</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-MRdataset">Module contents</a></li>
 </ul>
 </li>
@@ -96,12 +94,94 @@
              
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<p>The page holds MRdataset’s API documentation, which might be helpful for users or
+developers to create interface with their own neuroimaging datasets. Among the
+different sub-packages and modules, there are two categories: core utilities and
+high-level modules</p>
+<section id="high-level-api">
+<h2>High level API<a class="headerlink" href="#high-level-api" title="Permalink to this headline"></a></h2>
+<p>The high level API of MRdataset shows how to interface with neuroimaging datasets
+using the elements in Core API. Here is a summarized reference of classes
+which can be used to import BIDS dataset and DICOM dataset.</p>
+<span class="target" id="module-MRdataset.bids_dataset"></span><dl class="py class">
+<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.bids_dataset.</span></span><span class="sig-name descname"><span class="pre">BIDSDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.parse_json">
+<span class="sig-name descname"><span class="pre">parse_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_layout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.parse_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.parse_json" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.walk" title="Permalink to this definition"></a></dt>
+<dd><p>parses the file tree to populate them in a desirable hierarchy</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-MRdataset.xnat_dataset"></span><dl class="py class">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.xnat_dataset.</span></span><span class="sig-name descname"><span class="pre">XnatDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
+<p>Container to manage properties and issues of a dataset downloaded from
+XNAT. Expects the data_root to be collection of dicom files, which may
+belong to different subjects, modalities, sessions or runs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.name" title="Permalink to this definition"></a></dt>
+<dd><p>Identifier/name for the node</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.data_root">
+<span class="sig-name descname"><span class="pre">data_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.data_root" title="Permalink to this definition"></a></dt>
+<dd><p>directory containing dataset with dicom files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.metadata_root">
+<span class="sig-name descname"><span class="pre">metadata_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.metadata_root" title="Permalink to this definition"></a></dt>
+<dd><p>directory to store cache</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.include_phantom">
+<span class="sig-name descname"><span class="pre">include_phantom</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.include_phantom" title="Permalink to this definition"></a></dt>
+<dd><p>Whether to include non-subject scans like localizer, acr/phantom,
+head_scout</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.walk" title="Permalink to this definition"></a></dt>
+<dd><p>generates filenames in the directory tree, verifies if it is dicom
+file, extracts relevant parameters and stores it in project. Creates
+a desirable hierarchy for a neuroimaging experiment</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="module-MRdataset.base">
-<span id="mrdataset-base-module"></span><h2>MRdataset.base module<a class="headerlink" href="#module-MRdataset.base" title="Permalink to this headline"></a></h2>
-<dl class="py class">
+<section id="core-api">
+<h2>Core API<a class="headerlink" href="#core-api" title="Permalink to this headline"></a></h2>
+<p>The Core API contains modules for different level in a neuroimaging experiment.</p>
+<span class="target" id="module-MRdataset.base"></span><dl class="py class">
 <dt class="sig sig-object py" id="MRdataset.base.Modality">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.base.</span></span><span class="sig-name descname"><span class="pre">Modality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/base.html#Modality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.base.Modality" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Node" title="MRdataset.base.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Node</span></code></a></p>
@@ -595,86 +675,6 @@ aahead_scout</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="s1">&#39;xnat&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/my/data/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-</section>
-<section id="module-MRdataset.bids_dataset">
-<span id="mrdataset-bids-dataset-module"></span><h2>MRdataset.bids_dataset module<a class="headerlink" href="#module-MRdataset.bids_dataset" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.bids_dataset.</span></span><span class="sig-name descname"><span class="pre">BIDSDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.parse_json">
-<span class="sig-name descname"><span class="pre">parse_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_layout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.parse_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.parse_json" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.walk">
-<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.walk" title="Permalink to this definition"></a></dt>
-<dd><p>parses the file tree to populate them in a desirable hierarchy</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-MRdataset.xnat_dataset">
-<span id="mrdataset-xnat-dataset-module"></span><h2>MRdataset.xnat_dataset module<a class="headerlink" href="#module-MRdataset.xnat_dataset" title="Permalink to this headline"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.xnat_dataset.</span></span><span class="sig-name descname"><span class="pre">XnatDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
-<p>Container to manage properties and issues of a dataset downloaded from
-XNAT. Expects the data_root to be collection of dicom files, which may
-belong to different subjects, modalities, sessions or runs.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.name" title="Permalink to this definition"></a></dt>
-<dd><p>Identifier/name for the node</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.data_root">
-<span class="sig-name descname"><span class="pre">data_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.data_root" title="Permalink to this definition"></a></dt>
-<dd><p>directory containing dataset with dicom files</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str or Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.metadata_root">
-<span class="sig-name descname"><span class="pre">metadata_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.metadata_root" title="Permalink to this definition"></a></dt>
-<dd><p>directory to store cache</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str or Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.include_phantom">
-<span class="sig-name descname"><span class="pre">include_phantom</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.include_phantom" title="Permalink to this definition"></a></dt>
-<dd><p>Whether to include non-subject scans like localizer, acr/phantom,
-head_scout</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.walk">
-<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.walk" title="Permalink to this definition"></a></dt>
-<dd><p>generates filenames in the directory tree, verifies if it is dicom
-file, extracts relevant parameters and stores it in project. Creates
-a desirable hierarchy for a neuroimaging experiment</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

@@ -49,8 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'MRdataset'
-copyright = "2022, Pradeep Raamana"
-author = "Pradeep Raamana"
+copyright = "2022, Harsh Sinha"
+author = "Harsh Sinha"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -99,6 +99,12 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
 html_static_path = []
+html_context = {
+  'display_github': True,
+  'github_user': 'Open-Minds-Lab',
+  'github_repo': 'mrQA',
+  'github_version': 'master/docs/',
+}
 
 
 # -- Options for HTMLHelp output ---------------------------------------
@@ -133,7 +139,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'MRdataset.tex',
      'MRdataset Documentation',
-     'Pradeep Raamana', 'manual'),
+     'Harsh Sinha', 'manual'),
 ]
 
 

@@ -432,6 +432,14 @@ class Modality(Node):
         self.data = pd.DataFrame(columns=cols)
 
     def get_echo_times(self):
+        """
+        Different echo_times found for this modality in the project
+
+        Returns
+        -------
+        list
+            List of values
+        """
         return list(self._reference.keys())
 
     def get_reference(self, echo_time=None) -> dict:

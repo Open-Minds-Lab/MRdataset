@@ -4,6 +4,8 @@
 
 from setuptools import setup, find_packages
 
+import versioneer
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
@@ -49,7 +51,8 @@ setup(
     packages=find_packages(include=['MRdataset', 'MRdataset.*']),
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/openmindslab/MRdataset',
-    version='0.1.0',
+    url='https://github.com/Open-Minds-Lab/MRdataset',
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     zip_safe=False,
 )

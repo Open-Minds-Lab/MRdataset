@@ -13,11 +13,12 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'dicom2nifti',
+    'dicom2nifti>=2.4.2',
     'nibabel',
     'pydicom',
     'dictdiffer',
-    'pandas'
+    'pandas',
+    'pybids'
 ]
 
 test_requirements = ['pytest>=3', ]

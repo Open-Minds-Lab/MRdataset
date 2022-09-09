@@ -1,5 +1,6 @@
 nibabel
 pydicom
 dicom2nifti>=2.4.2
-mrdataset
 dictdiffer
+pandas
+pybids

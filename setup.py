@@ -16,7 +16,8 @@ requirements = [
     'dicom2nifti',
     'nibabel',
     'pydicom',
-    'dictdiffer'
+    'dictdiffer',
+    'pandas'
 ]
 
 test_requirements = ['pytest>=3', ]

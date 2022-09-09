@@ -1,4 +1,4 @@
-MRdataset
+Reference
 =========
 
 .. toctree::

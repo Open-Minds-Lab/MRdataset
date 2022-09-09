@@ -25,7 +25,8 @@ which can be used to import BIDS dataset and DICOM dataset.
 
 Core API
 ---------------------
-The Core API contains modules for different level in a neuroimaging experiment.
+The Core API contains modules for important elements (e.g. Modality,
+Subject, Run etc.in a neuroimaging experiment.
 
 .. automodule:: MRdataset.base
    :members:

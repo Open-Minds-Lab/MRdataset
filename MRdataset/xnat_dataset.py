@@ -30,13 +30,6 @@ class XnatDataset(Project):
     include_phantom
         Whether to include non-subject scans like localizer, acr/phantom,
         head_scout
-
-    Methods
-    -------
-    walk
-        generates filenames in the directory tree, verifies if it is dicom
-        file, extracts relevant parameters and stores it in project. Creates
-        a desirable hierarchy for a neuroimaging experiment
     """
 
     def __init__(self,
@@ -76,7 +69,9 @@ class XnatDataset(Project):
             self.load_dataset()
 
     def walk(self):
-        """parses the file tree to populate them in a desirable hierarchy"""
+        """generates filenames in the directory tree, verifies if it is dicom
+        file, extracts relevant parameters and stores it in project. Creates
+        a desirable hierarchy for a neuroimaging experiment"""
         no_files_found = True
         study_ids_found = set()
 

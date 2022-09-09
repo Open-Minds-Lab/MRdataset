@@ -130,8 +130,6 @@ class Node:
     ----------
     name : str
         Identifier/name for the node
-    children : list
-        Collection of children nodes
     """
 
     def __init__(self, name: str, **kwargs) -> None:
@@ -247,27 +245,6 @@ class Project(Node):
         directory containing dataset with dicom files
     metadata_root : str or Path
         directory to store cache
-    modalities : List[Modality]
-        Collection of Modality Nodes in the Project
-    compliant_modality_names : List[str]
-        List of modality names which are compliant
-    non_compliant_modality_names : List[str]
-        List of modality names which are not compliant
-
-    Methods
-    -------
-    add_modality
-        Add a new Modality Node to list of modalities in the Project
-    get_modality
-        Fetch a Modality Node searching by its name
-    add_compliant_modality_names
-        Add modality name (which is fully compliant) to the list
-    add_non_compliant_modality_names
-        Add modality name (which is not compliant) to the list
-    save_dataset
-        Saves dataset cache to disk for faster reloading
-    load_dataset
-        Loads dataset cache from disk
     """
 
     def __init__(self, name, data_root, metadata_root, **kwargs):
@@ -390,31 +367,6 @@ class Modality(Node):
         Identifier/name for the node
     compliant: bool
         If the modality is fully compliant
-    reasons_non_compliance: List[str]
-        Parameters which were found to be non-compliant
-
-    Methods
-    -------
-    subjects : List[Subject]
-        Collection of Subject Nodes in the Modality
-    compliant_subject_names : List[str]
-        List of subject names which are compliant
-    non_compliant_subject_names : List[str]
-        List of subject names which are not compliant
-    add_subject
-        Add a new Subject Node to list of subjects in the Modality
-    get_subject
-        Fetch a Subject Node searching by its name
-    add_compliant_subject_names
-        Add subject name (which is fully compliant) to the list
-    add_non_compliant_subject_names
-        Add subject name (which is not compliant) to the list
-    get_reference
-        Get the reference protocol used to check compliance
-    set_reference
-        Sets the reference protocol to check compliance
-    is_multi_echo : bool
-        If the modality is multi-echo modality
     """
 
     def __init__(self, name):
@@ -608,15 +560,6 @@ class Subject(Node):
     name : str
         Identifier/name for the node
 
-
-    Methods
-    -------
-    sessions : List[Session]
-        Collection of Session Nodes in the Subject
-    add_session
-        Add a new Session Node to list of sessions in the Subject
-    get_session
-        Fetch a session Node searching by its name
     """
 
     def __init__(self, name):
@@ -660,14 +603,6 @@ class Session(Node):
         filepath specifying the session directory
     params : dict
         Key, value pairs specifying the parameters for checking compliance
-    Methods
-    -------
-    runs : List[Run]
-        Collection of Run Nodes in the Session
-    add_run
-        Add a new Run Node to list of runs in the Session
-    get_run
-        Fetch a Run Node searching by its name
     """
 
     def __init__(self, name, path=None):

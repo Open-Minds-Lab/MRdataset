@@ -503,7 +503,18 @@ class Modality(Node):
         self.add(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
-        """Add subject name (which is compliant) to the list"""
+        """
+        Add subject name (which is compliant) to the list
+
+        Parameters
+        ----------
+        subject_name : str
+            String value specifying a subject
+
+        Returns
+        -------
+
+        """
         self._add_compliant_name(subject_name)
 
     def add_non_compliant_subject_name(self, subject_name) -> None:

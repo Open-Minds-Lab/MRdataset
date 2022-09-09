@@ -342,6 +342,8 @@ class Project(Node):
 
     def save_dataset(self) -> None:
         """Saves dataset cache to disk for faster reloading"""
+        if not self.modalities:
+            raise EOFError('Dataset is empty!')
         with open(self.cache_path, "wb") as f:
             pickle.dump(self.__dict__, f)
 

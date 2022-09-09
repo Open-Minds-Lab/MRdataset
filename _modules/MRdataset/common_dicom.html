@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRdataset.common_dicom &mdash; MRdataset 0+untagged.238.gba16fc2.dirty documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MRdataset
+          </a>
+              <div class="version">
+                0+untagged.238.gba16fc2.dirty
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Quickstart</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">How-to Guides &amp; Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MRdataset</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>MRdataset.common_dicom</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for MRdataset.common_dicom</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">dicom2nifti</span>
+<span class="kn">import</span> <span class="nn">pydicom</span>
+<span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">nibabel.nicom</span> <span class="kn">import</span> <span class="n">csareader</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="is_valid_inclusion"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.is_valid_inclusion">[docs]</a><span class="k">def</span> <span class="nf">is_valid_inclusion</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">dicom</span><span class="p">:</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">FileDataset</span><span class="p">,</span>
+                       <span class="n">include_phantom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function will do some basic checks to see if it is a valid imaging dicom</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str or Path</span>
+<span class="sd">        filename for raising the warning</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object returned by pydicom.dcmread or pydicom.read_file</span>
+<span class="sd">    include_phantom : bool</span>
+<span class="sd">        whether to include AAhead_coil/localizer/ACR/Phantom</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dicom2nifti</span><span class="o">.</span><span class="n">convert_dir</span><span class="o">.</span><span class="n">_is_valid_imaging_dicom</span><span class="p">(</span><span class="n">dicom</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Invalid file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">header_exists</span><span class="p">(</span><span class="n">dicom</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Header Absent: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># TODO: revisit whether to include localizer or not,</span>
+    <span class="c1">#  it may have relationship with other modalities</span>
+    <span class="c1"># TODO: make the check more concrete. See dicom2nifti for details</span>
+
+    <span class="c1"># check quality control subject :  Not present dicom headers</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">include_phantom</span><span class="p">:</span>
+        <span class="n">series_desc</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">SeriesDescription</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;local&#39;</span> <span class="ow">in</span> <span class="n">series_desc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Localizer: Skipping </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="s1">&#39;aahead&#39;</span> <span class="ow">in</span> <span class="n">series_desc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;AAhead_Scout: Skipping </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">is_phantom</span><span class="p">(</span><span class="n">dicom</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;ACR/Phantom: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="is_phantom"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.is_phantom">[docs]</a><span class="k">def</span> <span class="nf">is_phantom</span><span class="p">(</span><span class="n">dicom</span><span class="p">:</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">FileDataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements a heuristic to detect a phantom. Checks patient&#39;s name,</span>
+<span class="sd">    sex and age, to discriminate a phantom from a real person. It is very</span>
+<span class="sd">    unlikely that a patient&#39;s name is phantom, or age is 1 day.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">PatientID</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">sex</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">PatientSex</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">PatientAge</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;phantom&#39;</span> <span class="ow">in</span> <span class="n">sid</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">sex</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">age</span> <span class="o">==</span> <span class="s1">&#39;001D&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="get_dicom_modality_tag"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.get_dicom_modality_tag">[docs]</a><span class="k">def</span> <span class="nf">get_dicom_modality_tag</span><span class="p">(</span><span class="n">dicom</span><span class="p">:</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">FileDataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infer modality through dicom tags. In most cases series_description</span>
+<span class="sd">    should explain the modality of the volume, otherwise either use sequence</span>
+<span class="sd">    name or protocol name from DICOM metadata</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">property1</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">SeriesDescription</span>
+
+    <span class="k">if</span> <span class="n">property1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">property1</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">SequenceName</span>
+    <span class="k">if</span> <span class="n">property1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">property1</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">ProtocolName</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">property1</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="header_exists"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.header_exists">[docs]</a><span class="k">def</span> <span class="nf">header_exists</span><span class="p">(</span><span class="n">dicom</span><span class="p">:</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">FileDataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the private SIEMENS header exists in the file or not. Some</span>
+<span class="sd">    parameters like effective_echo_spacing and shim method need the dicom</span>
+<span class="sd">    header to be present.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">get_header</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;series_header_info&#39;</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">get_header</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;image_header_info&#39;</span><span class="p">)</span>
+        <span class="n">series_header</span> <span class="o">=</span> <span class="n">csareader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
+        <span class="c1"># just try reading these values, to bypass any errors,</span>
+        <span class="c1"># don&#39;t need these values now</span>
+        <span class="c1"># image_header = \</span>
+        <span class="n">csareader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="c1"># items = \</span>
+        <span class="n">series_header</span><span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">][</span><span class="s1">&#39;MrPhoenixProtocol&#39;</span><span class="p">][</span><span class="s1">&#39;items&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="parse_imaging_params"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.parse_imaging_params">[docs]</a><span class="k">def</span> <span class="nf">parse_imaging_params</span><span class="p">(</span><span class="n">dicom_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a filepath to a .dcm file, the function reader DICOM metadata</span>
+<span class="sd">    and extracts relevant parameter values for checking compliance.</span>
+<span class="sd">    The parameters are selected if it is present in config.PARAMETER_NAMES</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom_path: str or Path</span>
+<span class="sd">        filepath for .dcm file</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        contains key, value pairs for relevant parameters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dicom_path</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s2">&quot;Expected a valid filepath, Got invalid path : </span><span class="si">{0}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                      <span class="s2">&quot;Consider re-indexing dataset.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dicom</span> <span class="o">=</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">dcmread</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span>
+                                <span class="n">stop_before_pixels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="s2">&quot;Unable to read dicom file from disk : </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">PARAMETER_NAMES</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">get_param_value_by_name</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="c1"># the value should be hashable</span>
+        <span class="c1"># a dictionary will be used later to count the majority value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_hashable</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="n">csa_values</span> <span class="o">=</span> <span class="n">csa_parser</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;multi_slice_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">csa_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;slice_mode&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ipat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">csa_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ipat&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">[</span><span class="s1">&#39;shim&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">csa_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shim&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">is3d</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;MRAcquisitionType&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;3D&#39;</span>
+    <span class="n">params</span><span class="p">[</span><span class="s2">&quot;is3d&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">is3d</span>
+    <span class="n">params</span><span class="p">[</span><span class="s2">&quot;effective_echo_spacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">effective_echo_spacing</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
+    <span class="n">params</span><span class="p">[</span><span class="s2">&quot;phase_encoding_direction&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_phase_encoding</span><span class="p">(</span>
+                                <span class="n">dicom</span><span class="p">,</span>
+                                <span class="n">is3d</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;is3d&#39;</span><span class="p">],</span>
+                                <span class="n">echo_train_length</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;EchoTrainLength&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">params</span></div>
+
+
+<div class="viewcode-block" id="get_param_value_by_name"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.get_param_value_by_name">[docs]</a><span class="k">def</span> <span class="nf">get_param_value_by_name</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts value from dicom metadata looking up the corresponding HEX tag</span>
+<span class="sd">    in config.PARAMETER_NAMES</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    name : str</span>
+<span class="sd">        parameter name such as MagneticFieldStrength or Manufacturer</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    This method return a value for the given key. If key is not available,</span>
+<span class="sd">    then returns default value None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: consider name.lower()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">PARAMETER_NAMES</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_header"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.get_header">[docs]</a><span class="k">def</span> <span class="nf">get_header</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts value from dicom headers looking up the corresponding HEX tag</span>
+<span class="sd">    in config.HEADER_TAGS</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    name : str</span>
+<span class="sd">        parameter name such as ImageHeader or SeriesHeader</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    This method return a value for the given key. If key is not available,</span>
+<span class="sd">    then returns default value None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">HEADER_TAGS</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<span class="c1"># def get_tags_by_name(dicom, name):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Extracts value from dicom metadata looking up the corresponding HEX tag</span>
+<span class="c1">#     in config.PARAMETER_NAMES</span>
+<span class="c1">#</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     dicom : pydicom.FileDataset</span>
+<span class="c1">#         dicom object read from pydicom.read_file</span>
+<span class="c1">#</span>
+<span class="c1">#     name : str</span>
+<span class="c1">#         parameter name such as MagneticFieldStrength or Manufacturer</span>
+<span class="c1">#</span>
+<span class="c1">#     Returns</span>
+<span class="c1">#     -------</span>
+<span class="c1">#     This method return a value for the given key. If key is not available,</span>
+<span class="c1">#     then returns default value None.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     data = dicom.get(config.TAGS[name], None)</span>
+<span class="c1">#     if data is None:</span>
+<span class="c1">#         return None</span>
+<span class="c1">#     return data.value</span>
+
+
+<div class="viewcode-block" id="csa_parser"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.csa_parser">[docs]</a><span class="k">def</span> <span class="nf">csa_parser</span><span class="p">(</span><span class="n">dicom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the private CSA header from Siemens formatted raw scanner.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dicom : pydicom.FileDataset</span>
+<span class="sd">        dicom object read from pydicom.read_file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Contains multi-slice mode, iPAT and shim_mode</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">series_header</span> <span class="o">=</span> <span class="n">csareader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">get_header</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;series_header_info&#39;</span><span class="p">))</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_get</span><span class="p">(</span><span class="n">series_header</span><span class="p">,</span> <span class="s1">&#39;tags.MrPhoenixProtocol.items&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;CSA Header exists, but xProtocol is missing&#39;</span><span class="p">)</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="p">[:</span><span class="mi">15</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;### ASCCONV END&#39;</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">end</span><span class="p">:</span>
+            <span class="n">ele</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">ele</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+                <span class="n">props</span><span class="p">[</span><span class="n">ele</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ele</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">e</span><span class="p">[:</span><span class="mi">17</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;### ASCCONV BEGIN&#39;</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">slice_code</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sKSpace.ucMultiSliceMode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice_mode</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">SLICE_MODE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slice_code</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">ipat_code</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sPat.ucPATMode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">ipat</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">PAT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ipat_code</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">shim_code</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sAdjData.uiAdjShimMode&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">shim</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">SHIM</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">shim_code</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;slice_mode&#39;</span><span class="p">:</span> <span class="n">slice_mode</span><span class="p">,</span>
+        <span class="s1">&#39;ipat&#39;</span><span class="p">:</span> <span class="n">ipat</span><span class="p">,</span>
+        <span class="s1">&#39;shim&#39;</span><span class="p">:</span> <span class="n">shim</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="effective_echo_spacing"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.effective_echo_spacing">[docs]</a><span class="k">def</span> <span class="nf">effective_echo_spacing</span><span class="p">(</span><span class="n">dicom</span><span class="p">):</span>
+    <span class="c1"># if self.get(&quot;echo_train_length&quot;) &gt; 1: # Check if etl == pel</span>
+    <span class="c1"># check =</span>
+    <span class="c1"># (self.get(&quot;echo_train_length&quot;) == self.get(&quot;phase_encoding_lines&quot;))</span>
+    <span class="c1"># if not check:</span>
+    <span class="c1"># print(&quot;PhaseEncodingLines is not equal to EchoTrainLength</span>
+    <span class="c1"># : {0}&quot;.format(self.filepath))</span>
+
+    <span class="n">bwp_phase_encode</span> <span class="o">=</span> <span class="n">get_param_value_by_name</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;PixelBandwidth&#39;</span><span class="p">)</span>
+    <span class="n">phase_encoding</span> <span class="o">=</span> <span class="n">get_param_value_by_name</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;PhaseEncodingSteps&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">bwp_phase_encode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">phase_encoding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">/</span> <span class="p">(</span><span class="n">bwp_phase_encode</span> <span class="o">*</span> <span class="n">phase_encoding</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Match value to output of dcm2niix</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">/</span> <span class="mi">1000</span></div>
+
+
+<div class="viewcode-block" id="get_phase_encoding"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.common_dicom.get_phase_encoding">[docs]</a><span class="k">def</span> <span class="nf">get_phase_encoding</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="n">is3d</span><span class="p">,</span> <span class="n">echo_train_length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp</span>
+<span class="sd">    https://neurostars.org/t/determining-bids-phaseencodingdirection-from-dicom/612/6 # noqa</span>
+<span class="sd">    Following code only for SEIMENS, Look into above links for GE, Philips etc.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># is_skip = False</span>
+    <span class="c1"># if is3d:</span>
+    <span class="c1">#     is_skip = True</span>
+    <span class="c1"># if echo_train_length &gt; 1:</span>
+    <span class="c1">#     is_skip = False</span>
+    <span class="n">image_header</span> <span class="o">=</span> <span class="n">csareader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">get_header</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s1">&#39;image_header_info&#39;</span><span class="p">))</span>
+    <span class="n">phase_value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">safe_get</span><span class="p">(</span><span class="n">image_header</span><span class="p">,</span>
+                                 <span class="s1">&#39;tags.PhaseEncodingDirectionPositive.items&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">phase_value</span><span class="p">:</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">phase_value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ped_value</span> <span class="o">=</span> <span class="n">get_param_value_by_name</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="s2">&quot;PhaseEncodingDirection&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ped_value</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ROW&#39;</span><span class="p">,</span> <span class="s1">&#39;COL&#39;</span><span class="p">]:</span>
+            <span class="n">ped</span> <span class="o">=</span> <span class="n">ped_value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">niftidim</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;COL&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;ROW&#39;</span><span class="p">:</span> <span class="s1">&#39;j&#39;</span><span class="p">}</span>
+        <span class="n">ped_to_sign</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span>
+        <span class="n">ij</span> <span class="o">=</span> <span class="n">niftidim</span><span class="p">[</span><span class="n">ped</span><span class="p">]</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">ped_to_sign</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ij</span><span class="p">,</span> <span class="n">sign</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Harsh Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

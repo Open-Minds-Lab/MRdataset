@@ -6,17 +6,29 @@ Quickstart
 .. image:: https://img.shields.io/pypi/v/MRdataset.svg
         :target: https://pypi.python.org/pypi/MRdataset
 
+MRdataset
+----------
+* a unified interface to various neuroimaging datasets such as BIDS, DICOM etc
 * Documentation: https://open-minds-lab.github.io/MRdataset/
 
+CLI usage
+----------
+MRdataset can be used on the command line interface. For a DICOM dataset::
 
-MRdataset : a unified interface to various neuroimaging datasets such as BIDS, DICOM etc
+    mrds --data_root /path/to/dataset --style xnat
 
+For a BIDS dataset::
+
+    mrds --data_root /path/to/dataset --style bids
+
+Python usage
+------------
 To use MRdataset in a project::
 
     import MRdataset
 
-The most important method for importing a dataset is ``import_dataset``. It
-creates an appropriate object depending on the ``style`` argument.
+The most important method is ``import_dataset``. It
+creates an appropriate object depending as per ``style`` argument.
 
 First of all, you have to import the relevant module::
 

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; MRdataset 0.1.1+2.gd5fbd6a documentation</title>
+  <title>Quickstart &mdash; MRdataset 0.1.1+4.g38c1027 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.1+2.gd5fbd6a
+                0.1.1+4.g38c1027
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,6 +44,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mrdataset">MRdataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cli-usage">CLI usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-usage">Python usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
 </ul>
 </li>
@@ -89,16 +92,32 @@
   <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline"></a></h1>
 <a class="reference external image-reference" href="https://pypi.python.org/pypi/MRdataset"><img alt="https://img.shields.io/pypi/v/MRdataset.svg" src="https://img.shields.io/pypi/v/MRdataset.svg" /></a>
+<section id="mrdataset">
+<h2>MRdataset<a class="headerlink" href="#mrdataset" title="Permalink to this headline"></a></h2>
 <ul class="simple">
+<li><p>a unified interface to various neuroimaging datasets such as BIDS, DICOM etc</p></li>
 <li><p>Documentation: <a class="reference external" href="https://open-minds-lab.github.io/MRdataset/">https://open-minds-lab.github.io/MRdataset/</a></p></li>
 </ul>
-<p>MRdataset : a unified interface to various neuroimaging datasets such as BIDS, DICOM etc</p>
+</section>
+<section id="cli-usage">
+<h2>CLI usage<a class="headerlink" href="#cli-usage" title="Permalink to this headline"></a></h2>
+<p>MRdataset can be used on the command line interface. For a DICOM dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data_root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">xnat</span>
+</pre></div>
+</div>
+<p>For a BIDS dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data_root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">bids</span>
+</pre></div>
+</div>
+</section>
+<section id="python-usage">
+<h2>Python usage<a class="headerlink" href="#python-usage" title="Permalink to this headline"></a></h2>
 <p>To use MRdataset in a project:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">MRdataset</span>
 </pre></div>
 </div>
-<p>The most important method for importing a dataset is <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code>. It
-creates an appropriate object depending on the <code class="docutils literal notranslate"><span class="pre">style</span></code> argument.</p>
+<p>The most important method is <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code>. It
+creates an appropriate object depending as per <code class="docutils literal notranslate"><span class="pre">style</span></code> argument.</p>
 <p>First of all, you have to import the relevant module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">import_dataset</span>
 </pre></div>
@@ -129,6 +148,7 @@ NID (NeuroImaging Dataset), inherit <code class="docutils literal notranslate"><
 </div>
 <p>Implement, these two functions. You can directly use <code class="docutils literal notranslate"><span class="pre">style='nid'</span></code>. Thats it!
 No more changes required.</p>
+</section>
 <section id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline"></a></h2>
 <p>This package was created with <a class="reference external" href="https://github.com/audreyr/cookiecutter">Cookiecutter</a> and the <a class="reference external" href="https://github.com/audreyr/cookiecutter-pypackage">audreyr/cookiecutter-pypackage</a> project template.</p>

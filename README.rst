@@ -8,7 +8,7 @@ Quickstart
 
 MRdataset
 ----------
-* a unified interface to various neuroimaging datasets such as BIDS, DICOM etc
+* a unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc
 * Documentation: https://open-minds-lab.github.io/MRdataset/
 
 CLI usage
@@ -59,16 +59,9 @@ NID (NeuroImaging Dataset), inherit ``MRdataset.base.Project`` in a file
          def walk():
             pass
 
+
 Implement, these two functions. You can directly use ``style='nid'``. Thats it!
 No more changes required.
 
 
 
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

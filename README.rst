@@ -11,8 +11,10 @@ MRdataset
 * a unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc
 * Documentation: https://open-minds-lab.github.io/MRdataset/
 
-CLI usage
-----------
+
+Command line usage
+------------------
+
 MRdataset can be used on the command line interface. For a DICOM dataset::
 
     mrds --data_root /path/to/dataset --style xnat
@@ -21,8 +23,10 @@ For a BIDS dataset::
 
     mrds --data_root /path/to/dataset --style bids
 
-Python usage
-------------
+
+API/programmatic usage
+----------------------
+
 To use MRdataset in a project::
 
     import MRdataset

@@ -55,7 +55,7 @@ class BIDSDataset(Project):
 
     def walk(self):
         """parses the file tree to populate them in a desirable hierarchy"""
-        bids_layout = BIDSLayout(self.data_root)
+        bids_layout = BIDSLayout(self.data_root, validate=False)
 
         filters = {'extension': 'json'}
         if not bids_layout.get(**filters):

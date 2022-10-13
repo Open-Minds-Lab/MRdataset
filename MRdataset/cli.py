@@ -17,8 +17,8 @@ def main():
     required.add_argument('-d', '--data_root', type=str, required=True,
                           help='directory containing downloaded dataset with '
                                'dicom files, supports nested hierarchies')
-    optional.add_argument('-s', '--style', type=str, default='xnat',
-                          help='choose type of dataset, one of [xnat|other]')
+    optional.add_argument('-s', '--style', type=str, default='dicom',
+                          help='choose type of dataset, one of [dicom|other]')
     optional.add_argument('-n', '--name', type=str,
                           help='provide a identifier/name for dataset')
     optional.add_argument('-h', '--help', action='help',

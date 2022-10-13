@@ -17,7 +17,7 @@ which can be used to import BIDS dataset and DICOM dataset.
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: MRdataset.xnat_dataset
+.. automodule:: MRdataset.dicom_dataset
    :members:
    :undoc-members:
    :show-inheritance:

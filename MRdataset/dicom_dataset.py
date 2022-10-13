@@ -13,7 +13,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class XnatDataset(Project):
+class DicomDataset(Project):
     """
     Container to manage properties and issues of a dataset downloaded from
     XNAT. Expects the data_root to be collection of dicom files, which may
@@ -55,8 +55,8 @@ class XnatDataset(Project):
 
         Examples
         --------
-        >>> from MRdataset import xnat_dataset
-        >>> dataset = xnat_dataset.XnatDataset()
+        >>> from MRdataset import dicom_dataset
+        >>> dataset = dicom_dataset.DicomDataset()
         """
         super().__init__(name, data_root, metadata_root)
 

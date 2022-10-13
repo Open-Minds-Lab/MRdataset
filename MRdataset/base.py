@@ -9,7 +9,7 @@ import pandas as pd
 
 
 def import_dataset(data_root=None,
-                   style='xnat',
+                   style='dicom',
                    name=None,
                    reindex=False,
                    include_phantom=False,
@@ -47,7 +47,7 @@ def import_dataset(data_root=None,
     Examples
     --------
     >>> from MRdataset import import_dataset
-    >>> data = import_dataset('xnat', '/path/to/my/data/')
+    >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
 
     if not Path(data_root).is_dir():

@@ -17,7 +17,7 @@ Command line usage
 
 MRdataset can be used on the command line interface. For a DICOM dataset::
 
-    mrds --data_root /path/to/dataset --style xnat
+    mrds --data_root /path/to/dataset --style dicom
 
 For a BIDS dataset::
 
@@ -43,7 +43,7 @@ it creates a ``MRdataset.base.Project`` object.::
 
     data_root = '/home/user/datasets/ABCD'
     dataset = import_dataset(data_root=data_root,
-                             style='xnat',
+                             style='dicom',
                              name='ABCD')
 
 By default, the ``import_dataset`` expects a DICOM dataset. However, this can

@@ -43,9 +43,9 @@ def is_valid_inclusion(filename: str,
         logger.info("Invalid file: %s" % filename.parent)
         return False
 
-    if not header_exists(dicom):
-        logger.info("Header Absent: %s" % filename)
-        return False
+    # if not header_exists(dicom):
+    #     logger.error("Header Absent: %s" % filename)
+    #     return False
 
     # TODO: revisit whether to include localizer or not,
     #  it may have relationship with other modalities

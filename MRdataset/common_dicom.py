@@ -52,19 +52,24 @@ def is_valid_inclusion(filename: str,
     # TODO: make the check more concrete. See dicom2nifti for details
 
     # check quality control subject :  Not present dicom headers
-    if not include_phantom:
-        series_desc = dicom.SeriesDescription.lower()
-        if 'local' in series_desc:
-            logger.info("Localizer: Skipping %s" % filename.parent)
-            return False
+    try:
+        series_desc = dicom.get('SeriesDescription', None)
+        if series_desc is not None:
+            series_desc = series_desc.lower()
+            if not include_phantom:
+                if 'local' in series_desc:
+                    logger.info("Localizer: Skipping %s" % filename.parent)
+                    return False
 
-        if 'aahead' in series_desc:
-            logger.info("AAhead_Scout: Skipping %s" % filename.parent)
-            return True
+                if 'aahead' in series_desc:
+                    logger.info("AAhead_Scout: Skipping %s" % filename.parent)
+                    return True
 
-        if is_phantom(dicom):
-            logger.info('ACR/Phantom: %s' % filename.parent)
-            return False
+                if is_phantom(dicom):
+                    logger.info('ACR/Phantom: %s' % filename.parent)
+                    return False
+    except AttributeError as e:
+        logger.warning("Series Description not found in %s" % filename)
 
     return True
 

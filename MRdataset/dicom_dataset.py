@@ -103,8 +103,12 @@ class DicomDataset(Project):
                         session_node = Session(series_num,
                                                Path(filepath).parent)
 
-                    series_uid = dicom.SeriesInstanceUID
-                    run_name = series_uid + '_e' + str(dicom.EchoNumbers)
+                    series_uid = dicom.get('SeriesInstanceUID', None)
+                    echo_num = dicom.get('EchoNumbers', None)
+                    if echo_num:
+                        run_name = series_uid + '_e' + str(dicom.EchoNumbers)
+                    else:
+                        run_name = series_uid
                     run_node = session_node.get_run(run_name)
                     if run_node is None:
                         run_node = Run(run_name)

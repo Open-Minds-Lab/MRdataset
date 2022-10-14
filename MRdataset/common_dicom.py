@@ -126,7 +126,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
         return None
     return str(property1.replace(" ", "_"))
 
-
+# TODO : rename csa
 def header_exists(dicom: pydicom.FileDataset) -> bool:
     """
     Check if the private SIEMENS header exists in the file or not. Some
@@ -155,7 +155,9 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
         return True
     except Exception as e:
-        logger.exception(e)
+        # logger.exception("{}. Expects dicom files from Siemens. "
+        #                  "Use --skip_private_header to create report".format(e))
+        # raise e
         return False
 
 

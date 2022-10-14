@@ -30,7 +30,7 @@ def make_compliant_test_dataset(num_subjects,
         dicom.FlipAngle = flip_angle
 
         export_file(dicom, filepath, dest_dir)
-        subject_names.add(dicom.PatientID)
+        subject_names.add(dicom.get('PatientID', None))
         i += 1
     return dest_dir
 
@@ -81,12 +81,12 @@ def make_test_dataset(num_noncompliant_subjects,
             sub_path = subject_paths[j]
             for filepath in sub_path.glob('**/*.dcm'):
                 dicom = pydicom.read_file(filepath)
-                patient_id = str(dicom.PatientID)
+                patient_id = str(dicom.get('PatientID', None))
                 dicom.RepetitionTime = repetition_time
                 dicom.EchoTrainLength = echo_train_length
                 dicom.FlipAngle = flip_angle
                 export_file(dicom, filepath, dest_dir)
-                modality = dicom.SeriesDescription.replace(' ', '_')
+                modality = dicom.get('SeriesDescription', None).replace(' ', '_')
                 dataset_info[modality].add(patient_id)
 
     return dest_dir, dataset_info

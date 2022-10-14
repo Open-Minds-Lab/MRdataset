@@ -92,12 +92,12 @@ class DicomDataset(Project):
                     if modality_obj is None:
                         modality_obj = Modality(modality_name)
 
-                    patient_id = str(dicom.PatientID)
+                    patient_id = str(dicom.get('PatientID', None))
                     subject_obj = modality_obj.get_subject(patient_id)
                     if subject_obj is None:
                         subject_obj = Subject(patient_id)
 
-                    series_num = str(dicom.SeriesNumber)
+                    series_num = str(dicom.get('SeriesNumber', None))
                     session_node = subject_obj.get_session(series_num)
                     if session_node is None:
                         session_node = Session(series_num,

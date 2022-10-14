@@ -84,12 +84,12 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     bool
     """
 
-    sid = str(dicom.PatientID).lower()
-    sex = str(dicom.PatientSex).lower()
-    age = str(dicom.PatientAge)
-    if 'phantom' in sid:
+    sid = str(dicom.get('PatientID', None))
+    sex = str(dicom.get('PatientSex', None))
+    age = str(dicom.get('PatientAge', None))
+    if sid and ('phantom' in sid.lower()):
         return True
-    if sex == 'o':
+    if sex and (sex.lower() == 'o'):
         return True
     if age == '001D':
         return True
@@ -111,12 +111,14 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     -------
     str
     """
-    property1 = dicom.SeriesDescription
+    property1 = dicom.get('SeriesDescription', None)
 
     if property1 is None:
-        property1 = dicom.SequenceName
+        property1 = dicom.get('SequenceName', None)
     if property1 is None:
-        property1 = dicom.ProtocolName
+        property1 = dicom.get('ProtocolName', None)
+    if property1 is None:
+        return None
     return str(property1.replace(" ", "_"))
 
 

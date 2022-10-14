@@ -3,6 +3,7 @@ from pathlib import Path
 
 import dicom2nifti
 import pydicom
+
 from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
@@ -79,7 +80,8 @@ class DicomDataset(Project):
             no_files_found = False
             try:
                 if not dicom2nifti.common.is_dicom_file(filepath):
-                    logger.warning("DICOM not found in {}".format(filepath.parent))
+                    logger.warning(
+                        "DICOM not found in {}".format(filepath.parent))
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if common_dicom.is_valid_inclusion(filepath,
@@ -136,4 +138,3 @@ class DicomDataset(Project):
             raise EOFError("Read 0 files at {}".format(self.data_root))
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))
-

@@ -76,7 +76,7 @@ class BIDSDataset(Project):
         bids_layout = BIDSLayout(self.data_root, validate=False)
         print("Completed BIDSLayout .. ")
 
-        filters = {'extension': 'json'}
+        filters = self.get_filters()
         if not bids_layout.get(**filters):
             raise EOFError('No JSON files found at --data_root {}'.format(
                 self.data_root))
@@ -103,9 +103,10 @@ class BIDSDataset(Project):
                     if session_node is None:
                         session_node = Session('1')
 
-                    filters = {'subject': nSub,
-                               'datatype': datatype,
-                               'extension': 'json'}
+                    filters = self.get_filters(nSub, datatype)
+                    # {'subject': nSub,
+                    #        'datatype': datatype,
+                    #        'extension': 'json'}
                     session_node = self.parse_json(session_node,
                                                    filters,
                                                    bids_layout)
@@ -117,10 +118,11 @@ class BIDSDataset(Project):
                         session_node = subject_obj.get_session(nSess)
                         if session_node is None:
                             session_node = Session(nSess)
-                            filters = {'subject': nSub,
-                                       'session': nSess,
-                                       'datatype': datatype,
-                                       'extension': 'json'}
+                            filters = self.get_filters(nSub, nSess, datatype)
+                            # {'subject': nSub,
+                            # 'session': nSess,
+                            # 'datatype': datatype,
+                            # 'extension': 'json'}
                             session_node = self.parse_json(session_node,
                                                            filters,
                                                            bids_layout)

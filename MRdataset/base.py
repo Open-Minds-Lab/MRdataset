@@ -419,8 +419,9 @@ class Modality(Node):
             return None
         if self.is_multi_echo():
             if echo_time is None:
-                raise LookupError("Specify echo_time for a multi-echo "
-                                  "reference. Try one of {}".format(keys))
+                raise LookupError("Got NoneType for echo time."
+                                  "Specify echo_time,"
+                                  " use one of {}".format(keys))
             reference = self._reference.get(echo_time, None)
             if reference is None:
                 raise KeyError("Echo time {} absent. "

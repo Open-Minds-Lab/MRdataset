@@ -38,7 +38,8 @@ class DicomDataset(Project):
                  data_root=None,
                  metadata_root=None,
                  include_phantom=False,
-                 reindex=False):
+                 reindex=False,
+                 **kwargs):
 
         """
         Parameters

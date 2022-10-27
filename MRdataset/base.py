@@ -85,6 +85,7 @@ def import_dataset(data_root=None,
         metadata_root=metadata_root,
         include_phantom=include_phantom,
         reindex=reindex,
+        include_nifti_header=include_nifti_header,
     )
     if verbose:
         print(dataset)

@@ -138,8 +138,11 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     if property1 is None:
         property1 = dicom.get('ProtocolName', None)
     if property1 is None:
-        return None
-    return str(property1.replace(" ", "_"))
+        return 'MR_image'
+    ret_value = str(property1.replace(" ", "_"))
+    if ret_value:
+        return ret_value
+    return 'MR_image'
 
 # TODO : rename csa
 def header_exists(dicom: pydicom.FileDataset) -> bool:

@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
 
+from bids import BIDSLayout
+
 from MRdataset.base import Project, Run, Modality, Subject, Session
 from MRdataset.config import datatypes
 from MRdataset.utils import select_parameters
-from bids import BIDSLayout
 
 # Module-level logger
 logger = logging.getLogger('root')

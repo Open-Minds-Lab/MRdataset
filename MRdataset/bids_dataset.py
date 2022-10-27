@@ -57,6 +57,19 @@ class BIDSDataset(Project):
         else:
             self.load_dataset()
 
+    def get_filters(self, subject=None, session=None, datatype=None):
+        filters = {'extension': ['json']}
+        if subject:
+            filters['subject'] = subject
+        if session:
+            filters['session'] = session
+        if datatype:
+            filters['datatype'] = datatype
+        if self.include_nifti_header:
+            filters['extension'].append('nii.gz')
+            filters['extension'].append('nii')
+        return filters
+
     def walk(self):
         """parses the file tree to populate them in a desirable hierarchy"""
         bids_layout = BIDSLayout(self.data_root, validate=False)

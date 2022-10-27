@@ -116,7 +116,7 @@ class DicomDataset(Project):
                     run_node = session_node.get_run(run_name)
                     if run_node is None:
                         run_node = Run(run_name)
-                        run_node.echo_time = dicom.EchoTime
+                        run_node.echo_time = dicom.get('EchoTime', 1.0)
 
                     dcm_img_params = common_dicom.parse_imaging_params(filepath)
                     param_diff = param_difference(dcm_img_params, run_node.params)

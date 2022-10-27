@@ -118,10 +118,16 @@ class DicomDataset(Project):
                         run_node.echo_time = dicom.EchoTime
 
                     dcm_img_params = common_dicom.parse_imaging_params(filepath)
+                    param_diff = param_difference(dcm_img_params, run_node.params)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
-                    elif param_difference(dcm_img_params, run_node.params):
-                        raise config.ChangingParamsInSeries(filepath)
+                    elif param_diff:
+                        param_name = param_diff[0][1]
+                        expect = run_node.params[param_name]
+                        got = dcm_img_params[param_name]
+                        warnings.warn(f"Slices with varying {param_name}"
+                                      f" in {filepath}."
+                                      f" Expected {expect}, Got {got}")
 
                     session_node.add_run(run_node)
                     subject_obj.add_session(session_node)

@@ -33,10 +33,16 @@ def main():
                                'aahead_scout')
     optional.add_argument('--metadata_root', type=str, required=False,
                           help='directory to store cache')
+    optional.add_argument('--include_nifti_header', action='store_true',
+                          help='whether to check nifti headers for compliance,'
+                               'only used when --style==bids')
     args = parser.parse_args()
     if not Path(args.data_root).is_dir():
         raise OSError('Expected valid directory for --data_root argument, '
                       'Got {}'.format(args.data_root))
+    if args.include_nifti_header:
+        if args.style != 'bids':
+            raise SyntaxError('--include_nifti_header for style=bids')
 
     dataset = import_dataset(data_root=args.data_root,
                              style=args.style,
@@ -44,7 +50,8 @@ def main():
                              reindex=args.reindex,
                              include_phantom=args.include_phantom,
                              verbose=args.verbose,
-                             metadata_root=args.metadata_root)
+                             metadata_root=args.metadata_root,
+                             include_nifti_header=args.include_nifti_header)
     return dataset
 
 

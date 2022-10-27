@@ -14,7 +14,8 @@ def import_dataset(data_root=None,
                    reindex=False,
                    include_phantom=False,
                    verbose=False,
-                   metadata_root=None) -> "Project":
+                   metadata_root=None,
+                   include_nifti_header=False) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
     base.Dataset. This is the main interface between this package and your
@@ -39,6 +40,9 @@ def import_dataset(data_root=None,
         The flag allows you to change the verbosity of execution
     metadata_root :
         change the default cache directory
+    include_nifti_header :
+        whether to check nifti headers for compliance,
+        only used when --style==bids
     Returns
     -------
     dataset : MRdataset.base.Project()

@@ -21,7 +21,8 @@ class BIDSDataset(Project):
                  data_root=None,
                  metadata_root=None,
                  include_phantom=False,
-                 reindex=False):
+                 reindex=False,
+                 include_nifti_header=False):
 
         """
         Parameters
@@ -46,6 +47,7 @@ class BIDSDataset(Project):
         super().__init__(name, data_root, metadata_root)
 
         self.include_phantom = include_phantom
+        self.include_nifti_header = include_nifti_header
         indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()

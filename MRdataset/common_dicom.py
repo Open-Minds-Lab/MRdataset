@@ -18,6 +18,21 @@ with warnings.catch_warnings():
 logger = logging.getLogger('root')
 
 
+def isSameSet(dicom):
+    series_uid = dicom.get('SeriesInstanceUID', None)
+    # echo_num = dicom.get('EchoNumbers', None)
+    echo_time = dicom.get('EchoTime', None)
+    # if echo_num:
+    #     run_name = series_uid + '_e' + str(dicom.EchoNumbers)
+    if echo_time:
+        run_name = series_uid + '_e' + str(dicom.EchoTime)
+    else:
+        run_name = series_uid
+    return run_name
+
+
+
+
 def is_valid_inclusion(filename: str,
                        dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:

@@ -8,6 +8,7 @@ from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference, files_under_folder
+import warnings
 
 # Module-level logger
 logger = logging.getLogger('root')

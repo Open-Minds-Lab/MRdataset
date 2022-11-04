@@ -103,12 +103,16 @@ def select_parameters(filepath):
     with open(filepath, "r") as read_file:
         parameters = json.load(read_file)
 
-    selected_params = dict()
-    for key in parameters:
-        for entry in PARAMETER_NAMES:
-            if entry.lower() in key.lower():
-                selected_params[key] = parameters[key]
-
+        for key in parameters:
+            for entry in PARAMETER_NAMES:
+                if entry.lower() in key.lower():
+                    selected_params[key] = parameters[key]
+    elif ext in ['.nii', '.nii.gz']:
+        niimage = nib.load(filepath)
+        selected_params['obliquity'] = np.any(
+            nib.affines.obliquity(niimage.affine) > 1e-4)
+        selected_params['voxel_sizes'] = niimage.header.get_zooms()
+        selected_params['matrix_dims'] = niimage.shape
     return selected_params
 
 

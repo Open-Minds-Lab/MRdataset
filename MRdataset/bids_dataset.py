@@ -5,7 +5,7 @@ from bids import BIDSLayout
 
 from MRdataset.base import Project, Run, Modality, Subject, Session
 from MRdataset.config import datatypes
-from MRdataset.utils import select_parameters
+from MRdataset.utils import select_parameters, get_ext
 
 # Module-level logger
 logger = logging.getLogger('root')

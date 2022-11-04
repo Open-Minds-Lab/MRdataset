@@ -110,3 +110,7 @@ def select_parameters(filepath):
                 selected_params[key] = parameters[key]
 
     return selected_params
+
+
+def get_ext(file: BIDSFile) -> str:
+    return file.tags['extension'].value

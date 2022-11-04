@@ -8,6 +8,9 @@ from typing import List
 
 from MRdataset.config import PARAMETER_NAMES
 from dictdiffer import diff as dict_diff
+from bids.layout.models import BIDSFile
+import nibabel as nib
+import numpy as np
 
 
 def files_under_folder(path):

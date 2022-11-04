@@ -151,7 +151,8 @@ class BIDSDataset(Project):
                 run_node = session_node.get_run(filename)
                 if run_node is None:
                     run_node = Run(filename)
-                run_node.params = parameters.copy()
-                run_node.echo_time = parameters.get('EchoTime', 1.0)
+                for k, v in parameters.items():
+                    run_node.params[k] = v
+                run_node.echo_time = round(parameters.get('EchoTime', 1.0), 4)
                 session_node.add_run(run_node)
         return session_node

@@ -82,8 +82,8 @@ class DicomDataset(Project):
             no_files_found = False
             try:
                 if not dicom2nifti.common.is_dicom_file(filepath):
-                    logger.warning(
-                        "DICOM not found in {}".format(filepath.parent))
+                    # logger.warning(
+                    #     "DICOM not found in {}".format(filepath.parent))
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if common_dicom.is_valid_inclusion(filepath,

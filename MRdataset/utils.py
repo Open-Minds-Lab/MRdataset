@@ -99,9 +99,11 @@ def timestamp() -> str:
     return time_string
 
 
-def select_parameters(filepath):
-    with open(filepath, "r") as read_file:
-        parameters = json.load(read_file)
+def select_parameters(filepath, ext):
+    selected_params = dict()
+    if ext == '.json':
+        with open(filepath, "r") as read_file:
+            parameters = json.load(read_file)
 
         for key in parameters:
             for entry in PARAMETER_NAMES:

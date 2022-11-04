@@ -108,9 +108,9 @@ class BIDSDataset(Project):
                     # {'subject': nSub,
                     #        'datatype': datatype,
                     #        'extension': 'json'}
-                    session_node = self.parse_json(session_node,
-                                                   filters,
-                                                   bids_layout)
+                    session_node = self.parse(session_node,
+                                              filters,
+                                              bids_layout)
                     if session_node.runs:
                         subject_obj.add_session(session_node)
                 else:
@@ -124,9 +124,9 @@ class BIDSDataset(Project):
                             # 'session': nSess,
                             # 'datatype': datatype,
                             # 'extension': 'json'}
-                            session_node = self.parse_json(session_node,
-                                                           filters,
-                                                           bids_layout)
+                            session_node = self.parse(session_node,
+                                                      filters,
+                                                      bids_layout)
                         if session_node.runs:
                             subject_obj.add_session(session_node)
                 if subject_obj.sessions:
@@ -136,11 +136,17 @@ class BIDSDataset(Project):
         if not self.modalities:
             raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
-    def parse_json(self, session_node, filters, bids_layout):
+    def parse(self, session_node, filters, bids_layout):
         files = bids_layout.get(**filters)
         for file in files:
             filename = file.filename
-            parameters = select_parameters(file.path)
+            ext = get_ext(file)
+            if ext == '.json':
+                parameters = select_parameters(file.path, ext)
+            elif ext in ['.nii', '.nii.gz']:
+                parameters = select_parameters(file.path, ext)
+            else:
+                raise NotImplementedError(f"Got {ext}, Expects .nii/.json")
             if parameters:
                 run_node = session_node.get_run(filename)
                 if run_node is None:

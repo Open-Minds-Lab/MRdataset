@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; MRdataset 0.1.2 documentation</title>
+  <title>Index &mdash; MRdataset 0.1.2+32.g4318d88 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.2
+                0.1.2+32.g4318d88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -101,7 +101,6 @@
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
- | <a href="#X"><strong>X</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -160,9 +159,13 @@
       <li><a href="MRdataset.html#MRdataset.base.Project.data_root">data_root (MRdataset.base.Project attribute)</a>
 
       <ul>
-        <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset.data_root">(MRdataset.xnat_dataset.XnatDataset attribute)</a>
+        <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset.data_root">(MRdataset.dicom_dataset.DicomDataset attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset">DicomDataset (class in MRdataset.dicom_dataset)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -179,12 +182,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MRdataset.html#MRdataset.base.Modality.get_echo_times">get_echo_times() (MRdataset.base.Modality method)</a>
 </li>
-      <li><a href="MRdataset.html#MRdataset.base.Project.get_modality">get_modality() (MRdataset.base.Project method)</a>
+      <li><a href="MRdataset.html#MRdataset.bids_dataset.BIDSDataset.get_filters">get_filters() (MRdataset.bids_dataset.BIDSDataset method)</a>
 </li>
-      <li><a href="MRdataset.html#MRdataset.base.Modality.get_reference">get_reference() (MRdataset.base.Modality method)</a>
+      <li><a href="MRdataset.html#MRdataset.base.Project.get_modality">get_modality() (MRdataset.base.Project method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="MRdataset.html#MRdataset.base.Modality.get_reference">get_reference() (MRdataset.base.Modality method)</a>
+</li>
       <li><a href="MRdataset.html#MRdataset.base.Session.get_run">get_run() (MRdataset.base.Session method)</a>
 </li>
       <li><a href="MRdataset.html#MRdataset.base.Subject.get_session">get_session() (MRdataset.base.Subject method)</a>
@@ -201,7 +206,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset.include_phantom">include_phantom (MRdataset.xnat_dataset.XnatDataset attribute)</a>
+      <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset.include_phantom">include_phantom (MRdataset.dicom_dataset.DicomDataset attribute)</a>
 </li>
       <li><a href="MRdataset.html#MRdataset.base.Modality.is_multi_echo">is_multi_echo() (MRdataset.base.Modality method)</a>
 </li>
@@ -222,7 +227,7 @@
       <li><a href="MRdataset.html#MRdataset.base.Project.metadata_root">metadata_root (MRdataset.base.Project attribute)</a>
 
       <ul>
-        <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset.metadata_root">(MRdataset.xnat_dataset.XnatDataset attribute)</a>
+        <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset.metadata_root">(MRdataset.dicom_dataset.DicomDataset attribute)</a>
 </li>
       </ul></li>
       <li><a href="MRdataset.html#MRdataset.base.Project.modalities">modalities (MRdataset.base.Project property)</a>
@@ -239,13 +244,13 @@
 </li>
         <li><a href="MRdataset.html#module-MRdataset.bids_dataset">MRdataset.bids_dataset</a>
 </li>
+        <li><a href="MRdataset.html#module-MRdataset.dicom_dataset">MRdataset.dicom_dataset</a>
+</li>
         <li><a href="MRdataset.tests.html#module-MRdataset.tests">MRdataset.tests</a>
 </li>
         <li><a href="MRdataset.tests.html#module-MRdataset.tests.config">MRdataset.tests.config</a>
 </li>
         <li><a href="MRdataset.tests.html#module-MRdataset.tests.test_MRdataset">MRdataset.tests.test_MRdataset</a>
-</li>
-        <li><a href="MRdataset.html#module-MRdataset.xnat_dataset">MRdataset.xnat_dataset</a>
 </li>
       </ul></li>
       <li>
@@ -272,6 +277,13 @@
 </li>
       </ul></li>
       <li>
+    MRdataset.dicom_dataset
+
+      <ul>
+        <li><a href="MRdataset.html#module-MRdataset.dicom_dataset">module</a>
+</li>
+      </ul></li>
+      <li>
     MRdataset.tests
 
       <ul>
@@ -292,13 +304,6 @@
         <li><a href="MRdataset.tests.html#module-MRdataset.tests.test_MRdataset">module</a>
 </li>
       </ul></li>
-      <li>
-    MRdataset.xnat_dataset
-
-      <ul>
-        <li><a href="MRdataset.html#module-MRdataset.xnat_dataset">module</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -316,7 +321,7 @@
 </li>
         <li><a href="MRdataset.html#MRdataset.base.Subject.name">(MRdataset.base.Subject attribute)</a>
 </li>
-        <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset.name">(MRdataset.xnat_dataset.XnatDataset attribute)</a>
+        <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset.name">(MRdataset.dicom_dataset.DicomDataset attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -335,7 +340,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="MRdataset.html#MRdataset.base.Session.params">params (MRdataset.base.Session attribute)</a>
 </li>
-      <li><a href="MRdataset.html#MRdataset.bids_dataset.BIDSDataset.parse_json">parse_json() (MRdataset.bids_dataset.BIDSDataset method)</a>
+      <li><a href="MRdataset.html#MRdataset.bids_dataset.BIDSDataset.parse">parse() (MRdataset.bids_dataset.BIDSDataset method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -410,17 +415,9 @@
       <li><a href="MRdataset.html#MRdataset.bids_dataset.BIDSDataset.walk">walk() (MRdataset.bids_dataset.BIDSDataset method)</a>
 
       <ul>
-        <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset.walk">(MRdataset.xnat_dataset.XnatDataset method)</a>
+        <li><a href="MRdataset.html#MRdataset.dicom_dataset.DicomDataset.walk">(MRdataset.dicom_dataset.DicomDataset method)</a>
 </li>
       </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="X">X</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="MRdataset.html#MRdataset.xnat_dataset.XnatDataset">XnatDataset (class in MRdataset.xnat_dataset)</a>
-</li>
   </ul></td>
 </tr></table>
 

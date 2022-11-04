@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MRdataset.bids_dataset &mdash; MRdataset 0.1.2 documentation</title>
+  <title>MRdataset.bids_dataset &mdash; MRdataset 0.1.2+32.g4318d88 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.2
+                0.1.2+32.g4318d88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -84,10 +84,11 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
+<span class="kn">from</span> <span class="nn">bids</span> <span class="kn">import</span> <span class="n">BIDSLayout</span>
+
 <span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">Project</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">Modality</span><span class="p">,</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">Session</span>
 <span class="kn">from</span> <span class="nn">MRdataset.config</span> <span class="kn">import</span> <span class="n">datatypes</span>
-<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="n">select_parameters</span>
-<span class="kn">from</span> <span class="nn">bids</span> <span class="kn">import</span> <span class="n">BIDSLayout</span>
+<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="n">select_parameters</span><span class="p">,</span> <span class="n">get_ext</span>
 
 <span class="c1"># Module-level logger</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
@@ -104,7 +105,8 @@
                  <span class="n">data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">metadata_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">include_phantom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">reindex</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">reindex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">include_nifti_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -119,7 +121,9 @@
 <span class="sd">            whether to include localizer/aahead_scout/phantom/acr</span>
 <span class="sd">        reindex : bool</span>
 <span class="sd">            If true, rejects stored cache and rebuilds index</span>
-
+<span class="sd">        include_nifti_header :</span>
+<span class="sd">            whether to check nifti headers for compliance,</span>
+<span class="sd">            only used when --style==bids</span>
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; from MRdataset.bids_dataset import BIDSDataset</span>
@@ -129,6 +133,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">data_root</span><span class="p">,</span> <span class="n">metadata_root</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span> <span class="o">=</span> <span class="n">include_phantom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_nifti_header</span> <span class="o">=</span> <span class="n">include_nifti_header</span>
         <span class="n">indexed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">indexed</span> <span class="ow">or</span> <span class="n">reindex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">()</span>
@@ -136,11 +141,26 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">()</span>
 
+<div class="viewcode-block" id="BIDSDataset.get_filters"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.bids_dataset.BIDSDataset.get_filters">[docs]</a>    <span class="k">def</span> <span class="nf">get_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extension&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="n">subject</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;datatype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_nifti_header</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nii.gz&#39;</span><span class="p">)</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nii&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filters</span></div>
+
 <div class="viewcode-block" id="BIDSDataset.walk"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.bids_dataset.BIDSDataset.walk">[docs]</a>    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;parses the file tree to populate them in a desirable hierarchy&quot;&quot;&quot;</span>
-        <span class="n">bids_layout</span> <span class="o">=</span> <span class="n">BIDSLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_root</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Started building BIDSLayout .. &quot;</span><span class="p">)</span>
+        <span class="n">bids_layout</span> <span class="o">=</span> <span class="n">BIDSLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_root</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Completed BIDSLayout .. &quot;</span><span class="p">)</span>
 
-        <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extension&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span><span class="p">}</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">filters</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s1">&#39;No JSON files found at --data_root </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data_root</span><span class="p">))</span>
@@ -167,12 +187,13 @@
                     <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
 
-                    <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">nSub</span><span class="p">,</span>
-                               <span class="s1">&#39;datatype&#39;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
-                               <span class="s1">&#39;extension&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span><span class="p">}</span>
-                    <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_json</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
-                                                   <span class="n">filters</span><span class="p">,</span>
-                                                   <span class="n">bids_layout</span><span class="p">)</span>
+                    <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">(</span><span class="n">nSub</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
+                    <span class="c1"># {&#39;subject&#39;: nSub,</span>
+                    <span class="c1">#        &#39;datatype&#39;: datatype,</span>
+                    <span class="c1">#        &#39;extension&#39;: &#39;json&#39;}</span>
+                    <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
+                                              <span class="n">filters</span><span class="p">,</span>
+                                              <span class="n">bids_layout</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">session_node</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
                         <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -181,13 +202,14 @@
                         <span class="n">session_node</span> <span class="o">=</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">get_session</span><span class="p">(</span><span class="n">nSess</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">nSess</span><span class="p">)</span>
-                            <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subject&#39;</span><span class="p">:</span> <span class="n">nSub</span><span class="p">,</span>
-                                       <span class="s1">&#39;session&#39;</span><span class="p">:</span> <span class="n">nSess</span><span class="p">,</span>
-                                       <span class="s1">&#39;datatype&#39;</span><span class="p">:</span> <span class="n">datatype</span><span class="p">,</span>
-                                       <span class="s1">&#39;extension&#39;</span><span class="p">:</span> <span class="s1">&#39;json&#39;</span><span class="p">}</span>
-                            <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_json</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
-                                                           <span class="n">filters</span><span class="p">,</span>
-                                                           <span class="n">bids_layout</span><span class="p">)</span>
+                            <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">(</span><span class="n">nSub</span><span class="p">,</span> <span class="n">nSess</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
+                            <span class="c1"># {&#39;subject&#39;: nSub,</span>
+                            <span class="c1"># &#39;session&#39;: nSess,</span>
+                            <span class="c1"># &#39;datatype&#39;: datatype,</span>
+                            <span class="c1"># &#39;extension&#39;: &#39;json&#39;}</span>
+                            <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
+                                                      <span class="n">filters</span><span class="p">,</span>
+                                                      <span class="n">bids_layout</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">session_node</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
                             <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
@@ -197,17 +219,24 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">modalities</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Expected Sidecar JSON files in --data_root. Got 0&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BIDSDataset.parse_json"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.bids_dataset.BIDSDataset.parse_json">[docs]</a>    <span class="k">def</span> <span class="nf">parse_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_node</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">bids_layout</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSDataset.parse"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.bids_dataset.BIDSDataset.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_node</span><span class="p">,</span> <span class="n">filters</span><span class="p">,</span> <span class="n">bids_layout</span><span class="p">):</span>
         <span class="n">files</span> <span class="o">=</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">filters</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">filename</span>
-            <span class="n">parameters</span> <span class="o">=</span> <span class="n">select_parameters</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="n">get_ext</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.json&#39;</span><span class="p">:</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="n">select_parameters</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii.gz&#39;</span><span class="p">]:</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="n">select_parameters</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">, Expects .nii/.json&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">parameters</span><span class="p">:</span>
                 <span class="n">run_node</span> <span class="o">=</span> <span class="n">session_node</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">run_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">run_node</span> <span class="o">=</span> <span class="n">Run</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-                <span class="n">run_node</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                <span class="n">run_node</span><span class="o">.</span><span class="n">echo_time</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="n">run_node</span><span class="o">.</span><span class="n">echo_time</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mi">4</span><span class="p">)</span>
                 <span class="n">session_node</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">run_node</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">session_node</span></div></div>
 </pre></div>

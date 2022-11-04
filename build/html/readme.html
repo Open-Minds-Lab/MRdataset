@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; MRdataset 0.1.2 documentation</title>
+  <title>Quickstart &mdash; MRdataset 0.1.2+32.g4318d88 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.2
+                0.1.2+32.g4318d88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -45,8 +45,8 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mrdataset">MRdataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#cli-usage">CLI usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-usage">Python usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-usage">Command line usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-programmatic-usage">API/programmatic usage</a></li>
 </ul>
 </li>
 </ul>
@@ -98,10 +98,10 @@
 <li><p>Documentation: <a class="reference external" href="https://open-minds-lab.github.io/MRdataset/">https://open-minds-lab.github.io/MRdataset/</a></p></li>
 </ul>
 </section>
-<section id="cli-usage">
-<h2>CLI usage<a class="headerlink" href="#cli-usage" title="Permalink to this headline"></a></h2>
+<section id="command-line-usage">
+<h2>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this headline"></a></h2>
 <p>MRdataset can be used on the command line interface. For a DICOM dataset:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data_root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">xnat</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data_root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">dicom</span>
 </pre></div>
 </div>
 <p>For a BIDS dataset:</p>
@@ -109,8 +109,8 @@
 </pre></div>
 </div>
 </section>
-<section id="python-usage">
-<h2>Python usage<a class="headerlink" href="#python-usage" title="Permalink to this headline"></a></h2>
+<section id="api-programmatic-usage">
+<h2>API/programmatic usage<a class="headerlink" href="#api-programmatic-usage" title="Permalink to this headline"></a></h2>
 <p>To use MRdataset in a project:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">MRdataset</span>
 </pre></div>
@@ -125,7 +125,7 @@ creates an appropriate object depending as per <code class="docutils literal not
 it creates a <code class="docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code> object.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_root</span> <span class="o">=</span> <span class="s1">&#39;/home/user/datasets/ABCD&#39;</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span>
-                         <span class="n">style</span><span class="o">=</span><span class="s1">&#39;xnat&#39;</span><span class="p">,</span>
+                         <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
                          <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ABCD&#39;</span><span class="p">)</span>
 </pre></div>
 </div>

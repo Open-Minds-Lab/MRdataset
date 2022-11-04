@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; MRdataset 0.1.2 documentation</title>
+  <title>API Reference &mdash; MRdataset 0.1.2+32.g4318d88 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -30,7 +30,7 @@
             <a href="index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.2
+                0.1.2+32.g4318d88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -105,11 +105,16 @@ using the elements in Core API. Here is a summarized reference of classes
 which can be used to import BIDS dataset and DICOM dataset.</p>
 <span class="target" id="module-MRdataset.bids_dataset"></span><dl class="py class">
 <dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.bids_dataset.</span></span><span class="sig-name descname"><span class="pre">BIDSDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.bids_dataset.</span></span><span class="sig-name descname"><span class="pre">BIDSDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_nifti_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.parse_json">
-<span class="sig-name descname"><span class="pre">parse_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_layout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.parse_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.parse_json" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.get_filters">
+<span class="sig-name descname"><span class="pre">get_filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.get_filters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.get_filters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.bids_dataset.BIDSDataset.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bids_layout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/bids_dataset.html#BIDSDataset.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.bids_dataset.BIDSDataset.parse" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -120,16 +125,16 @@ which can be used to import BIDS dataset and DICOM dataset.</p>
 
 </dd></dl>
 
-<span class="target" id="module-MRdataset.xnat_dataset"></span><dl class="py class">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.xnat_dataset.</span></span><span class="sig-name descname"><span class="pre">XnatDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset" title="Permalink to this definition"></a></dt>
+<span class="target" id="module-MRdataset.dicom_dataset"></span><dl class="py class">
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">MRdataset.dicom_dataset.</span></span><span class="sig-name descname"><span class="pre">DicomDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mind'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/dicom_dataset.html#DicomDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">MRdataset.base.Project</span></code></a></p>
 <p>Container to manage properties and issues of a dataset downloaded from
 XNAT. Expects the data_root to be collection of dicom files, which may
 belong to different subjects, modalities, sessions or runs.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset.name" title="Permalink to this definition"></a></dt>
 <dd><p>Identifier/name for the node</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -139,8 +144,8 @@ belong to different subjects, modalities, sessions or runs.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.data_root">
-<span class="sig-name descname"><span class="pre">data_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.data_root" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset.data_root">
+<span class="sig-name descname"><span class="pre">data_root</span></span><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset.data_root" title="Permalink to this definition"></a></dt>
 <dd><p>directory containing dataset with dicom files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -150,8 +155,8 @@ belong to different subjects, modalities, sessions or runs.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.metadata_root">
-<span class="sig-name descname"><span class="pre">metadata_root</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.metadata_root" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset.metadata_root">
+<span class="sig-name descname"><span class="pre">metadata_root</span></span><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset.metadata_root" title="Permalink to this definition"></a></dt>
 <dd><p>directory to store cache</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -161,15 +166,15 @@ belong to different subjects, modalities, sessions or runs.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.include_phantom">
-<span class="sig-name descname"><span class="pre">include_phantom</span></span><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.include_phantom" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset.include_phantom">
+<span class="sig-name descname"><span class="pre">include_phantom</span></span><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset.include_phantom" title="Permalink to this definition"></a></dt>
 <dd><p>Whether to include non-subject scans like localizer, acr/phantom,
 head_scout</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.xnat_dataset.XnatDataset.walk">
-<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/xnat_dataset.html#XnatDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.xnat_dataset.XnatDataset.walk" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="MRdataset.dicom_dataset.DicomDataset.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/dicom_dataset.html#DicomDataset.walk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.dicom_dataset.DicomDataset.walk" title="Permalink to this definition"></a></dt>
 <dd><p>generates filenames in the directory tree, verifies if it is dicom
 file, extracts relevant parameters and stores it in project. Creates
 a desirable hierarchy for a neuroimaging experiment</p>
@@ -645,7 +650,7 @@ is a subclass of MRdataset.base.Dataset</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="MRdataset.base.import_dataset">
-<span class="sig-prename descclassname"><span class="pre">MRdataset.base.</span></span><span class="sig-name descname"><span class="pre">import_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xnat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><span class="pre">MRdataset.base.Project</span></a></span></span><a class="reference internal" href="_modules/MRdataset/base.html#import_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.base.import_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">MRdataset.base.</span></span><span class="sig-name descname"><span class="pre">import_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dicom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reindex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_phantom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_nifti_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#MRdataset.base.Project" title="MRdataset.base.Project"><span class="pre">MRdataset.base.Project</span></a></span></span><a class="reference internal" href="_modules/MRdataset/base.html#import_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.base.import_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Create dataset as per arguments. This function acts as a Wrapper class for
 base.Dataset. This is the main interface between this package and your
 analysis.</p>
@@ -662,6 +667,8 @@ results</p></li>
 aahead_scout</p></li>
 <li><p><strong>verbose</strong> – The flag allows you to change the verbosity of execution</p></li>
 <li><p><strong>metadata_root</strong> – change the default cache directory</p></li>
+<li><p><strong>include_nifti_header</strong> – whether to check nifti headers for compliance,
+only used when –style==bids</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -673,7 +680,7 @@ aahead_scout</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">import_dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="s1">&#39;xnat&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/my/data/&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/my/data/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

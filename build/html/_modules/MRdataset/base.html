@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MRdataset.base &mdash; MRdataset 0.1.2 documentation</title>
+  <title>MRdataset.base &mdash; MRdataset 0.1.2+32.g4318d88 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -27,7 +27,7 @@
             <a href="../../index.html" class="icon icon-home"> MRdataset
           </a>
               <div class="version">
-                0.1.2
+                0.1.2+32.g4318d88
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -92,12 +92,13 @@
 
 
 <div class="viewcode-block" id="import_dataset"><a class="viewcode-back" href="../../MRdataset.html#MRdataset.base.import_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_dataset</span><span class="p">(</span><span class="n">data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">style</span><span class="o">=</span><span class="s1">&#39;xnat&#39;</span><span class="p">,</span>
+                   <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
                    <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">reindex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">include_phantom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">metadata_root</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Project&quot;</span><span class="p">:</span>
+                   <span class="n">metadata_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">include_nifti_header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Project&quot;</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create dataset as per arguments. This function acts as a Wrapper class for</span>
 <span class="sd">    base.Dataset. This is the main interface between this package and your</span>
@@ -122,6 +123,9 @@
 <span class="sd">        The flag allows you to change the verbosity of execution</span>
 <span class="sd">    metadata_root :</span>
 <span class="sd">        change the default cache directory</span>
+<span class="sd">    include_nifti_header :</span>
+<span class="sd">        whether to check nifti headers for compliance,</span>
+<span class="sd">        only used when --style==bids</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dataset : MRdataset.base.Project()</span>
@@ -130,7 +134,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; from MRdataset import import_dataset</span>
-<span class="sd">    &gt;&gt;&gt; data = import_dataset(&#39;xnat&#39;, &#39;/path/to/my/data/&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; data = import_dataset(&#39;dicom&#39;, &#39;/path/to/my/data/&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_root</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
@@ -164,6 +168,7 @@
         <span class="n">metadata_root</span><span class="o">=</span><span class="n">metadata_root</span><span class="p">,</span>
         <span class="n">include_phantom</span><span class="o">=</span><span class="n">include_phantom</span><span class="p">,</span>
         <span class="n">reindex</span><span class="o">=</span><span class="n">reindex</span><span class="p">,</span>
+        <span class="n">include_nifti_header</span><span class="o">=</span><span class="n">include_nifti_header</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
@@ -498,8 +503,9 @@
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_multi_echo</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">echo_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s2">&quot;Specify echo_time for a multi-echo &quot;</span>
-                                  <span class="s2">&quot;reference. Try one of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span>
+                <span class="k">raise</span> <span class="ne">LookupError</span><span class="p">(</span><span class="s2">&quot;Got NoneType for echo time.&quot;</span>
+                                  <span class="s2">&quot;Specify echo_time,&quot;</span>
+                                  <span class="s2">&quot; use one of </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">keys</span><span class="p">))</span>
             <span class="n">reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">echo_time</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Echo time </span><span class="si">{}</span><span class="s2"> absent. &quot;</span>

@@ -13,11 +13,15 @@ import nibabel as nib
 import numpy as np
 
 
-def files_under_folder(path):
+def files_under_folder(path, ext=None):
     if not Path(path).exists():
         raise FileNotFoundError("Folder doesn't exist")
     folder_path = Path(path).resolve()
-    for file in folder_path.rglob('*'):
+    if ext:
+        pattern = '*'+ext
+    else:
+        pattern = '*'
+    for file in folder_path.rglob(pattern):
         if file.is_file():
             yield file
 

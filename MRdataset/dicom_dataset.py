@@ -81,7 +81,7 @@ class DicomDataset(Project):
         for filepath in files_under_folder(self.data_root):
             no_files_found = False
             try:
-                if not dicom2nifti.common.is_dicom_file(filepath):
+                if not common_dicom.is_dicom_file(filepath):
                     # logger.warning(
                     #     "DICOM not found in {}".format(filepath.parent))
                     continue

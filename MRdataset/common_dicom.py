@@ -18,6 +18,15 @@ with warnings.catch_warnings():
 logger = logging.getLogger('root')
 
 
+def is_dicom_file(filename):
+    file_stream = open(filename, 'rb')
+    file_stream.seek(128)
+    data = file_stream.read(4)
+    file_stream.close()
+    if data == b'DICM':
+        return True
+
+
 def isSameSet(dicom):
     series_uid = dicom.get('SeriesInstanceUID', None)
     # echo_num = dicom.get('EchoNumbers', None)

@@ -124,6 +124,7 @@ class DicomDataset(Project):
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
                     elif param_diff:
+                        # TODO: print out differing parameter names as warning
                         param_name = param_diff[0][1]
                         expect = run_node.params[param_name]
                         got = dcm_img_params[param_name]

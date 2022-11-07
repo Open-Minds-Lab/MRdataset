@@ -56,6 +56,7 @@ class FastBIDSDataset(Project):
             self.load_dataset()
 
     def walk(self):
+        # TODO: Need to handle BIDS datasets without JSON files
         for file in files_under_folder(self.data_root, '.json'):
             datatype = file.parent.name
             modality_obj = self.get_modality(datatype)

@@ -278,6 +278,7 @@ class Project(Node):
             self.metadata_root.mkdir(exist_ok=True)
             # raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
+        # TODO : Add a flag to identify instance as a subset
         self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
 
     @property

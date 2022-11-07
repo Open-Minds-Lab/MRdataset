@@ -9,6 +9,7 @@ import pydicom
 from MRdataset import config
 from MRdataset import utils
 from collections.abc import Iterable
+import re
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
@@ -342,30 +343,15 @@ def csa_parser(dicom):
     series_header = csareader.read(get_header(dicom, 'series_header_info'))
     items = utils.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
     if items:
-        text = items[0].split("\n")
+        text = items[0]
     else:
         raise AttributeError('CSA Header exists, but xProtocol is missing')
 
-    start = False
-    end = False
-    props = {}
-    for e in text:
-        if e[:15] == '### ASCCONV END':
-            end = True
-        if start and not end:
-            ele = e.split()
-            if ele[1].strip() == "=":
-                props[ele[0]] = ele[2]
-        if e[:17] == '### ASCCONV BEGIN':
-            start = True
-
-    slice_code = props.get("sKSpace.ucMultiSliceMode", None)
+    slice_code = get_csa_props("sKSpace.ucMultiSliceMode", text)
     slice_mode = config.SLICE_MODE.get(slice_code, None)
-
-    ipat_code = props.get("sPat.ucPATMode", None)
+    ipat_code = get_csa_props("sPat.ucPATMode", text)
     ipat = config.PAT.get(ipat_code, None)
-
-    shim_code = props.get("sAdjData.uiAdjShimMode", None)
+    shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
     shim = config.SHIM.get(shim_code, None)
 
     return {
@@ -373,6 +359,15 @@ def csa_parser(dicom):
         'ipat': ipat,
         'shim': shim
     }
+
+
+def get_csa_props(parameter, corpus):
+    index = corpus.find(parameter)
+    if index == -1:
+        return -1
+    shift = len(parameter)+6
+    code = re.split('\t|\n', corpus[index:index + shift])[2]
+    return code
 
 
 def effective_echo_spacing(dicom):

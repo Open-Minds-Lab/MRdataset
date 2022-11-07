@@ -389,13 +389,7 @@ def effective_echo_spacing(dicom):
         # Match value to output of dcm2niix
         return value / 1000
     else:
-        try:
-            value = 1000 / (bwp_phase_encode * phase_encoding)
-        except ZeroDivisionError as exc:
-            logger.exception(exc)
-            return None
-        # Match value to output of dcm2niix
-        return value / 1000
+        return None
 
 
 def get_phase_encoding(dicom, is3d, echo_train_length):

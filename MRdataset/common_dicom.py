@@ -41,8 +41,6 @@ def isSameSet(dicom):
     return run_name
 
 
-
-
 def is_valid_inclusion(filename: str,
                        dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:
@@ -153,6 +151,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
     if ret_value:
         return ret_value
     return 'MR_image'
+
 
 # TODO : rename csa
 def header_exists(dicom: pydicom.FileDataset) -> bool:
@@ -301,30 +300,6 @@ def get_header(dicom, name):
     return None
 
 
-# def get_tags_by_name(dicom, name):
-#     """
-#     Extracts value from dicom metadata looking up the corresponding HEX tag
-#     in config.PARAMETER_NAMES
-#
-#     Parameters
-#     ----------
-#     dicom : pydicom.FileDataset
-#         dicom object read from pydicom.read_file
-#
-#     name : str
-#         parameter name such as MagneticFieldStrength or Manufacturer
-#
-#     Returns
-#     -------
-#     This method return a value for the given key. If key is not available,
-#     then returns default value None.
-#     """
-#     data = dicom.get(config.TAGS[name], None)
-#     if data is None:
-#         return None
-#     return data.value
-
-
 def csa_parser(dicom):
     """
     Handles the private CSA header from Siemens formatted raw scanner.
@@ -371,13 +346,6 @@ def get_csa_props(parameter, corpus):
 
 
 def effective_echo_spacing(dicom):
-    # if self.get("echo_train_length") > 1: # Check if etl == pel
-    # check =
-    # (self.get("echo_train_length") == self.get("phase_encoding_lines"))
-    # if not check:
-    # print("PhaseEncodingLines is not equal to EchoTrainLength
-    # : {0}".format(self.filepath))
-
     bwp_phase_encode = get_param_value_by_name(dicom, 'PixelBandwidth')
     phase_encoding = get_param_value_by_name(dicom, 'PhaseEncodingSteps')
 

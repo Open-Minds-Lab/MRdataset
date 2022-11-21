@@ -23,7 +23,8 @@ class BIDSDataset(Project):
                  metadata_root=None,
                  include_phantom=False,
                  reindex=False,
-                 include_nifti_header=False):
+                 include_nifti_header=False,
+                 **kwargs):
 
         """
         Parameters

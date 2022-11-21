@@ -328,7 +328,11 @@ class Project(Node):
             # raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
 
         # TODO : Add a flag to identify instance as a subset
-        self.cache_path = self.metadata_root / "{}.pkl".format(self.name)
+        self.cache_path = None
+        self.set_cache_path()
+
+    def set_cache_path(self):
+        self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(self.name)
 
     @property
     def modalities(self) -> List["Modality"]:

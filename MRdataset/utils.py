@@ -127,3 +127,10 @@ def select_parameters(filepath, ext):
 
 def get_ext(file: BIDSFile) -> str:
     return file.tags['extension'].value
+
+
+def files_in_path(path, ext=None):
+    if isinstance(path, Iterable):
+        files = [list(files_under_folder(i, ext)) for i in path]
+        return files
+    return list(files_under_folder(path, ext))

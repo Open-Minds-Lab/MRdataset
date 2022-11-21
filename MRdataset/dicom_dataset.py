@@ -148,6 +148,6 @@ class DicomDataset(Project):
             except Exception as exc:
                 raise exc
         if no_files_found:
-            raise EOFError("Read 0 files at {}".format(self.data_root))
+            raise EOFError("Read 0 files")
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))

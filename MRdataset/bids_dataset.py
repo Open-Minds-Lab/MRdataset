@@ -105,7 +105,7 @@ class BIDSDataset(Project):
                     if session_node is None:
                         session_node = Session('1')
 
-                    filters = self.get_filters(nSub, datatype)
+                    filters = self.get_filters(subject=nSub, datatype=datatype)
                     # {'subject': nSub,
                     #        'datatype': datatype,
                     #        'extension': 'json'}
@@ -120,7 +120,9 @@ class BIDSDataset(Project):
                         session_node = subject_obj.get_session(nSess)
                         if session_node is None:
                             session_node = Session(nSess)
-                            filters = self.get_filters(nSub, nSess, datatype)
+                            filters = self.get_filters(subject=nSub,
+                                                       session=nSess,
+                                                       datatype=datatype)
                             # {'subject': nSub,
                             # 'session': nSess,
                             # 'datatype': datatype,

@@ -220,6 +220,55 @@ class Node:
             return
         self._non_compliant_children.append(other)
 
+    def print_tree(self, markerStr="+- ", levelMarkers=None):
+        """
+        Adapted from
+        https://simonhessner.de/python-3-recursively-print-structured-tree-including-hierarchy-markers-using-depth-first-search/
+        Recursive function that prints the hierarchical structure of a tree including markers that indicate
+            parent-child relationships between nodes.
+            Parameters:
+            - root: Node instance, possibly containing children Nodes
+            - markerStr: String to print in front of each node  ("+- " by default)
+            - levelMarkers: Internally used by recursion to indicate where to
+                            print markers and connections (see explanations below)
+
+            Example output:
+            1
+            +- 1.1
+            |  +- 1.1.1
+            |  |  +- 1.1.1.1
+            |  |  +- 1.1.1.2
+            |  +- 1.1.2
+            |  |  +- 1.1.2.1
+            |  |  +- 1.1.2.2
+            |  |  +- 1.1.2.3
+            |  |     +- 1.1.2.3.1
+            |  +- 1.1.3
+            +- 1.2
+            |  +- 1.2.1
+            |  +- 1.2.2
+            +- 1.3
+            +- 1.4
+               +- 1.4.1
+               +- 1.4.2
+        """
+        emptyStr = " " * len(markerStr)
+        connectionStr = "|" + emptyStr[:-1]
+
+        if levelMarkers is None:
+            level = 0
+            levelMarkers = []
+        else:
+            level = len(levelMarkers)
+        mapper = lambda draw: connectionStr if draw else emptyStr
+        markers = "".join(map(mapper, levelMarkers[:-1]))
+        markers += markerStr if level > 0 else ""
+        print(f"{markers}{self.name}")
+
+        for i, child in enumerate(self.children):
+            isLast = i == len(self.children) - 1
+            child.print_tree(markerStr, [*levelMarkers, not isLast])
+
     def __repr__(self) -> str:
         return "<class MRdataset.base.{}({})>".format(self.__class__.__name__,
                                                       self.name)

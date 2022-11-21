@@ -40,6 +40,7 @@ class DicomDataset(Project):
                  metadata_root=None,
                  include_phantom=False,
                  reindex=False,
+                 save=True,
                  **kwargs):
 
         """
@@ -67,9 +68,11 @@ class DicomDataset(Project):
         indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()
-            self.save_dataset()
         else:
             self.load_dataset()
+
+        if save:
+            self.save_dataset()
 
     def walk(self):
         """generates filenames in the directory tree, verifies if it is dicom

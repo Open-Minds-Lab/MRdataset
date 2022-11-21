@@ -15,7 +15,8 @@ def import_dataset(data_root=None,
                    include_phantom=False,
                    verbose=False,
                    metadata_root=None,
-                   include_nifti_header=False) -> "Project":
+                   include_nifti_header=False,
+                   save=True) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
     base.Dataset. This is the main interface between this package and your
@@ -86,6 +87,7 @@ def import_dataset(data_root=None,
         include_phantom=include_phantom,
         reindex=reindex,
         include_nifti_header=include_nifti_header,
+        save=save
     )
     if verbose:
         print(dataset)

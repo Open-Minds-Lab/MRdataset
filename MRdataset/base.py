@@ -414,6 +414,33 @@ class Project(Node):
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
 
+    def merge(self, other):
+        """
+        merges only at the subject level
+        Parameters
+        ----------
+        other
+
+        Returns
+        -------
+
+        """
+        warnings.warn("Function is meant only for smooth "
+                      " execution of ABCD dataset. "
+                      "There is no guarantee on other datasets")
+        if not isinstance(other, Project):
+            raise TypeError(f'Cannot merge MRdataset.Project and {type(other)}')
+        for modality in other.modalities:
+            exist_modality = self.get_modality(modality.name)
+            # If modality doesn't exist
+            if exist_modality is None:
+                self.add_modality(modality)
+                continue
+            # If modality already exists
+            for subject in modality.subjects:
+                exist_modality.add_subject(subject)
+
+
 
 class Modality(Node):
     """

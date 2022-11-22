@@ -7,7 +7,7 @@ import pydicom
 from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.base import Project, Run, Modality, Subject, Session
-from MRdataset.utils import param_difference, files_under_folder
+from MRdataset.utils import param_difference, files_under_folder, files_in_path
 import warnings
 
 # Module-level logger
@@ -82,7 +82,7 @@ class DicomDataset(Project):
         no_files_found = True
         study_ids_found = set()
 
-        for filepath in files_under_folder(self.data_root):
+        for filepath in files_in_path(self.data_root):
             no_files_found = False
             try:
                 if not common_dicom.is_dicom_file(filepath):

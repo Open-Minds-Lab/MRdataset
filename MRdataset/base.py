@@ -758,3 +758,35 @@ class Run(Node):
         self.params = dict()
         self.delta = None
 
+
+def load_mr_dataset(filepath, style='dicom'):
+    if Path(filepath).exists():
+        filepath = Path(filepath)
+    else:
+        raise FileNotFoundError(f"Invalid filepath {filepath}")
+
+    with open(filepath, 'rb') as f:
+        temp = pickle.load(f)
+        if isinstance(temp, dict):
+            # If dict is found, create object and update __dict__
+            saved_style = temp.get('style', None)
+            if saved_style is None:
+                dataset_class = find_dataset_using_style(style)
+            else:
+                dataset_class = find_dataset_using_style(saved_style)
+            dataset = dataset_class(
+                name=filepath.name,
+                data_root=filepath.parent,
+                metadata_root=filepath.parent,
+                save=False
+            )
+            dataset.__dict__.update(temp)
+            return dataset
+        elif isinstance(temp, MRdataset.base.Project):
+            # If object is found, return object
+            return temp
+
+
+if __name__ == '__main__':
+    # load_mr_dataset('/home/sinhah/.mrdataset/abcd-375.pkl')
+    load_mr_dataset('/home/sinhah/.mrdataset/abcd-375_master0.pkl')

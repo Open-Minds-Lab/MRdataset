@@ -133,4 +133,16 @@ def files_in_path(path, ext=None):
     if isinstance(path, Iterable):
         files = [list(files_under_folder(i, ext)) for i in path]
         return files
-    return list(files_under_folder(path, ext))
+    return list(files_under_folder(filepaths, ext))
+
+
+def valid_dirs(folders):
+    if isinstance(folders, str) or isinstance(folders, pathlib.Path):
+        if not Path(folders).is_dir():
+            raise OSError('Invalid directory {0}'.format(folders))
+        return Path(folders).resolve()
+    elif isinstance(folders, Iterable):
+        for folder in folders:
+            if not Path(folder).is_dir():
+                raise OSError('Invalid directory {0}'.format(folders))
+        return [Path(f).resolve() for f in folders]

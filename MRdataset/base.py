@@ -333,6 +333,16 @@ class Project(Node):
         # TODO : Add a flag to identify instance as a subset
         self.cache_path = None
         self.set_cache_path()
+        self.style = self.get_style()
+
+    def get_style(self):
+        """
+        Extracts style from classname
+        For example, returns 'dicom', given DicomDataset class
+        """
+        classname = self.__class__.__name__.lower()
+        style = classname.split('dataset')[0]
+        return style
 
     def set_cache_path(self):
         self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(self.name)

@@ -49,7 +49,7 @@ class DicomDataset(Project):
         ----------
         name : str
             an identifier/name for the dataset
-        data_root : Path or str
+        data_root : Path or str or Iterable
             directory containing dicom files, supports nested hierarchies
         metadata_root : str or Path
             directory to store cache

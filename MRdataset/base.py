@@ -774,11 +774,11 @@ def load_mr_dataset(filepath, style='dicom'):
         raise FileNotFoundError(f"Invalid filepath {filepath}")
 
     with open(filepath, 'rb') as f:
-        temp = pickle.load(f)
-        if isinstance(temp, dict):
+        fetched = pickle.load(f)
+        if isinstance(fetched, dict):
             # If dict is found, create object and update __dict__
-            saved_style = temp.get('style', None)
-            is_complete = temp.get('is_complete', None)
+            saved_style = fetched.get('style', None)
+            is_complete = fetched.get('is_complete', None)
             if is_complete is False:
                 warnings.warn("Trying to load an incomplete dataset.")
             if saved_style is None:
@@ -786,14 +786,18 @@ def load_mr_dataset(filepath, style='dicom'):
             else:
                 dataset_class = find_dataset_using_style(saved_style)
             dataset = dataset_class(
-                name=filepath.name,
-                data_root=filepath.parent,
-                metadata_root=filepath.parent,
-                save=False
+                name=fetched['name'],
+                data_root=fetched['data_root'],
+                metadata_root=fetched['metadata_root'],
+                include_phantom=fetched['include_phantom'],
+                reindex=False,
+                is_complete=fetched['is_complete'],
+                save=False,
+                style=fetched['style']
             )
-            dataset.__dict__.update(temp)
+            dataset.__dict__.update(fetched)
             return dataset
-        elif isinstance(temp, MRdataset.base.Project):
+        elif isinstance(fetched, MRdataset.base.Project):
             # If object is found, return object
-            return temp
+            return fetched
 

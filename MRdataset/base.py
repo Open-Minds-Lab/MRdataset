@@ -334,6 +334,7 @@ class Project(Node):
         self.cache_path = None
         self.set_cache_path()
         self.style = self.get_style()
+        self.is_complete = True
 
     def get_style(self):
         """
@@ -781,6 +782,9 @@ def load_mr_dataset(filepath, style='dicom'):
         if isinstance(temp, dict):
             # If dict is found, create object and update __dict__
             saved_style = temp.get('style', None)
+            is_complete = temp.get('is_complete', None)
+            if is_complete is False:
+                warnings.warn("Trying to load an incomplete dataset.")
             if saved_style is None:
                 dataset_class = find_dataset_using_style(style)
             else:

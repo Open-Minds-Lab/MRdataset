@@ -801,7 +801,3 @@ def load_mr_dataset(filepath, style='dicom'):
             # If object is found, return object
             return temp
 
-
-if __name__ == '__main__':
-    # load_mr_dataset('/home/sinhah/.mrdataset/abcd-375.pkl')
-    load_mr_dataset('/home/sinhah/.mrdataset/abcd-375_master0.pkl')

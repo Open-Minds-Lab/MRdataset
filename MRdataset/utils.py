@@ -139,7 +139,7 @@ def files_in_path(filepaths, ext=None):
 
 
 def valid_dirs(folders):
-    if isinstance(folders, str) or isinstance(folders, pathlib.Path):
+    if isinstance(folders, str) or isinstance(folders, Path):
         if not Path(folders).is_dir():
             raise OSError('Invalid directory {0}'.format(folders))
         return Path(folders).resolve()

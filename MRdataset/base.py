@@ -56,10 +56,7 @@ def import_dataset(data_root=None,
     >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
 
-    if not Path(data_root).is_dir():
-        raise OSError('Expected valid directory for --data_root argument,'
-                      ' Got {0}'.format(data_root))
-    data_root = Path(data_root).resolve()
+    data_root = valid_dirs(data_root)
 
     if not metadata_root:
         metadata_root = Path.home() / CACHE_DIR
@@ -321,9 +318,7 @@ class Project(Node):
         """
         super().__init__(name)
         # Manage directories
-        self.data_root = Path(data_root)
-        if not self.data_root.exists():
-            raise FileNotFoundError('Provide a valid /path/to/dataset/')
+        self.data_root = valid_dirs(data_root)
 
         self.metadata_root = Path(metadata_root)
         if not self.metadata_root.exists():

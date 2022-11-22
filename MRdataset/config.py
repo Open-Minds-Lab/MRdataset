@@ -22,6 +22,7 @@ TAGS = {
 
 # Constant Paths
 CACHE_DIR = ".mrdataset"
+MRDS_EXT = '.mrds.pkl'
 
 # Constant Dicom Identifiers used for protocol compliance.
 # These are the parameters

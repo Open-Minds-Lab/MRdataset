@@ -2,8 +2,8 @@ import importlib
 import warnings
 from pathlib import Path
 import pickle
-from MRdataset.config import CACHE_DIR, setup_logger
-from MRdataset.utils import random_name, timestamp
+from MRdataset.config import CACHE_DIR, setup_logger, MRDS_EXT
+from MRdataset.utils import random_name, timestamp, valid_dirs
 from typing import List, Optional, Type
 import pandas as pd
 import MRdataset

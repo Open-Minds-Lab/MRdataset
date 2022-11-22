@@ -803,5 +803,15 @@ def load_mr_dataset(filepath, style='dicom'):
 
 
 def save_mr_dataset(filename, folder, mrds_obj):
+    ext = ""
+    if isinstance(filename, Path):
+        ext = filename.name.split('.')[-1]
+    elif isinstance(filename, str):
+        ext = filename.split('.')[-1]
+    else:
+        raise NotImplementedError(f"Expected str or pathlib.Path,"
+                                  f" Got {type(filename)}")
+    if not ext:
+        warnings.warn('Extension for saving file, not specified')
     with open(folder / filename, "wb") as f:
         pickle.dump(mrds_obj.__dict__, f)

@@ -341,7 +341,8 @@ class Project(Node):
         return style
 
     def set_cache_path(self):
-        self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(self.name)
+        self.cache_path = self.metadata_root / "{}{}".format(self.name,
+                                                             MRDS_EXT)
 
     @property
     def modalities(self) -> List["Modality"]:

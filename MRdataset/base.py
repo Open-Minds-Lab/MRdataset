@@ -437,7 +437,7 @@ class Project(Node):
         """
         warnings.warn("Function is meant only for smooth "
                       " execution of ABCD dataset. "
-                      "There is no guarantee on other datasets")
+                      "There is no guarantee on other datasets", stacklevel=2)
         if not isinstance(other, Project):
             raise TypeError(f'Cannot merge MRdataset.Project and {type(other)}')
         for modality in other.modalities:
@@ -780,7 +780,7 @@ def load_mr_dataset(filepath, style='dicom'):
             saved_style = fetched.get('style', None)
             is_complete = fetched.get('is_complete', None)
             if is_complete is False:
-                warnings.warn("Trying to load an incomplete dataset.")
+                warnings.warn("Trying to load an incomplete dataset.", stacklevel=2)
             if saved_style is None:
                 dataset_class = find_dataset_using_style(style)
             else:
@@ -812,6 +812,7 @@ def save_mr_dataset(filename, folder, mrds_obj):
         raise NotImplementedError(f"Expected str or pathlib.Path,"
                                   f" Got {type(filename)}")
     if not ext:
-        warnings.warn('Extension for saving file, not specified')
+        warnings.warn('Extension for saving file, not specified',
+                      stacklevel=2)
     with open(folder / filename, "wb") as f:
         pickle.dump(mrds_obj.__dict__, f)

@@ -362,7 +362,7 @@ def get_csa_props(parameter, corpus):
 
     # this runs multiple times on every dicom
     # regexp is expesive? dont use unless we need to
-    match = re.search('=\s*(.*)(\n|$)', corpus[index:])
+    match = re.search('=\s*([^\n]+)', corpus[index:])
     if match:
         match = match.groups()[0]
         # above is also a string. dont worry about conversion?

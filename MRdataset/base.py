@@ -796,7 +796,8 @@ def load_mr_dataset(filepath, style='dicom'):
                 reindex=False,
                 is_complete=fetched['is_complete'],
                 save=False,
-                style=fetched['style']
+                style=fetched['style'],
+                cache_path=fetched['cache_path']
             )
             dataset.__dict__.update(fetched)
             return dataset

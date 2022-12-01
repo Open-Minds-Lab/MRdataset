@@ -340,9 +340,12 @@ class Project(Node):
         style = classname.split('dataset')[0]
         return style
 
-    def set_cache_path(self):
-        self.cache_path = self.metadata_root / "{}{}".format(self.name,
-                                                             MRDS_EXT)
+    def set_cache_path(self, path=None):
+        if not path:
+            self.cache_path = None
+            #self.metadata_root / "{}{}".format(self.name, MRDS_EXT)
+        else:
+            self.cache_path = path
 
     @property
     def modalities(self) -> List["Modality"]:

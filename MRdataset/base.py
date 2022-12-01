@@ -806,7 +806,7 @@ def load_mr_dataset(filepath, style='dicom'):
             return fetched
 
 
-def save_mr_dataset(filename, folder, mrds_obj):
+def save_mr_dataset(filename, mrds_obj):
     ext = ""
     mrds_obj.set_cache_path(filename)
     if isinstance(filename, Path):
@@ -819,5 +819,5 @@ def save_mr_dataset(filename, folder, mrds_obj):
     if not ext:
         warnings.warn('Extension for saving file, not specified',
                       stacklevel=2)
-    with open(folder / filename, "wb") as f:
+    with open(filename, "wb") as f:
         pickle.dump(mrds_obj.__dict__, f)

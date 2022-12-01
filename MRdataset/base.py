@@ -808,6 +808,7 @@ def load_mr_dataset(filepath, style='dicom'):
 
 def save_mr_dataset(filename, folder, mrds_obj):
     ext = ""
+    mrds_obj.set_cache_path(filename)
     if isinstance(filename, Path):
         ext = filename.name.split('.')[-1]
     elif isinstance(filename, str):

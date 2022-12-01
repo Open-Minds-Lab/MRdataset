@@ -42,6 +42,7 @@ class DicomDataset(Project):
                  reindex=False,
                  save=True,
                  is_complete=False,
+                 cache_path=None,
                  **kwargs):
 
         """
@@ -66,6 +67,7 @@ class DicomDataset(Project):
         super().__init__(name, data_root, metadata_root)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
+        self.cache_path = Path(cache_path)
         indexed = self.cache_path.exists()
         if not indexed or reindex:
             self.walk()

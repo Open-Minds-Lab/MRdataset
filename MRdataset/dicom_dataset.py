@@ -67,8 +67,12 @@ class DicomDataset(Project):
         super().__init__(name, data_root, metadata_root)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
-        self.cache_path = Path(cache_path)
-        indexed = self.cache_path.exists()
+        if cache_path:
+            self.cache_path = Path(cache_path)
+            indexed = self.cache_path.exists()
+        else:
+            indexed = None
+
         if not indexed or reindex:
             self.walk()
         else:

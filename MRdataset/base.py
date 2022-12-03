@@ -7,6 +7,7 @@ from MRdataset.utils import random_name, timestamp, valid_dirs
 from typing import List, Optional, Type
 import pandas as pd
 import MRdataset
+from functools import total_ordering
 
 
 def import_dataset(data_root=None,
@@ -126,6 +127,7 @@ def find_dataset_using_style(dataset_style: str):
     return dataset
 
 
+@total_ordering
 class Node:
     """
     An abstract class specifying a generic node in a neuroimaging experiment.
@@ -282,6 +284,23 @@ class Node:
                 self.children[0].__class__.__name__)
         else:
             return "{} {}".format(self.__class__.__name__, self.name)
+
+    def __lt__(self, other):
+        if not isinstance(other, self.__class__):
+            raise RuntimeError(f'< not supported between instances of '
+                               f'{self.__class__.__name__} and '
+                               f'{other.__class__.__name__}')
+        return self.name < other.name
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            raise RuntimeError(f'== not supported between instances of '
+                               f'{self.__class__.__name__} and '
+                               f'{other.__class__.__name__}')
+        if self.name == other.name:
+            if self._children == other._children:
+                return True
+        return False
 
 
 class Project(Node):

@@ -39,6 +39,7 @@ def files_under_folder(path: str, ext: str = None) -> Path:
         pattern = '*'
     for file in folder_path.rglob(pattern):
         if file.is_file():
+            # If it is a regular file and not a directory, return filepath
             yield file
 
 

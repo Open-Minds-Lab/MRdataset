@@ -100,7 +100,10 @@ def is_hashable(value) -> bool:
 def timestamp() -> str:
     """
     Generates time string in the specified format
-    @return: time cast as string
+
+    Returns
+    -------
+    time formatted as string
     """
     time_string = time.strftime("%m_%d_%Y_%H_%M")
     return time_string

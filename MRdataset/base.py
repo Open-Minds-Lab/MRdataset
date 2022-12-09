@@ -272,6 +272,7 @@ class Node:
             child.print_tree(markerStr, [*levelMarkers, not isLast])
 
     def __repr__(self) -> str:
+        """String representation for developers"""
         return "<class MRdataset.base.{}({})>".format(self.__class__.__name__,
                                                       self.name)
 

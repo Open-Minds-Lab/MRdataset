@@ -14,7 +14,22 @@ import numpy as np
 from typing import Union, List, Optional
 
 
-def files_under_folder(path, ext=None):
+def files_under_folder(path: str, ext: str = None) -> Path:
+    """
+    Generates all the files inside the folder recursively. If ext is given returns file which
+    have that extension.
+
+    Parameters
+    ----------
+    path: str
+        filepath of the directory
+    ext: str
+        filter files with given extension. For ex. return only .nii files
+
+    Returns
+    -------
+    generates filepaths
+    """
     if not Path(path).exists():
         raise FileNotFoundError("Folder doesn't exist")
     folder_path = Path(path).resolve()

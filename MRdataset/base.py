@@ -46,6 +46,8 @@ def import_dataset(data_root=None,
     include_nifti_header :
         whether to check nifti headers for compliance,
         only used when --style==bids
+    save :
+        whether to save the dataset or not
     Returns
     -------
     dataset : MRdataset.base.Project()

@@ -121,8 +121,14 @@ def random_name() -> str:
 def is_hashable(value) -> bool:
     """
     Check if variable type is hashable, required to make dictionary keys
-    @param value: any variable
-    @return: bool
+
+    Parameters
+    ----------
+    value : any datatype
+
+    Returns
+    -------
+    If the data type is hashable
     """
     return isinstance(value, Hashable)
 

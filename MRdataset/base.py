@@ -117,7 +117,7 @@ def find_dataset_using_style(dataset_style: str):
     target_dataset_class = '{}dataset'.format(dataset_style)
     for name, cls in dataset_lib.__dict__.items():
         name_matched = name.lower() == target_dataset_class.lower()
-        if name_matched and issubclass(cls, MRdataset.base.Project):
+        if name_matched and issubclass(cls, Project):
             dataset = cls
 
     if dataset is None:

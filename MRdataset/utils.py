@@ -45,10 +45,16 @@ def files_under_folder(path: str, ext: str = None) -> Path:
 def safe_get(dictionary: dict, keys: str, default=None):
     """
     Used to get value from nested dictionaries without getting KeyError
-    @param dictionary: nested dict from which the value should be fetched
-    @param keys: string of keys delimited by '.'
-    @param default: if KeyError, return default
-    @return: object
+
+    Parameters
+    ----------
+    dictionary : nested dict from which the value should be fetched
+    keys : string of keys delimited by '.'
+    default : if KeyError, return default
+
+    Returns
+    -------
+    Value stored in that key
 
     Examples:
     To get value, dictonary[tag1][tag2][tag3],

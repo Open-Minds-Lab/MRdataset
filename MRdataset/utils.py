@@ -106,7 +106,25 @@ def timestamp() -> str:
     return time_string
 
 
-def select_parameters(filepath, ext):
+def select_parameters(filepath, ext) -> dict:
+    """
+    Reads parameters for BIDS datasets. The filepath can either point to a
+     JSON file or a NIfTI file. In case of a NIfTI file the parameters are
+     extracted from the header.
+
+    Parameters
+    ----------
+    filepath : pathlib.Path or str
+        Path pointing to either a JSON or NIfTI file
+    ext : str
+        Argument to choose either a NIfTI file or a JSON file
+    Returns
+    -------
+
+    """
+    # TODO: filepath should already have the extension, why do you need to
+    #  pass separately? Modify the code.
+
     selected_params = dict()
     if ext == '.json':
         with open(filepath, "r") as read_file:

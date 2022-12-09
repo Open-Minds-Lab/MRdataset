@@ -341,7 +341,8 @@ class Project(Node):
 
     def set_cache_path(self):
         """Path to save the dataset"""
-        self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(self.name)
+        self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(
+            self.name)
 
     @property
     def modalities(self) -> List["Modality"]:

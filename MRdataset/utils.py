@@ -86,10 +86,15 @@ def param_difference(dict1: dict,
     3. Will be helpful in hierarchical checks (e.g. within modality within
     session)
 
-    @param dict1: source dict
-    @param dict2: destination dict
-    @param ignore: dictionary keys which should be ignored
-    @return: list of items representing addition/deletion/change
+    Parameters
+    ----------
+    dict1 : source dictionary
+    dict2 : destination dictionary
+    ignore : dictionary keys which should be ignored
+
+    Returns
+    -------
+    list of items representing addition/deletion/change
     """
     if isinstance(dict1, dict) and isinstance(dict2, dict):
         if ignore is None:

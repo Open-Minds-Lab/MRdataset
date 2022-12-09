@@ -110,7 +110,10 @@ def param_difference(dict1: dict,
 def random_name() -> str:
     """
     Function to generate a random identifier/name
-    @return: random_number cast to string
+
+    Returns
+    -------
+    random_number cast to string
     """
     return str(hash(str(uuid.uuid1())) % 1000000)
 

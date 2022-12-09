@@ -336,6 +336,7 @@ class Project(Node):
         self.set_cache_path()
 
     def set_cache_path(self):
+        """Path to save the dataset"""
         self.cache_path = self.metadata_root / "{}.mrdataset.pkl".format(self.name)
 
     @property

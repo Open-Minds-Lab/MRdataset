@@ -1,11 +1,13 @@
 import importlib
+import pickle
 import warnings
 from pathlib import Path
-import pickle
+from typing import List, Optional, Type
+
+import pandas as pd
+
 from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp
-from typing import List, Optional, Type
-import pandas as pd
 
 
 def import_dataset(data_root=None,
@@ -446,7 +448,6 @@ class Project(Node):
                 exist_modality.add_subject(subject)
 
 
-
 class Modality(Node):
     """
     Container to manage properties and issues at the modality level.
@@ -760,4 +761,3 @@ class Run(Node):
         self.error = False
         self.params = dict()
         self.delta = None
-

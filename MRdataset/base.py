@@ -418,14 +418,12 @@ class Project(Node):
 
     def merge(self, other):
         """
-        merges only at the subject level
+        merges only at the subject level. Function would work if two partial
+        datasets have mutually exclusive subjects in a single modality.
         Parameters
         ----------
-        other
-
-        Returns
-        -------
-
+        other: Project
+            another partial dataset you want to merge with self.
         """
         warnings.warn("Function is meant only for smooth "
                       " execution of ABCD dataset. "

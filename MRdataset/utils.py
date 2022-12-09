@@ -11,6 +11,7 @@ from dictdiffer import diff as dict_diff
 from bids.layout.models import BIDSFile
 import nibabel as nib
 import numpy as np
+from typing import Union, List, Optional
 
 
 def files_under_folder(path, ext=None):

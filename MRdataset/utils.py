@@ -126,6 +126,16 @@ def select_parameters(filepath, ext):
 
 
 def get_ext(file: BIDSFile) -> str:
+    """
+    Extract the extension from a BIDSFile object.
+    Parameters
+    ----------
+    file : A BIDSFile object
+
+    Returns
+    -------
+    file extension as a string
+    """
     return file.tags['extension'].value
 
 

@@ -129,9 +129,26 @@ def get_ext(file: BIDSFile) -> str:
     return file.tags['extension'].value
 
 
-def files_in_path(path, ext=None):
-    if isinstance(path, Iterable):
-        files = [list(files_under_folder(i, ext)) for i in path]
+def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
+    """
+    If given a single folder, returns the list of all files in the directory.
+    If given a list of folders, returns concatenated list of all the files
+    inside each directory.
+
+    Parameters
+    ----------
+    folders : List[Path]
+        List of folder paths
+    ext : str
+        Used to filter files, and select only those which have this extension
+    Returns
+    -------
+    List of paths
+    """
+    if isinstance(folders, Iterable):
+        files = []
+        for i in folders:
+            files.extend(list(files_under_folder(i, ext)))
         return files
     return list(files_under_folder(folders, ext))
 

@@ -277,6 +277,7 @@ class Node:
                                                       self.name)
 
     def __str__(self):
+        """String representation for users"""
         if len(self.children) > 0:
             return "{} {} with {} {}".format(
                 self.__class__.__name__,

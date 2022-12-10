@@ -60,6 +60,21 @@ class BIDSDataset(Project):
             self.load_dataset()
 
     def get_filters(self, subject=None, session=None, datatype=None):
+        """
+        Given subject ids, session ids, and datatype, the function would create
+        a dictionary to fetch the appropriate file from BIDS Layout. It just
+        creates the filter dictionary, doesn't fetch the files itself.
+
+        Parameters
+        ----------
+        subject : list of subject ids
+        session : list if session ids
+        datatype : list of datatypes like anat, func, dwi etc
+
+        Returns
+        -------
+        Dict to specify the filter parameters
+        """
         filters = {'extension': ['json']}
         if subject:
             filters['subject'] = subject

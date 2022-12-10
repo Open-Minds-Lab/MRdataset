@@ -155,7 +155,8 @@ class BIDSDataset(Project):
         if not self.modalities:
             raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
-    def parse(self, session_node, filters, bids_layout):
+    def parse(self, session_node: Session,
+              filters: dict, bids_layout: BIDSLayout) -> Session:
         """
         Extracts parameters for a run. Adds the new run node to session node,
         returns modified session node.

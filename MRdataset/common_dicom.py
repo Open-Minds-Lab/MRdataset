@@ -40,7 +40,19 @@ def is_dicom_file(filename: str):
         return True
 
 
-def isSameSet(dicom):
+def isSameSet(dicom: pydicom.FileDataset) -> str:
+    """
+    Provides a unique id for Series, to which the input dicom file
+    belongs to.
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+
+    Returns
+    -------
+    Series identifier to which this DICOM should be added to
+    """
     series_uid = dicom.get('SeriesInstanceUID', None)
     # echo_num = dicom.get('EchoNumbers', None)
     echo_time = dicom.get('EchoTime', None)

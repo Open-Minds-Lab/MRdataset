@@ -369,7 +369,25 @@ def get_csa_props(parameter, corpus):
     return code
 
 
-def effective_echo_spacing(dicom):
+def effective_echo_spacing(dicom) -> Optional[float]:
+    """
+    Calculates effective echo spacing in sec.
+    * For Siemens
+    Effective Echo Spacing (s) =
+    (BandwidthPerPixelPhaseEncode * MatrixSizePhase)^-1
+
+    * For Philips
+    echo spacing (msec) =
+     1000*water-fat shift (per pixel)/(water-fat shift(in Hz)*echo_train_length)
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+
+    Returns
+    -------
+    float value for effective echo spacing
+    """
     bwp_phase_encode = get_param_value_by_name(dicom, 'PixelBandwidth')
     phase_encoding = get_param_value_by_name(dicom, 'PhaseEncodingSteps')
 

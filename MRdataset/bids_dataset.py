@@ -155,6 +155,25 @@ class BIDSDataset(Project):
             raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
     def parse(self, session_node, filters, bids_layout):
+        """
+        Extracts parameters for a run. Adds the new run node to session node,
+        returns modified session node.
+
+        Parameters
+        ----------
+        session_node : MRdataset.base.Session
+            session node to which the run node has to be added
+        filters : dict
+            dictionary defining arguments like subject, session, datatype to
+            extract corresponding files from a BIDS Layout object
+        bids_layout : bids.BIDSLayout
+            data structure which encapsulates the entire BIDS data structure
+
+        Returns
+        -------
+        session_node : MRdataset.base.Session
+            modified session_node which also contains the new run
+        """
         files = bids_layout.get(**filters)
         for file in files:
             filename = file.filename

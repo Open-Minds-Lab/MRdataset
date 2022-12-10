@@ -19,7 +19,19 @@ with warnings.catch_warnings():
 logger = logging.getLogger('root')
 
 
-def is_dicom_file(filename):
+def is_dicom_file(filename: str):
+    """
+    The first 4 bytes are read from the file. For a valid DICOM file,
+    the bytes should be DICM. Otherwise, it is not a valid DICOM file.
+    Parameters
+    ----------
+    filename : str
+        path to the file
+
+    Returns
+    -------
+    bool : if the file is a DICOM file
+    """
     file_stream = open(filename, 'rb')
     file_stream.seek(128)
     data = file_stream.read(4)

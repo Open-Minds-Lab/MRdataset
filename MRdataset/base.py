@@ -230,34 +230,18 @@ class Node:
         """
         Adapted from
         https://simonhessner.de/python-3-recursively-print-structured-tree-including-hierarchy-markers-using-depth-first-search/
-        Recursive function that prints the hierarchical structure of a tree including markers that indicate
-            parent-child relationships between nodes.
-            Parameters:
-            - root: Node instance, possibly containing children Nodes
-            - markerStr: String to print in front of each node  ("+- " by default)
-            - levelMarkers: Internally used by recursion to indicate where to
-                            print markers and connections (see explanations below)
+        Recursive function that prints the hierarchical structure of a tree
+        including markers that indicate parent-child relationships between nodes
 
-            Example output:
-            1
-            +- 1.1
-            |  +- 1.1.1
-            |  |  +- 1.1.1.1
-            |  |  +- 1.1.1.2
-            |  +- 1.1.2
-            |  |  +- 1.1.2.1
-            |  |  +- 1.1.2.2
-            |  |  +- 1.1.2.3
-            |  |     +- 1.1.2.3.1
-            |  +- 1.1.3
-            +- 1.2
-            |  +- 1.2.1
-            |  +- 1.2.2
-            +- 1.3
-            +- 1.4
-               +- 1.4.1
-               +- 1.4.2
+        Parameters
+        ----------
+        markerStr : str
+            String to print in front of each node  ("+- " by default)
+        levelMarkers : list
+            Internally used by recursion to indicate where to print markers
+            and connections
         """
+
         emptyStr = " " * len(markerStr)
         connectionStr = "|" + emptyStr[:-1]
 

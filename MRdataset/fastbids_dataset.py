@@ -82,9 +82,21 @@ class FastBIDSDataset(Project):
         if not self.modalities:
             raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
-    def parse(self, session_node, filepath):
-        # files = bids_layout.get(**filters)
-        # for file in files:
+    def parse(self, session_node: Session, filepath) -> Session:
+        """
+            Extracts parameters for a file. Adds the parameters as a
+            new run node to given session node, returns modified session node.
+
+            Parameters
+            ----------
+            session_node : MRdataset.base.Session
+                session node to which the run node has to be added
+
+            Returns
+            -------
+            session_node : MRdataset.base.Session
+                modified session_node which also contains the new run
+            """
         filename = filepath.name
         ext = filepath.suffix
         if ext == '.json':

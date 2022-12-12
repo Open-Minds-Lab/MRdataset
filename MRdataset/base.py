@@ -3,7 +3,7 @@ import pickle
 import warnings
 from functools import total_ordering
 from pathlib import Path
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Type, Union, Sized
 
 import MRdataset
 import pandas as pd
@@ -241,7 +241,8 @@ class Node:
             return
         self._non_compliant_children.append(other)
 
-    def print_tree(self, markerStr="+- ", levelMarkers=None):
+    def print_tree(self, markerStr: str = "+- ",
+                   levelMarkers: Sized = None) -> None:
         """
         Adapted from
         https://simonhessner.de/python-3-recursively-print-structured-tree-including-hierarchy-markers-using-depth-first-search/

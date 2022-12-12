@@ -273,10 +273,14 @@ class Node:
 
         # Draw the markers for the current level
         markers = "".join(map(mapper, levelMarkers[:-1]))
+        # Draw the marker for the current node
         markers += markerStr if level > 0 else ""
+        # Print the node name
         print(f"{markers}{self.name}")
 
+        # Recursively print the children
         for i, child in enumerate(self.children):
+            # If the node is the last child, don't draw a connection
             isLast = i == len(self.children) - 1
             child.print_tree(markerStr, [*levelMarkers, not isLast])
 

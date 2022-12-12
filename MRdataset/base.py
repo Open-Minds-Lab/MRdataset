@@ -69,8 +69,8 @@ def import_dataset(data_root: Union[str, List[str]] = None,
 
     # Check if metadata_root is valid
     if not Path(metadata_root).is_dir():
-        raise OSError('Expected valid directory for --metadata_root argument,'
-                      ' Got {0}'.format(metadata_root))
+        raise FileNotFoundError('Expected valid directory for --metadata_root '
+                                'argument, Got {0}'.format(metadata_root))
     metadata_root = Path(metadata_root).resolve()
 
     # Check if name is provided by user, otherwise use random name

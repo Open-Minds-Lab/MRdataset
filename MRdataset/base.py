@@ -339,7 +339,7 @@ class Project(Node):
 
     def __init__(self, name, data_root, metadata_root, **kwargs):
         """
-        Constructor
+        Constructor for Project class
 
         Parameters
         ----------

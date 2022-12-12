@@ -301,6 +301,7 @@ class Node:
             return "{} {}".format(self.__class__.__name__, self.name)
 
     def __lt__(self, other):
+        """Comparison operator for sorting"""
         if not isinstance(other, self.__class__):
             raise RuntimeError(f'< not supported between instances of '
                                f'{self.__class__.__name__} and '
@@ -308,6 +309,7 @@ class Node:
         return self.name < other.name
 
     def __eq__(self, other):
+        """Comparison operator for equality"""
         if not isinstance(other, self.__class__):
             raise RuntimeError(f'== not supported between instances of '
                                f'{self.__class__.__name__} and '

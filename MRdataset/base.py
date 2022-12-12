@@ -160,7 +160,7 @@ class Node:
 
     def __init__(self, name: str, **kwargs) -> None:
         """
-        Constructor
+        Constructor for Node class
 
         Parameters
         ----------

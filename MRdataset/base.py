@@ -121,20 +121,28 @@ def find_dataset_using_style(dataset_style: str):
     dataset: MRdataset.base.Project()
         dataset container class
     """
+    # Import the module "{style}_dataset.py"
     dataset_modulename = "MRdataset.{}_dataset".format(dataset_style)
     dataset_lib = importlib.import_module(dataset_modulename)
 
     dataset = None
+    # Find the class in the module
     target_dataset_class = '{}dataset'.format(dataset_style)
+    # Iterate through the module's attributes
     for name, cls in dataset_lib.__dict__.items():
+        # If the attribute is a class
         name_matched = name.lower() == target_dataset_class.lower()
+        # If the class is a subclass of MRdataset.base.Dataset
         if name_matched and issubclass(cls, Project):
+            # Use the class
             dataset = cls
 
+    # If no class was found, raise an error
     if dataset is None:
         raise NotImplementedError(
             "Expected %s to be a subclass of MRdataset.base.Project in % s.py."
             % (target_dataset_class, dataset_modulename))
+    # Return the class
     return dataset
 
 

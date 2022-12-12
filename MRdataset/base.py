@@ -377,6 +377,17 @@ class Project(Node):
         return style
 
     def set_cache_path(self, path=None):
+        """
+        Sets cache path for the project
+        Parameters
+        ----------
+        path: str or Path
+            Path to cache file
+
+        Returns
+        -------
+        None
+        """
         if not path:
             self.cache_path = None
             #self.metadata_root / "{}{}".format(self.name, MRDS_EXT)

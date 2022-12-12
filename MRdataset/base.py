@@ -1,13 +1,14 @@
 import importlib
-import warnings
-from pathlib import Path
 import pickle
-from MRdataset.config import CACHE_DIR, setup_logger, MRDS_EXT
-from MRdataset.utils import random_name, timestamp, valid_dirs
-from typing import List, Optional, Type
-import pandas as pd
-import MRdataset
+import warnings
 from functools import total_ordering
+from pathlib import Path
+from typing import List, Optional, Type, Union
+
+import MRdataset
+import pandas as pd
+from MRdataset.config import CACHE_DIR, setup_logger
+from MRdataset.utils import random_name, timestamp, valid_dirs
 
 
 def import_dataset(data_root=None,

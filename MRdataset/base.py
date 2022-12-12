@@ -266,7 +266,12 @@ class Node:
             levelMarkers = []
         else:
             level = len(levelMarkers)
-        mapper = lambda draw: connectionStr if draw else emptyStr
+
+        def mapper(draw):
+            # If the node is the last child, don't draw a connection
+            return connectionStr if draw else emptyStr
+
+        # Draw the markers for the current level
         markers = "".join(map(mapper, levelMarkers[:-1]))
         markers += markerStr if level > 0 else ""
         print(f"{markers}{self.name}")

@@ -824,6 +824,21 @@ class Run(Node):
 
 
 def load_mr_dataset(filepath, style='dicom'):
+    """
+    Load a dataset from a file
+
+    Parameters
+    ----------
+    filepath: str or Path
+        path to the dataset file
+    style : str
+        style of the dataset file. Currently only supports dicom, bids
+
+    Returns
+    -------
+    dataset : MRdataset.base.Project
+        dataset loaded from the file
+    """
     if Path(filepath).exists():
         filepath = Path(filepath)
     else:

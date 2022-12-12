@@ -852,7 +852,8 @@ def load_mr_dataset(filepath: str,
             saved_style = fetched.get('style', None)
             is_complete = fetched.get('is_complete', None)
             if is_complete is False:
-                warnings.warn("Trying to load an incomplete dataset.", stacklevel=2)
+                warnings.warn("Trying to load an incomplete dataset.",
+                              stacklevel=2)
             if saved_style is None:
                 dataset_class = find_dataset_using_style(style)
             else:

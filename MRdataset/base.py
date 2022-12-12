@@ -11,14 +11,14 @@ from MRdataset.config import CACHE_DIR, setup_logger
 from MRdataset.utils import random_name, timestamp, valid_dirs
 
 
-def import_dataset(data_root=None,
-                   style='dicom',
-                   name=None,
-                   reindex=False,
-                   include_phantom=False,
-                   verbose=False,
-                   metadata_root=None,
-                   include_nifti_header=False,
+def import_dataset(data_root: Union[str, List[str]] = None,
+                   style: str = 'dicom',
+                   name: str = None,
+                   reindex: bool = False,
+                   include_phantom: bool = False,
+                   verbose: bool = False,
+                   metadata_root: Union[str, Path] = None,
+                   include_nifti_header: bool = False,
                    save=True) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for

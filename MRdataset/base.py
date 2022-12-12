@@ -22,13 +22,13 @@ def import_dataset(data_root: Union[str, List[str]] = None,
                    save=True) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
-    base.Dataset. This is the main interface between this package and your
+    base.Project. This is the main interface between this package and your
     analysis.
 
     Parameters
     ----------
-    data_root : str
-        path/to/my/dataset containing .dcm files
+    data_root : Union[str, List[str]]
+        path/to/my/dataset containing files
     style : str
         Specify dataset type. Imports the module "{style}_dataset.py",
         which will instantiate {Style}Dataset().
@@ -37,21 +37,21 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         results
     reindex : bool
         Similar to --no-cache. Rejects all cached files and rebuilds index.
-    include_phantom
+    include_phantom: bool
         Whether to include non-subject scans like localizer, acr/phantom,
         aahead_scout
-    verbose :
+    verbose: bool
         The flag allows you to change the verbosity of execution
-    metadata_root :
+    metadata_root: Union[str, Path]
         change the default cache directory
-    include_nifti_header :
+    include_nifti_header: bool
         whether to check nifti headers for compliance,
         only used when --style==bids
-    save :
+    save: bool
         whether to save the dataset or not
     Returns
     -------
-    dataset : MRdataset.base.Project()
+    dataset : MRdataset.base.Project
         dataset container class
 
     Examples

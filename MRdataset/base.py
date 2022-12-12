@@ -59,18 +59,21 @@ def import_dataset(data_root: Union[str, List[str]] = None,
     >>> from MRdataset import import_dataset
     >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
-
+    # Check if data_root is valid
     data_root = valid_dirs(data_root)
 
+    # Check if metadata_root is provided by user, otherwise use default
     if not metadata_root:
         metadata_root = Path.home() / CACHE_DIR
         metadata_root.mkdir(exist_ok=True)
 
+    # Check if metadata_root is valid
     if not Path(metadata_root).is_dir():
         raise OSError('Expected valid directory for --metadata_root argument,'
                       ' Got {0}'.format(metadata_root))
     metadata_root = Path(metadata_root).resolve()
 
+    # Check if name is provided by user, otherwise use random name
     if name is None:
         warnings.warn(
             'Expected a unique identifier for caching data. Got NoneType. '
@@ -78,10 +81,14 @@ def import_dataset(data_root: Union[str, List[str]] = None,
             stacklevel=2)
         name = random_name()
 
+    # Setup logger
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
     setup_logger('root', log_filename)
 
+    # Find dataset class using style
     dataset_class = find_dataset_using_style(style.lower())
+
+    # Instantiate dataset class
     dataset = dataset_class(
         name=name,
         data_root=data_root,
@@ -91,9 +98,10 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         include_nifti_header=include_nifti_header,
         save=save
     )
+    # Print dataset summary
     if verbose:
         print(dataset)
-
+    # Return dataset
     return dataset
 
 

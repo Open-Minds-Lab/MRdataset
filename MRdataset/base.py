@@ -486,16 +486,24 @@ class Project(Node):
         warnings.warn("Function is meant only for smooth "
                       " execution of ABCD dataset. "
                       "There is no guarantee on other datasets", stacklevel=2)
+        # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, Project):
             raise TypeError(f'Cannot merge MRdataset.Project and {type(other)}')
+        # Add a check to ensure that the two datasets are of same style
+        if self.style != other.style:
+            raise TypeError(f'Cannot merge {self.style} and {other.style}')
+
         for modality in other.modalities:
+            # Check if modality is present in Project
             exist_modality = self.get_modality(modality.name)
             # If modality doesn't exist
             if exist_modality is None:
+                # Add modality to Project
                 self.add_modality(modality)
                 continue
             # If modality already exists
             for subject in modality.subjects:
+                # Add subject to modality
                 exist_modality.add_subject(subject)
 
 

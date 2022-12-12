@@ -823,13 +823,14 @@ class Run(Node):
         self.delta = None
 
 
-def load_mr_dataset(filepath, style='dicom'):
+def load_mr_dataset(filepath: str,
+                    style: str = 'dicom') -> MRdataset.base.Project:
     """
     Load a dataset from a file
 
     Parameters
     ----------
-    filepath: str or Path
+    filepath: Union[str, Path]
         path to the dataset file
     style : str
         style of the dataset file. Currently only supports dicom, bids

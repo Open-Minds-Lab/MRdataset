@@ -69,12 +69,8 @@ class DicomDataset(Project):
         self.include_phantom = include_phantom
         if cache_path:
             self.cache_path = Path(cache_path)
-
-        if reindex:
-            self.walk()
-
-        if save:
-            self.save_dataset()
+            if save:
+                self.save_dataset()
 
     def walk(self):
         """generates filenames in the directory tree, verifies if it is dicom

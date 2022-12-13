@@ -367,6 +367,9 @@ class Project(Node):
         self.style = self.get_style()
         self.is_complete = True
 
+    def walk(self):
+        raise NotImplementedError("walk method must be implemented")
+
     def get_style(self):
         """
         Extracts style from classname

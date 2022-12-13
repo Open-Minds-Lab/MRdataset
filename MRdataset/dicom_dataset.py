@@ -69,14 +69,9 @@ class DicomDataset(Project):
         self.include_phantom = include_phantom
         if cache_path:
             self.cache_path = Path(cache_path)
-            indexed = self.cache_path.exists()
-        else:
-            indexed = None
 
-        if not indexed or reindex:
+        if reindex:
             self.walk()
-        else:
-            self.load_dataset()
 
         if save:
             self.save_dataset()

@@ -840,7 +840,7 @@ def load_mr_dataset(filepath: Union[str, Path],
     dataset : MRdataset.base.Project
         dataset loaded from the file
     """
-    if Path(filepath).exists():
+    if Path(filepath).is_file():
         filepath = Path(filepath)
     else:
         raise FileNotFoundError(f"Invalid filepath {filepath}")

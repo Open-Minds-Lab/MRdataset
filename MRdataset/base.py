@@ -7,7 +7,7 @@ from typing import List, Optional, Type, Union, Sized
 
 import MRdataset
 import pandas as pd
-from MRdataset.config import CACHE_DIR, setup_logger
+from MRdataset.config import CACHE_DIR, setup_logger, MRDS_EXT
 from MRdataset.utils import random_name, timestamp, valid_dirs
 
 

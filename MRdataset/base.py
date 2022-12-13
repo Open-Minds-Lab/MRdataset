@@ -876,18 +876,35 @@ def load_mr_dataset(filepath: Union[str, Path],
             return fetched
 
 
-def save_mr_dataset(filename, mrds_obj):
-    ext = ""
-    mrds_obj.set_cache_path(filename)
-    if isinstance(filename, Path):
-        ext = filename.name.split('.')[-1]
-    elif isinstance(filename, str):
-        ext = filename.split('.')[-1]
+def save_mr_dataset(filepath: Union[str, Path],
+                    mrds_obj: MRdataset.base.Project) -> None:
+    """
+    Save a dataset to a file
+
+    Parameters
+    ----------
+    filepath: Union[str, Path]
+        path to the dataset file
+    mrds_obj: MRdataset.base.Project
+        dataset to be saved
+
+    Returns
+    -------
+    None
+    """
+    # Set cache_path, denotes the path to which dataset saved
+    mrds_obj.set_cache_path(filepath)
+
+    # Extract extension from filename
+    if isinstance(filepath, Path):
+        ext = filepath.name.split('.')[-1]
+    elif isinstance(filepath, str):
+        ext = filepath.split('.')[-1]
     else:
         raise NotImplementedError(f"Expected str or pathlib.Path,"
-                                  f" Got {type(filename)}")
-    if not ext:
-        warnings.warn('Extension for saving file, not specified',
-                      stacklevel=2)
-    with open(filename, "wb") as f:
+                                  f" Got {type(filepath)}")
+    assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
+
+    with open(filepath, "wb") as f:
+        # save dict of the object as pickle
         pickle.dump(mrds_obj.__dict__, f)

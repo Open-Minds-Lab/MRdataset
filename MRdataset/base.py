@@ -393,7 +393,7 @@ class Project(Node):
         """
         if not path:
             self.cache_path = None
-            #self.metadata_root / "{}{}".format(self.name, MRDS_EXT)
+            # self.metadata_root / "{}{}".format(self.name, MRDS_EXT)
         else:
             self.cache_path = path
 

@@ -95,7 +95,6 @@ class DicomDataset(Project):
                                                    dicom,
                                                    self.include_phantom):
 
-                    # info = common.parse_study_information(dicom)
                     modality_name = common_dicom.get_dicom_modality_tag(dicom)
                     modality_obj = self.get_modality(modality_name)
                     if modality_obj is None:
@@ -112,12 +111,6 @@ class DicomDataset(Project):
                         session_node = Session(series_num,
                                                Path(filepath).parent)
 
-                    # series_uid = dicom.get('SeriesInstanceUID', None)
-                    # echo_num = dicom.get('EchoNumbers', None)
-                    # if echo_num:
-                    #     run_name = series_uid + '_e' + str(dicom.EchoNumbers)
-                    # else:
-                    #     run_name = series_uid
                     run_name = common_dicom.isSameSet(dicom)
                     run_node = session_node.get_run(run_name)
                     if run_node is None:

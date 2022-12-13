@@ -52,6 +52,7 @@ def main():
                              verbose=args.verbose,
                              metadata_root=args.metadata_root,
                              include_nifti_header=args.include_nifti_header)
+    dataset.walk()
     return dataset
 
 

@@ -118,7 +118,8 @@ class DicomDataset(Project):
                         run_node.echo_time = dicom.get('EchoTime', 1.0)
 
                     dcm_img_params = common_dicom.parse_imaging_params(filepath)
-                    param_diff = param_difference(dcm_img_params, run_node.params)
+                    param_diff = param_difference(dcm_img_params,
+                                                  run_node.params)
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
                     elif param_diff:

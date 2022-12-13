@@ -823,7 +823,7 @@ class Run(Node):
         self.delta = None
 
 
-def load_mr_dataset(filepath: str,
+def load_mr_dataset(filepath: Union[str, Path],
                     style: str = 'dicom') -> MRdataset.base.Project:
     """
     Load a dataset from a file

@@ -58,7 +58,9 @@ class Node:
             another Node object that must be added to list of children
         """
         if not isinstance(other, Node):
-            raise TypeError("must be base.Node, not {}".format(type(other)))
+            raise TypeError("must be {}, not {}".format(
+                type(Node),
+                type(other)))
         self._children[other.name] = other
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
@@ -287,7 +289,8 @@ class Project(Node):
         """
         if not isinstance(new_modality, Modality):
             raise TypeError(
-                "Expected argument of type <Modality>, got {} instead".format(
+                "Expected argument of type {}, got {} instead".format(
+                    type(Modality),
                     type(new_modality)))
         self.add(new_modality)
 
@@ -473,8 +476,8 @@ class Modality(Node):
         """
         if not isinstance(new_subject, Subject):
             raise TypeError(
-                "Expected argument of type <Subject>, got {} instead".format(
-                    type(new_subject)))
+                "Expected argument of type {}, got {} instead".format(
+                    type(Subject), type(new_subject)))
         self.add(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
@@ -603,8 +606,8 @@ class Subject(Node):
         """
         if not isinstance(new_session, Session):
             raise TypeError(
-                "Expected argument of type <Session>, got {} instead"
-                "".format(type(new_session)))
+                "Expected argument of type {}, got {} instead"
+                "".format(type(Session), type(new_session)))
         self.add(new_session)
 
     def get_session(self, name) -> Optional["Session"]:
@@ -658,8 +661,8 @@ class Session(Node):
             new run node added to the session
         """
         if not isinstance(new_run, Run):
-            raise TypeError("Expected type <Run>, got {} instead"
-                            .format(type(new_run)))
+            raise TypeError("Expected type {}, got {} instead"
+                            .format(type(Run), type(new_run)))
         self.add(new_run)
 
     def get_run(self, name):

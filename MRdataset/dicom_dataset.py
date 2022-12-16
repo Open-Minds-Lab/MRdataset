@@ -1,14 +1,12 @@
 import logging
 from pathlib import Path
 
-import dicom2nifti
 import pydicom
 
 from MRdataset import common_dicom
 from MRdataset import config
 from MRdataset.core import Project, Run, Modality, Subject, Session
-from MRdataset.utils import param_difference, files_under_folder, files_in_path
-import warnings
+from MRdataset.utils import param_difference, files_in_path
 
 # Module-level logger
 logger = logging.getLogger('root')

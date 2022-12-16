@@ -1,0 +1,1 @@
+*.ipynb filter=strip-notebook-output  # strip output from notebooks

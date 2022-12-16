@@ -182,7 +182,7 @@ class Node:
             raise RuntimeError(f'== not supported between instances of '
                                f'{self.__class__.__name__} and '
                                f'{other.__class__.__name__}')
-        if self.__dict__ == other.__dict__:
+        if other._children == self._children:
             return True
         return False
 

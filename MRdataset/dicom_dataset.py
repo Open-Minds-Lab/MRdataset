@@ -41,7 +41,7 @@ class DicomDataset(Project):
                  include_phantom=False,
                  reindex=False,
                  save=True,
-                 is_complete=False,
+                 is_complete=True,
                  cache_path=None,
                  **kwargs):
 

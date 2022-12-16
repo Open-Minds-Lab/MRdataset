@@ -125,9 +125,9 @@ class DicomDataset(Project):
                         param_name = param_diff[0][1]
                         expect = run_node.params[param_name]
                         got = dcm_img_params[param_name]
-                        warnings.warn(f"Slices with varying {param_name}"
-                                      f" in {filepath}."
-                                      f" Expected {expect}, Got {got}")
+                        logger.info(f"Slices with varying {param_name}"
+                                       f" in {filepath}."
+                                       f" Expected {expect}, Got {got}")
 
                     session_node.add_run(run_node)
                     subject_obj.add_session(session_node)

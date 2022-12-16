@@ -183,8 +183,7 @@ def load_mr_dataset(filepath: Union[str, Path],
             saved_style = fetched.get('style', None)
             is_complete = fetched.get('is_complete', None)
             if is_complete is False:
-                warnings.warn("Loading a partial dataset.",
-                              stacklevel=2)
+                logger.warning("Loading a partial dataset.")
             if saved_style is None:
                 dataset_class = find_dataset_using_style(style)
             else:

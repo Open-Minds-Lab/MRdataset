@@ -169,6 +169,8 @@ def load_mr_dataset(filepath: Union[str, Path],
     dataset : MRdataset.core.Project
         dataset loaded from the file
     """
+    logger = logging.getLogger('root')
+
     if Path(filepath).is_file():
         filepath = Path(filepath)
     else:

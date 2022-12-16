@@ -3,11 +3,14 @@ import warnings
 from functools import total_ordering
 from pathlib import Path
 from typing import List, Optional, Type, Sized
-
+import logging
 import pandas as pd
 
 from MRdataset.base import find_dataset_using_style
 from MRdataset.utils import valid_dirs
+
+
+logger = logging.getLogger('root')
 
 
 @total_ordering

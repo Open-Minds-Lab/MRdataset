@@ -179,9 +179,8 @@ class Node:
             raise RuntimeError(f'== not supported between instances of '
                                f'{self.__class__.__name__} and '
                                f'{other.__class__.__name__}')
-        if self.name == other.name:
-            if self._children == other._children:
-                return True
+        if self.__dict__ == other.__dict__:
+            return True
         return False
 
 

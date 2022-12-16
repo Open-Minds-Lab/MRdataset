@@ -546,6 +546,27 @@ class Modality(Node):
         return len(self._reference) > 1
 
     def reasons_non_compliance(self, echo_time=None):
+        """
+        Reasons for non-compliance in this modality across all the subjects.
+
+        The following code uses the query method on the Pandas dataframe
+        self.data to filter the rows based on query string
+        "(echo_time == @echo_time)". This query string specifies that only
+        rows where the value in the column 'echo_time' is equal to the value of
+        the variable echo_time should be included in the resulting dataframe,
+        denoted by the variable db. The @ symbol is used to indicate that the
+        variable echo_time is a variable in the current namespace. The @ symbol
+        is not required if the variable is a column in the dataframe.
+
+        Parameters
+        ----------
+        echo_time
+
+        Returns
+        -------
+        values : List[str]
+            List of parameters that are non-compliant in this modality
+        """
         if echo_time:
             query_str = "(echo_time==@echo_time)"
             db = self.data.query(query_str)

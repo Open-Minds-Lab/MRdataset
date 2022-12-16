@@ -828,7 +828,7 @@ class Run(Node):
 
 
 def load_mr_dataset(filepath: Union[str, Path],
-                    style: str = 'dicom') -> MRdataset.base.Project:
+                    style: str = 'dicom') -> Project:
     """
     Load a dataset from a file
 
@@ -881,7 +881,7 @@ def load_mr_dataset(filepath: Union[str, Path],
 
 
 def save_mr_dataset(filepath: Union[str, Path],
-                    mrds_obj: MRdataset.base.Project) -> None:
+                    mrds_obj: Project) -> None:
     """
     Save a dataset to a file
 

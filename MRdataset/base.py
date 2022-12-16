@@ -298,7 +298,8 @@ class Node:
                 len(self.children),
                 self.children[0].__class__.__name__)
         else:
-            return "{} {}".format(self.__class__.__name__, self.name)
+            return "{} {} is empty. Use .walk()".format(self.__class__.__name__,
+                                                        self.name)
 
     def __lt__(self, other):
         """Comparison operator for sorting"""

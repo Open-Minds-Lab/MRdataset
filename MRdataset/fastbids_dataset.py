@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from MRdataset.base import Project, Run, Modality, Subject, Session
+from MRdataset.core import Project, Run, Modality, Subject, Session
 from MRdataset.utils import select_parameters, get_ext, files_under_folder
 
 # Module-level logger
@@ -89,12 +89,12 @@ class FastBIDSDataset(Project):
 
             Parameters
             ----------
-            session_node : MRdataset.base.Session
+            session_node : MRdataset.core.Session
                 session node to which the run node has to be added
 
             Returns
             -------
-            session_node : MRdataset.base.Session
+            session_node : MRdataset.core.Session
                 modified session_node which also contains the new run
             """
         filename = filepath.name

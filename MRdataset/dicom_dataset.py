@@ -6,7 +6,7 @@ import pydicom
 
 from MRdataset import common_dicom
 from MRdataset import config
-from MRdataset.base import Project, Run, Modality, Subject, Session
+from MRdataset.core import Project, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference, files_under_folder, files_in_path
 import warnings
 

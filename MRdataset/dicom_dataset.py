@@ -73,9 +73,11 @@ class DicomDataset(Project):
                 self.save_dataset()
 
     def walk(self):
-        """generates filenames in the directory tree, verifies if it is dicom
+        """
+        Retrieves filenames in the directory tree, verifies if it is dicom
         file, extracts relevant parameters and stores it in project. Creates
-        a desirable hierarchy for a neuroimaging experiment"""
+        a desirable hierarchy for a neuroimaging experiment
+        """
         no_files_found = True
         study_ids_found = set()
 

@@ -901,9 +901,9 @@ def save_mr_dataset(filepath: Union[str, Path],
 
     # Extract extension from filename
     if isinstance(filepath, Path):
-        ext = filepath.name.split('.')[-1]
+        ext = "".join(filepath.suffixes)
     elif isinstance(filepath, str):
-        ext = filepath.split('.')[-1]
+        ext = "".join(Path(filepath).suffixes)
     else:
         raise NotImplementedError(f"Expected str or pathlib.Path,"
                                   f" Got {type(filepath)}")

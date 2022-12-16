@@ -82,7 +82,10 @@ def import_dataset(data_root: Union[str, List[str]] = None,
 
     # Setup logger
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
-    setup_logger('root', log_filename)
+    if verbose:
+        setup_logger('root', log_filename, logging.INFO)
+    else:
+        setup_logger('root', log_filename, logging.WARNING)
 
     # Find dataset class using style
     dataset_class = find_dataset_using_style(style.lower())

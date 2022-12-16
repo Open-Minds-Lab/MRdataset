@@ -124,13 +124,13 @@ def warn_once(logger: logging.Logger, msg: str):
     logger.warning(msg)
 
 
-def setup_logger(name, filename):
+def setup_logger(name, filename, level=logging.INFO):
     format_string = '%(asctime)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(fmt=format_string)
     handler = logging.StreamHandler()
     dup_filter = DuplicateFilter()
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
     handler.addFilter(dup_filter)
     handler.setFormatter(formatter)
     logger.addHandler(handler)

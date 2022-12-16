@@ -178,7 +178,7 @@ class Node:
 
     def __eq__(self, other):
         """Comparison operator for equality"""
-        if not isinstance(other, self.__class__):
+        if not type(other) == type(self):
             raise RuntimeError(f'== not supported between instances of '
                                f'{self.__class__.__name__} and '
                                f'{other.__class__.__name__}')
@@ -657,7 +657,7 @@ class Session(Node):
 
         Parameters
         ----------
-        new_run : base.Run
+        new_run : Run
             new run node added to the session
         """
         if not isinstance(new_run, Run):

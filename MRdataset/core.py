@@ -378,7 +378,6 @@ class Project(Node):
                 exist_modality.add_subject(subject)
 
 
-
 class Modality(Node):
     """
     Container to manage properties and issues at the modality level.
@@ -575,9 +574,40 @@ class Modality(Node):
             return self.data['parameter'].unique()
 
     def update_reason(self, param, te, ref, value, sub):
+        """
+        This function updates a DataFrame self.data with a new row of data.
+
+        Parameters
+        ----------
+        param : str
+            Parameter, for example, Manufacturer, EchoTime, etc.
+        te : float
+            Echo time
+        ref : str or float
+            Reference value of the parameter
+        value: str or float
+            Value of the parameter for this subject
+        sub: str
+            Subject name
+
+        Returns
+        -------
+
+        """
+        # The function first creates a list query that contains all the
+        # input values in the order they will appear in the new row.
         query = [param, te, ref, value, sub]
+        # Compares the DataFrame self.data with the query list.
+        # The all method whether all the values in each row of self.data
+        # are equal to the corresponding values in the query list.
+        # .any() method returns a single boolean value
+        # indicating whether any of the rows in self.data is equal to query.
         matches = (self.data == query).all(axis=1).any()
         if not matches:
+            # If the query list is not present in self.data,
+            # then the query list is appended to self.data as a new row.
+            # If matches is True, then the query list is already present
+            # in self.data and no new row is added.
             self.data.loc[len(self.data)] = query
 
     def query_reason(self, parameter, echo_time, column_name):

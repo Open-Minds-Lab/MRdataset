@@ -691,7 +691,3 @@ class Run(Node):
         self.error = False
         self.params = dict()
         self.delta = None
-
-
-if __name__ == '__main__':
-    dataset_class = find_dataset_using_style('dicom')

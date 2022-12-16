@@ -73,13 +73,6 @@ def import_dataset(data_root: Union[str, List[str]] = None,
                                 'argument, Got {0}'.format(metadata_root))
     metadata_root = Path(metadata_root).resolve()
 
-    # Check if name is provided by user, otherwise use random name
-    if name is None:
-        warnings.warn(
-            'Expected a unique identifier for caching data. Got NoneType. '
-            'Using a random name. Use --name flag for persistent metadata',
-            stacklevel=2)
-        name = random_name()
 
     # Setup logger
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())
@@ -87,6 +80,16 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         setup_logger('root', log_filename, logging.INFO)
     else:
         setup_logger('root', log_filename, logging.WARNING)
+
+    logger = logging.getLogger('root')
+
+    # Check if name is provided by user, otherwise use random name
+    if name is None:
+        logger.warning(
+            'Expected a unique identifier for caching data. Got NoneType. '
+            'Using a random name. Use --name flag for persistent metadata',
+            stacklevel=2)
+        name = random_name()
 
     # Find dataset class using style
     dataset_class = find_dataset_using_style(style.lower())

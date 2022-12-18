@@ -89,7 +89,11 @@ class BIDSDataset(Project):
         return filters
 
     def walk(self):
-        """parses the file tree to populate them in a desirable hierarchy"""
+        """
+        Parses the file tree to populate them in a desirable hierarchy.
+        Extracts relevant parameters and stores it in project. Creates
+        a desirable hierarchy for a neuroimaging experiment
+        """
         print("Started building BIDSLayout .. ")
         bids_layout = BIDSLayout(self.data_root, validate=False)
         print("Completed BIDSLayout .. ")

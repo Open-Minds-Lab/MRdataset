@@ -242,7 +242,6 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         )
 
     for k in config.PARAMETER_NAMES.keys():
-        # try:
         value = get_param_value_by_name(dicom, k)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
@@ -252,9 +251,6 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
             elif not utils.is_hashable(value):
                 value = str(value)
         params[k] = value
-        # except:
-        #     warnings.warn('Unable to parse parameter {} from \n\t{}'
-        #                   ''.format(k, dicom_path))
     is3d = params['MRAcquisitionType'] == '3D'
     params["is3d"] = is3d
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)

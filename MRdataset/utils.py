@@ -176,11 +176,11 @@ def select_parameters(filepath, ext) -> dict:
                 if entry.lower() in key.lower():
                     selected_params[key] = parameters[key]
     elif ext in ['.nii', '.nii.gz']:
-        niimage = nib.load(filepath)
+        nii_image = nib.load(filepath)
         selected_params['obliquity'] = np.any(
-            nib.affines.obliquity(niimage.affine) > 1e-4)
-        selected_params['voxel_sizes'] = niimage.header.get_zooms()
-        selected_params['matrix_dims'] = niimage.shape
+            nib.affines.obliquity(nii_image.affine) > 1e-4)
+        selected_params['voxel_sizes'] = nii_image.header.get_zooms()
+        selected_params['matrix_dims'] = nii_image.shape
     return selected_params
 
 

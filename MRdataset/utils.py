@@ -59,7 +59,7 @@ def safe_get(dictionary: dict, keys: str, default=None):
     Value stored in that key
 
     Examples:
-    To get value, dictonary[tag1][tag2][tag3],
+    To get value, dictionary[tag1][tag2][tag3],
     if KeyError: return default
     >>>     items = safe_get(dictionary, 'tags1.tag2.tag3')
 

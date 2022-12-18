@@ -695,7 +695,17 @@ class Subject(Node):
         self.add(new_session)
 
     def get_session(self, name) -> Optional["Session"]:
-        """        Fetch a Subject Node searching by its name"""
+        """
+        Fetch a Session Node searching by its name
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the Session Node
+
+        Returns
+        -------
+        None or Session
+        """
         return self._get(name)
 
 

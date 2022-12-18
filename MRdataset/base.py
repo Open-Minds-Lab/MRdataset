@@ -107,7 +107,10 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         include_phantom=include_phantom,
         reindex=reindex,
         include_nifti_header=include_nifti_header,
-        save=save
+        save=save,
+        is_complete=is_complete,
+        cache_path=cache_path,
+        **_kwargs
     )
     # Print dataset summary
     if verbose:

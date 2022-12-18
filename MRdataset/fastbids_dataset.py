@@ -18,10 +18,11 @@ class FastBIDSDataset(Project):
                  name='mind',
                  data_root=None,
                  metadata_root=None,
-                 include_phantom=False,
-                 reindex=False,
                  include_nifti_header=False,
-                 **kwargs):
+                 save=True,
+                 is_complete=True,
+                 cache_path=None,
+                 **_kwargs):
 
         """
         Parameters

@@ -82,13 +82,15 @@ class FastBIDSDataset(Project):
         if not self.modalities:
             raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
 
-    def parse(self, session_node: Session, filepath) -> Session:
+    def parse(self, session_node: Session, filepath: Path) -> Session:
         """
             Extracts parameters for a file. Adds the parameters as a
             new run node to given session node, returns modified session node.
 
             Parameters
             ----------
+            filepath : Path
+                path to the file
             session_node : MRdataset.core.Session
                 session node to which the run node has to be added
 

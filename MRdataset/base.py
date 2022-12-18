@@ -51,6 +51,10 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         only used when --style==bids
     save: bool
         whether to save the dataset or not
+    is_complete: bool
+        whether the dataset is complete or not
+    cache_path: str
+        path to the save the dataset
     Returns
     -------
     dataset : MRdataset.core.Project

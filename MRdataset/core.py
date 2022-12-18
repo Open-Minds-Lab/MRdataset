@@ -405,7 +405,7 @@ class Modality(Node):
         self.compliant = None
 
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
-        self.data = pd.DataFrame(columns=cols)
+        self.non_compliant_data = pd.DataFrame(columns=cols)
 
     def get_echo_times(self):
         """
@@ -549,7 +549,7 @@ class Modality(Node):
         Reasons for non-compliance in this modality across all the subjects.
 
         The following code uses the query method on the Pandas dataframe
-        self.data to filter the rows based on query string
+        self.non_compliant_data to filter the rows based on query string
         "(echo_time == @echo_time)". This query string specifies that only
         rows where the value in the column 'echo_time' is equal to the value of
         the variable echo_time should be included in the resulting dataframe,
@@ -568,14 +568,15 @@ class Modality(Node):
         """
         if echo_time:
             query_str = "(echo_time==@echo_time)"
-            db = self.data.query(query_str)
+            db = self.non_compliant_data.query(query_str)
             return db['parameter'].unique()
         else:
-            return self.data['parameter'].unique()
+            return self.non_compliant_data['parameter'].unique()
 
     def update_reason(self, param, te, ref, value, sub):
         """
-        This function updates a DataFrame self.data with a new row of data.
+        This function updates a DataFrame self.non_compliant_data with a new
+        row of non_compliant_data.
 
         Parameters
         ----------
@@ -597,25 +598,28 @@ class Modality(Node):
         # The function first creates a list query that contains all the
         # input values in the order they will appear in the new row.
         query = [param, te, ref, value, sub]
-        # Compares the DataFrame self.data with the query list.
-        # The all method whether all the values in each row of self.data
-        # are equal to the corresponding values in the query list.
+        # Compares the DataFrame self.non_compliant_data with the query list.
+        # The all method whether all the values in each row of
+        # self.non_compliant_data are equal to the corresponding values
+        # in the query list.
         # .any() method returns a single boolean value
-        # indicating whether any of the rows in self.data is equal to query.
-        matches = (self.data == query).all(axis=1).any()
+        # indicating whether any of the rows in self.non_compliant_data
+        # is equal to query.
+        matches = (self.non_compliant_data == query).all(axis=1).any()
         if not matches:
-            # If the query list is not present in self.data,
-            # then the query list is appended to self.data as a new row.
+            # If the query list is not present in self.non_compliant_data,
+            # then the query list is appended to
+            # self.non_compliant_data as a new row.
             # If matches is True, then the query list is already present
-            # in self.data and no new row is added.
-            self.data.loc[len(self.data)] = query
+            # in self.non_compliant_data and no new row is added.
+            self.non_compliant_data.loc[len(self.non_compliant_data)] = query
 
     def query_reason(self, parameter, echo_time, column_name):
         # Do not remove brackets, seems redundant but code may break
         # See https://stackoverflow.com/a/57897625
         query_str = "(parameter==@parameter) & (echo_time==@echo_time)"
-        db = self.data.query(query_str)
-        colnames = list(self.data.columns)
+        db = self.non_compliant_data.query(query_str)
+        colnames = list(self.non_compliant_data.columns)
         if column_name not in colnames:
             print(column_name)
             raise AttributeError('Expected one of {}. '

@@ -14,7 +14,10 @@ logger = logging.getLogger('root')
 # TODO: check what if each variable is None. Apply try catch
 class BIDSDataset(Project):
     """
-
+    Container to manage the properties and methods of a BIDS dataset downloaded
+    from OpenNeuro. It is a subclass of Project. Expects the data_root to
+    contain JSON files for reading image acquisition parameters. Use
+    include_nifti_header to extract parameter from nifti headers.
     """
 
     def __init__(self,

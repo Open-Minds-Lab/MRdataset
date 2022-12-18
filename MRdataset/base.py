@@ -112,6 +112,8 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         cache_path=cache_path,
         **_kwargs
     )
+    dataset.walk()
+
     # Print dataset summary
     if verbose:
         print(dataset)

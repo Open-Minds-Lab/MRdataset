@@ -37,7 +37,6 @@ class DicomDataset(Project):
                  data_root=None,
                  metadata_root=None,
                  include_phantom=False,
-                 reindex=False,
                  save=True,
                  is_complete=True,
                  cache_path=None,
@@ -54,8 +53,13 @@ class DicomDataset(Project):
             directory to store cache
         include_phantom : bool
             whether to include localizer/aahead_scout/phantom/acr
-        reindex : bool
-            If true, rejects stored cache and rebuilds index
+        save : bool
+            whether to save the dataset to cache
+        is_complete : bool
+            whether the dataset is complete or partial (default: True)
+        cache_path : str or Path
+            filepath to save the dataset
+
 
         Examples
         --------

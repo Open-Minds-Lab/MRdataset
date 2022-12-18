@@ -354,7 +354,7 @@ class Project(Node):
         other: Project
             another partial dataset you want to merge with self.
         """
-        logger.warning("Function is meant only for smooth "
+        logger.info("Function is meant only for smooth "
                        " execution of ABCD dataset. "
                        "There is no guarantee on other datasets")
         # Add a check to ensure that the two datasets are of same type

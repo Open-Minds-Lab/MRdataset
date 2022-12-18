@@ -224,7 +224,7 @@ def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
 
 def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
     """
-    If given a single path, the function will just check if its valid.
+    If given a single path, the function will just check if it's valid.
     If given a list of paths, the function validates if all the paths exist or
     not. The paths can either be an instance of string or POSIX path.
 

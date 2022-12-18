@@ -355,8 +355,8 @@ class Project(Node):
             another partial dataset you want to merge with self.
         """
         logger.warning("Function is meant only for smooth "
-                      " execution of ABCD dataset. "
-                      "There is no guarantee on other datasets", stacklevel=2)
+                       " execution of ABCD dataset. "
+                       "There is no guarantee on other datasets")
         # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, Project):
             raise TypeError(f'Cannot merge MRdataset.Project and {type(other)}')

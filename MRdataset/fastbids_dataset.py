@@ -11,7 +11,11 @@ logger = logging.getLogger('root')
 # TODO: check what if each variable is None. Apply try catch
 class FastBIDSDataset(Project):
     """
-
+    Container to manage the properties and methods of a BIDS dataset downloaded
+    from OpenNeuro. In contrast to BIDSDataset, it doesn't create a BIDSLayout
+    object for the dataset. Instead, it uses the file structure to extract
+    information about the dataset. Therefore, it is much faster than
+    BIDSDataset.
     """
 
     def __init__(self,

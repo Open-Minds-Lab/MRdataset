@@ -11,10 +11,11 @@ from dictdiffer import diff as dict_diff
 from bids.layout.models import BIDSFile
 import nibabel as nib
 import numpy as np
-from typing import Union, List, Optional, Generator
+import typing
+from typing import Union, List, Optional
 
 
-def files_under_folder(path: str, ext: str = None) -> Generator[Path]:
+def files_under_folder(path: str, ext: str = None) -> typing.Iterable[Path]:
     """
     Generates all the files inside the folder recursively. If ext is given
     returns file which have that extension.

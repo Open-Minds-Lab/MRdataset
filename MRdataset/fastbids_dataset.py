@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from MRdataset.core import Project, Run, Modality, Subject, Session
-from MRdataset.utils import select_parameters, get_ext, files_under_folder
+from MRdataset.utils import select_parameters, files_under_folder
 
 # Module-level logger
 logger = logging.getLogger('root')

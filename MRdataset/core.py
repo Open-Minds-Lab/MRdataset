@@ -2,7 +2,7 @@ import logging
 import pickle
 from functools import total_ordering
 from pathlib import Path
-from typing import List, Optional, Type, Sized
+from typing import List, Optional, Type, Sized, Union
 
 import pandas as pd
 
@@ -393,7 +393,7 @@ class Modality(Node):
         If the modality is fully compliant
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         """Constructor
         Parameters
         ----------
@@ -407,7 +407,7 @@ class Modality(Node):
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)
 
-    def get_echo_times(self):
+    def get_echo_times(self) -> List[float]:
         """
         Different echo_times found for this modality in the project
 
@@ -418,7 +418,7 @@ class Modality(Node):
         """
         return list(self._reference.keys())
 
-    def get_reference(self, echo_time=None) -> dict:
+    def get_reference(self, echo_time: float = None) -> Optional[dict]:
         """
         Get the reference protocol used to check compliance
 
@@ -465,7 +465,7 @@ class Modality(Node):
         """List of subject names which are not compliant"""
         return self._non_compliant_children
 
-    def add_subject(self, new_subject) -> None:
+    def add_subject(self, new_subject: 'Subject') -> None:
         """Add a new Subject Node to list of subjects in the Modality
 
         Parameters
@@ -494,11 +494,11 @@ class Modality(Node):
         """
         self._add_compliant_name(subject_name)
 
-    def add_non_compliant_subject_name(self, subject_name) -> None:
+    def add_non_compliant_subject_name(self, subject_name: str) -> None:
         """Add subject name (which is not compliant) to the list"""
         self._add_non_compliant_name(subject_name)
 
-    def get_subject(self, name) -> Optional["Subject"]:
+    def get_subject(self, name: str) -> Optional["Subject"]:
         """
         Fetch a Subject Node searching by its name
 
@@ -544,7 +544,7 @@ class Modality(Node):
                              "set_reference first!")
         return len(self._reference) > 1
 
-    def reasons_non_compliance(self, echo_time=None):
+    def reasons_non_compliance(self, echo_time: float = None) -> dict:
         """
         Reasons for non-compliance in this modality across all the subjects.
 

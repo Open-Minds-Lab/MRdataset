@@ -364,6 +364,12 @@ class Project(Node):
         if self.style != other.style:
             raise TypeError(f'Cannot merge {self.style} and {other.style}')
 
+        # Merge the list of folders in the data_root
+        if isinstance(self.data_root, list):
+            self.data_root.extend(other.data_root)
+        else:
+            self.data_root = [self.data_root, other.data_root]
+
         for modality in other.modalities:
             # Check if modality is present in Project
             exist_modality = self.get_modality(modality.name)

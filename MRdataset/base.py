@@ -18,7 +18,10 @@ def import_dataset(data_root: Union[str, List[str]] = None,
                    verbose: bool = False,
                    metadata_root: Union[str, Path] = None,
                    include_nifti_header: bool = False,
-                   save=True) -> "Project":
+                   save: bool = True,
+                   is_complete: bool = True,
+                   cache_path: str = None,
+                   **_kwargs) -> "Project":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
     base.Project. This is the main interface between this package and your

@@ -24,8 +24,12 @@ def main():
     optional.add_argument('-h', '--help', action='help',
                           default=argparse.SUPPRESS,
                           help='show this help message and exit')
-    optional.add_argument('-r', '--reindex', action='store_true',
-                          help='overwrite existing metadata files')
+    optional.add_argument('--is_partial', action='store_true',
+                          help='flag dataset as a partial dataset')
+    optional.add_argument('--skip_save', action='store_true',
+                          help='skip saving dataset to disk')
+    optional.add_argument('--cache_path', type=str,
+                          help='complete path for saving the dataset')
     optional.add_argument('-v', '--verbose', action='store_true',
                           help='allow verbose output on console')
     optional.add_argument('--include_phantom', action='store_true',
@@ -47,11 +51,13 @@ def main():
     dataset = import_dataset(data_root=args.data_root,
                              style=args.style,
                              name=args.name,
-                             reindex=args.reindex,
                              include_phantom=args.include_phantom,
                              verbose=args.verbose,
                              metadata_root=args.metadata_root,
-                             include_nifti_header=args.include_nifti_header)
+                             include_nifti_header=args.include_nifti_header,
+                             save=not args.skip_save,
+                             is_complete=not args.is_partial,
+                             cache_path=args.cache_path)
     dataset.walk()
     return dataset
 

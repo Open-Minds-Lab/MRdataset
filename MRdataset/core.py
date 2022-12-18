@@ -573,22 +573,24 @@ class Modality(Node):
         else:
             return self.non_compliant_data['parameter'].unique()
 
-    def update_reason(self, param, te, ref, value, sub):
+    def update(self, parameter: str, echo_time: float,
+               reference: Union[str, float],
+               new_value: Union[str, float], subject_name: str):
         """
         This function updates a DataFrame self.non_compliant_data with a new
         row of non_compliant_data.
 
         Parameters
         ----------
-        param : str
+        parameter : str
             Parameter, for example, Manufacturer, EchoTime, etc.
-        te : float
+        echo_time : float
             Echo time
-        ref : str or float
+        reference : str or float
             Reference value of the parameter
-        value: str or float
+        new_value: str or float
             Value of the parameter for this subject
-        sub: str
+        subject_name: str
             Subject name
 
         Returns
@@ -597,7 +599,7 @@ class Modality(Node):
         """
         # The function first creates a list query that contains all the
         # input values in the order they will appear in the new row.
-        query = [param, te, ref, value, sub]
+        query = [parameter, echo_time, reference, new_value, subject_name]
         # Compares the DataFrame self.non_compliant_data with the query list.
         # The all method whether all the values in each row of
         # self.non_compliant_data are equal to the corresponding values

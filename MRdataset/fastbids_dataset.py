@@ -52,6 +52,11 @@ class FastBIDSDataset(Project):
                 self.save_dataset()
 
     def walk(self):
+        """
+        Retrieves filenames in the directory tree, verifies if it is json
+        file, extracts relevant parameters and stores it in project. Creates
+        a desirable hierarchy for a neuroimaging experiment
+        """
         # TODO: Need to handle BIDS datasets without JSON files
         for file in files_under_folder(self.data_root, '.json'):
             datatype = file.parent.name

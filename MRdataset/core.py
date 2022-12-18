@@ -614,7 +614,8 @@ class Modality(Node):
             # in self.non_compliant_data and no new row is added.
             self.non_compliant_data.loc[len(self.non_compliant_data)] = query
 
-    def query_reason(self, parameter, echo_time, column_name):
+    def query(self, parameter: str,
+              echo_time: float, column_name: str):
         """
         This function queries the DataFrame self.non_compliant_data to find the
         corresponding values for a given parameter and echo time.
@@ -634,7 +635,7 @@ class Modality(Node):
 
         Returns
         -------
-
+        values : List[str]
         """
         # Do not remove brackets, seems redundant but code may break
         # See https://stackoverflow.com/a/57897625

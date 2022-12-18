@@ -615,6 +615,27 @@ class Modality(Node):
             self.non_compliant_data.loc[len(self.non_compliant_data)] = query
 
     def query_reason(self, parameter, echo_time, column_name):
+        """
+        This function queries the DataFrame self.non_compliant_data to find the
+        corresponding values for a given parameter and echo time.
+        The function is used in mrQA to find the reference value, the subject
+        name, the parameter value for this subject. The function is
+        used to create the report of non-compliant subjects.
+
+        Parameters
+        ----------
+        parameter : str
+            Parameter, for example, Manufacturer, EchoTime, etc.
+        echo_time : float
+            Echo time
+        column_name : str
+            Name of the column to query.
+            One of ['ref_value', 'new_value', 'subjects']
+
+        Returns
+        -------
+
+        """
         # Do not remove brackets, seems redundant but code may break
         # See https://stackoverflow.com/a/57897625
         query_str = "(parameter==@parameter) & (echo_time==@echo_time)"

@@ -665,6 +665,14 @@ class Subject(Node):
     """
 
     def __init__(self, name):
+        """
+        Constructor for Subject class
+
+        Parameters
+        ----------
+        name : str
+            Identifier/name for the Subject node
+        """
         super().__init__(name)
 
     @property

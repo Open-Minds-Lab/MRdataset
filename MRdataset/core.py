@@ -643,11 +643,11 @@ class Modality(Node):
         # See https://stackoverflow.com/a/57897625
         query_str = "(parameter==@parameter) & (echo_time==@echo_time)"
         db = self.non_compliant_data.query(query_str)
-        colnames = list(self.non_compliant_data.columns)
-        if column_name not in colnames:
+        column_names = list(self.non_compliant_data.columns)
+        if column_name not in column_names:
             print(column_name)
             raise AttributeError('Expected one of {}. '
-                                 'Got {}'.format(colnames, column_name))
+                                 'Got {}'.format(column_names, column_name))
         return db[column_name].unique()
 
 

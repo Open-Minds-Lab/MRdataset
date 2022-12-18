@@ -1,13 +1,12 @@
 import importlib
-import pickle
-import warnings
 import logging
+import pickle
 from pathlib import Path
 from typing import Union, List
 
 import MRdataset
-from MRdataset.core import Project
 from MRdataset.config import CACHE_DIR, setup_logger, MRDS_EXT
+from MRdataset.core import Project
 from MRdataset.utils import valid_dirs, random_name, timestamp
 
 
@@ -72,7 +71,6 @@ def import_dataset(data_root: Union[str, List[str]] = None,
         raise FileNotFoundError('Expected valid directory for --metadata_root '
                                 'argument, Got {0}'.format(metadata_root))
     metadata_root = Path(metadata_root).resolve()
-
 
     # Setup logger
     log_filename = metadata_root / '{}_{}.log'.format(name, timestamp())

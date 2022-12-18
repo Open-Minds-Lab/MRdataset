@@ -685,7 +685,7 @@ class Subject(Node):
 
         Parameters
         ----------
-        new_session : base.Session
+        new_session : Session
             new session node added to the Subject
         """
         if not isinstance(new_session, Session):

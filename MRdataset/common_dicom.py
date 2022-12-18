@@ -116,7 +116,7 @@ def is_valid_inclusion(filename: str,
                     logger.info('ACR/Phantom: %s' % filename.parent)
                     return False
     except AttributeError as e:
-        logger.warning("Series Description not found in %s" % filename)
+        logger.warning(f"{e} : Series Description not found in %s" % filename)
 
     return True
 

@@ -55,12 +55,10 @@ class BIDSDataset(Project):
 
         self.include_phantom = include_phantom
         self.include_nifti_header = include_nifti_header
-        indexed = self.cache_path.exists()
-        if not indexed or reindex:
-            self.walk()
-            self.save_dataset()
-        else:
-            self.load_dataset()
+        if cache_path:
+            self.cache_path = Path(cache_path)
+            if save:
+                self.save_dataset()
 
     def get_filters(self, subject: str = None,
                     session: str = None, datatype: str = None):

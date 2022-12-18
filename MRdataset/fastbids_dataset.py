@@ -33,10 +33,6 @@ class FastBIDSDataset(Project):
             directory containing dicom files, supports nested hierarchies
         metadata_root : str or Path
             directory to store cache
-        include_phantom : bool
-            whether to include localizer/aahead_scout/phantom/acr
-        reindex : bool
-            If true, rejects stored cache and rebuilds index
         include_nifti_header :
             whether to check nifti headers for compliance,
             only used when --style==bids

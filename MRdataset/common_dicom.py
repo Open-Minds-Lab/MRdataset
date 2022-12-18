@@ -206,7 +206,10 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
         return True
     except Exception as e:
-        logger.exception(f"{e}. Expects dicom files from Siemens.")
+        logger.info(f"Expects dicom files from Siemens to be able to"
+                         f" read the private header. For other vendors, "
+                         f"private header is skipped. "
+                         f"{e} in {dicom.filename}")
         # "Use --skip_private_header to create report".format(e))
         # raise e
         return False

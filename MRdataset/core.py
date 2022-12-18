@@ -432,7 +432,7 @@ class Modality(Node):
         dict
             Key, Value pairs specifying the reference protocol
         """
-        keys = self.get_echo_times()
+        keys = list(self.get_echo_times())
         if len(self._reference) == 0:
             return None
         if self.is_multi_echo():

@@ -268,7 +268,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     return params
 
 
-def get_param_value_by_name(dicom, name):
+def get_param_value_by_name(dicom: pydicom.FileDataset, name: str):
     """
     Extracts value from dicom metadata looking up the corresponding HEX tag
     in config.PARAMETER_NAMES
@@ -293,7 +293,7 @@ def get_param_value_by_name(dicom, name):
     return None
 
 
-def get_header(dicom, name):
+def get_header(dicom: pydicom.FileDataset, name: str):
     """
     Extracts value from dicom headers looking up the corresponding HEX tag
     in config.HEADER_TAGS
@@ -317,7 +317,7 @@ def get_header(dicom, name):
     return None
 
 
-def csa_parser(dicom):
+def csa_parser(dicom: pydicom.FileDataset) -> dict:
     """
     Handles the private CSA header from Siemens formatted raw scanner.
 
@@ -362,7 +362,7 @@ def get_csa_props(parameter, corpus):
     return code
 
 
-def effective_echo_spacing(dicom) -> Optional[float]:
+def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
     """
     Calculates effective echo spacing in sec.
     * For Siemens
@@ -395,7 +395,7 @@ def effective_echo_spacing(dicom) -> Optional[float]:
         return None
 
 
-def get_phase_encoding(dicom, is3d, echo_train_length) -> Optional[str]:
+def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
     https://neurostars.org/t/determining-bids-phaseencodingdirection-from-dicom/612/6 # noqa

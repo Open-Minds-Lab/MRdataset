@@ -345,7 +345,7 @@ class Project(Node):
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
 
-    def merge(self, other):
+    def merge(self, other: "Project") -> None:
         """
         merges only at the subject level. Function would work if two partial
         datasets have mutually exclusive subjects in a single modality.
@@ -537,7 +537,7 @@ class Modality(Node):
             logging.info("Using a default value of 1.0 for echo time.")
             self._reference[echo_time] = params.copy()
 
-    def is_multi_echo(self):
+    def is_multi_echo(self) -> bool:
         """If the modality is multi-echo modality"""
         if len(self._reference) == 0:
             raise ValueError("Reference for modality not set. Use "
@@ -667,7 +667,7 @@ class Subject(Node):
 
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         """
         Constructor for Subject class
 
@@ -697,7 +697,7 @@ class Subject(Node):
                 "".format(type(Session), type(new_session)))
         self.add(new_session)
 
-    def get_session(self, name) -> Optional["Session"]:
+    def get_session(self, name: str) -> Optional["Session"]:
         """
         Fetch a Session Node searching by its name
         Parameters
@@ -728,7 +728,7 @@ class Session(Node):
         Key, value pairs specifying the parameters for checking compliance
     """
 
-    def __init__(self, name, path=None):
+    def __init__(self, name: str, path=None):
         """Constructor
         Parameters
         ----------
@@ -749,7 +749,7 @@ class Session(Node):
         """Collection of Run Nodes in the Session"""
         return self.children
 
-    def add_run(self, new_run):
+    def add_run(self, new_run: "Run") -> None:
         """Add a new Run Node to list of runs in the Session
 
         Parameters
@@ -762,7 +762,7 @@ class Session(Node):
                             .format(type(Run), type(new_run)))
         self.add(new_run)
 
-    def get_run(self, name):
+    def get_run(self, name: str) -> Optional["Run"]:
         """Fetch a Run Node searching by its name"""
         return self._get(name)
 
@@ -775,7 +775,7 @@ class Run(Node):
     files should have same parameters at this level.
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         """Constructor
 
         Parameters

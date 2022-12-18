@@ -41,7 +41,7 @@ class DicomDataset(Project):
                  save=True,
                  is_complete=True,
                  cache_path=None,
-                 **kwargs):
+                 **_kwargs):
 
         """
         Parameters

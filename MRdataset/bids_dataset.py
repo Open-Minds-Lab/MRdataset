@@ -25,7 +25,7 @@ class BIDSDataset(Project):
                  is_complete=True,
                  cache_path=None,
                  include_nifti_header=False,
-                 **kwargs):
+                 **_kwargs):
 
         """
         Parameters

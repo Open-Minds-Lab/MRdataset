@@ -44,7 +44,7 @@ class FastBIDSDataset(Project):
 
         super().__init__(name, data_root, metadata_root)
 
-        self.include_phantom = include_phantom
+        self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
         if cache_path:
             self.cache_path = cache_path

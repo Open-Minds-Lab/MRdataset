@@ -46,12 +46,10 @@ class FastBIDSDataset(Project):
 
         self.include_phantom = include_phantom
         self.include_nifti_header = include_nifti_header
-        indexed = self.cache_path.exists()
-        if not indexed or reindex:
-            self.walk()
-            self.save_dataset()
-        else:
-            self.load_dataset()
+        if cache_path:
+            self.cache_path = cache_path
+            if save:
+                self.save_dataset()
 
     def walk(self):
         # TODO: Need to handle BIDS datasets without JSON files

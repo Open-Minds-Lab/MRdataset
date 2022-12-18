@@ -21,8 +21,9 @@ class BIDSDataset(Project):
                  name='mind',
                  data_root=None,
                  metadata_root=None,
-                 include_phantom=False,
-                 reindex=False,
+                 save=True,
+                 is_complete=True,
+                 cache_path=None,
                  include_nifti_header=False,
                  **kwargs):
 

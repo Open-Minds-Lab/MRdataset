@@ -186,6 +186,14 @@ class Node:
             return True
         return False
 
+    def __nonzero__(self):
+        """Returns True if the node is not empty, at that level. False otherwise."""
+
+        if len(self.children) > 0:
+            return True
+        else:
+            return False
+
 
 class Project(Node):
     """

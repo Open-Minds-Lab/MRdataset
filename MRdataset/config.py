@@ -1,5 +1,6 @@
 import logging
 from functools import lru_cache
+from pathlib import Path
 
 # Constant Dicom Identifiers Used for dataset creation and manipulation
 TAGS = {
@@ -21,7 +22,8 @@ TAGS = {
 }
 
 # Constant Paths
-CACHE_DIR = ".mrdataset"
+CACHE_DIR_NAME = ".mrdataset"
+CACHE_DIR = Path.home().resolve() / CACHE_DIR_NAME
 MRDS_EXT = '.mrds.pkl'
 
 # Constant Dicom Identifiers used for protocol compliance.

@@ -69,7 +69,7 @@ def import_dataset(data_root: Union[str, List[str]] = None,
 
     # Check if metadata_root is provided by user, otherwise use default
     if not metadata_root:
-        metadata_root = Path.home() / CACHE_DIR
+        metadata_root = CACHE_DIR
         metadata_root.mkdir(exist_ok=True)
 
     # Check if metadata_root is valid

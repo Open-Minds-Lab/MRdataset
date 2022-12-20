@@ -3,12 +3,12 @@ import pickle
 from functools import total_ordering
 from pathlib import Path
 from typing import List, Optional, Type, Sized, Union
-from config import MRDS_EXT
+from MRdataset.config import MRDS_EXT
 import pandas as pd
 
 from MRdataset.utils import valid_dirs
 
-from log import logger
+from MRdataset.log import logger
 
 
 @total_ordering

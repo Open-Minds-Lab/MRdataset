@@ -24,10 +24,8 @@ class DicomDataset(BaseDataset):
     ----------
     name : str
         Identifier/name for the node
-    data_root : str or Path
-        directory containing dataset with dicom files
-    metadata_root : str or Path
-        directory to store cache
+    data_source_folders : Path or str or Iterable
+        directories containing dicom files, supports nested hierarchies
     include_phantom
         Whether to include non-subject scans like localizer, acr/phantom,
         head_scout

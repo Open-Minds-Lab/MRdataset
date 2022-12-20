@@ -549,7 +549,7 @@ class Modality(Node):
 
         if echo_time is None:
             echo_time = 1.0
-            logging.info("echo time is not specified! Using a value of 1.0.")
+            logger.info("echo time is not specified! Using a value of 1.0.")
 
         self._reference[echo_time] = params.copy()
 

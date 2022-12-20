@@ -3,7 +3,7 @@ from pathlib import Path
 
 from bids import BIDSLayout
 
-from MRdataset.core import Project, Run, Modality, Subject, Session
+from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.config import datatypes
 from MRdataset.utils import select_parameters, get_ext
 
@@ -12,7 +12,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class BIDSDataset(Project):
+class BIDSDataset(BaseDataset):
     """
     Container to manage the properties and methods of a BIDS dataset downloaded
     from OpenNeuro. It is a subclass of Project. Expects the data_root to
@@ -170,7 +170,7 @@ class BIDSDataset(Project):
 
         Parameters
         ----------
-        session_node : MRdataset.core.Session
+        session_node : MRdataset.base.Session
             session node to which the run node has to be added
         filters : dict
             dictionary defining arguments like subject, session, datatype to
@@ -180,7 +180,7 @@ class BIDSDataset(Project):
 
         Returns
         -------
-        session_node : MRdataset.core.Session
+        session_node : MRdataset.base.Session
             modified session_node which also contains the new run
         """
         files = bids_layout.get(**filters)

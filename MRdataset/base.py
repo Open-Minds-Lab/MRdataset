@@ -3,7 +3,7 @@ import pickle
 from functools import total_ordering
 from pathlib import Path
 from typing import List, Optional, Type, Sized, Union
-
+from config import MRDS_EXT
 import pandas as pd
 
 from MRdataset.utils import valid_dirs
@@ -337,9 +337,18 @@ class BaseDataset(Node):
         """Saves dataset cache to disk for faster reloading"""
         if not self.modalities:
             raise ValueError('Dataset is empty!')
-        if not self.output_path:
-            raise ValueError('Output path not specified!')
-        with open(self.output_path, "wb") as f:
+        if not filepath:
+            raise ValueError('Filepath not specified!')
+        if isinstance(filepath, str) or isinstance(filepath, Path):
+            filepath = Path(filepath).resolve()
+        else:
+            raise NotImplementedError(f"Expected str or pathlib.Path,"
+                                      f" Got {type(filepath)} instead")
+
+        ext = "".join(filepath.suffixes)
+        assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
+
+        with open(filepath, "wb") as f:
             pickle.dump(self.__dict__, f)
 
     def load_dataset(self) -> None:

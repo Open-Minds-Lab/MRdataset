@@ -35,17 +35,31 @@ class Node:
             Additional keyword arguments passed to Node
         """
         self.name = name
-        self._children = dict()
-        self._compliant_children = list()
-        self._non_compliant_children = list()
+        self._sub_nodes = dict()
+        self._compliant_list = list()
+        self._non_compliant_list = list()
 
     @property
-    def children(self):
+    def sub_nodes(self):
         """
-        Each node can be connected to several children, generally
+        Each node can be connected to several sub nodes, generally
         subcomponents of Node
         """
-        return list(self._children.values())
+        return list(self._sub_nodes.values())
+
+    @property
+    def compliant_list(self):
+        """
+        Each node can be connected to several compliant sub nodes
+        """
+        return self._compliant_list
+
+    @property
+    def non_compliant_list(self):
+        """
+        Each node can be connected to several non-compliant sub nodes
+        """
+        return self._non_compliant_list
 
     def add(self, other: "Node") -> None:
         """
@@ -61,7 +75,7 @@ class Node:
             raise TypeError("must be {}, not {}".format(
                 type(Node),
                 type(other)))
-        self._children[other.name] = other
+        self._sub_nodes[other.name] = other
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
         """
@@ -78,7 +92,7 @@ class Node:
         None or Node
             value specified for key if key is in self._children
         """
-        return self._children.get(name, None)
+        return self._sub_nodes.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:
         """
@@ -146,10 +160,10 @@ class Node:
         print(f"{markers}{self.name}")
 
         # Recursively print the children
-        for i, child in enumerate(self.children):
-            # If the node is the last child, don't draw a connection
-            isLast = i == len(self.children) - 1
-            child.print_tree(markerStr, [*levelMarkers, not isLast])
+        for i, sub_node in enumerate(self.sub_nodes):
+            # If the node is last, don't draw a connection
+            isLast = i == len(self.sub_nodes) - 1
+            sub_node.print_tree(markerStr, [*levelMarkers, not isLast])
 
     def __repr__(self) -> str:
         """String representation for developers"""
@@ -158,12 +172,12 @@ class Node:
 
     def __str__(self):
         """String representation for users"""
-        if len(self.children) > 0:
+        if len(self.sub_nodes) > 0:
             return "{} {} with {} {}".format(
                 self.__class__.__name__,
                 self.name,
-                len(self.children),
-                self.children[0].__class__.__name__)
+                len(self.sub_nodes),
+                self.sub_nodes[0].__class__.__name__)
         else:
             return "{} {} is empty. Use .walk()".format(self.__class__.__name__,
                                                         self.name)
@@ -182,7 +196,7 @@ class Node:
             raise RuntimeError(f'== not supported between instances of '
                                f'{self.__class__.__name__} and '
                                f'{other.__class__.__name__}')
-        if other._children == self._children:
+        if other.sub_nodes == self.sub_nodes:
             return True
         return False
 
@@ -190,7 +204,7 @@ class Node:
         """
         Returns True if the node is not empty, at that level. False otherwise.
         """
-        if len(self.children) > 0:
+        if len(self.sub_nodes) > 0:
             return True
         else:
             return False

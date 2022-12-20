@@ -247,8 +247,10 @@ class BaseDataset(Node):
         if 'dataset' in classname:
             style = classname.split('dataset')[0]
         else:
-            raise ValueError("Classname must contain keyword 'dataset'. "
-                             "For example, DicomDataset, BIDSdataset")
+            raise ValueError("Expected classname with keyword 'dataset'. "
+                             "For example, DicomDataset, BIDSDataset. Got"
+                             "{0} instead. Rename the class as "
+                             "{0}Dataset".format(classname))
         return style
 
     @property

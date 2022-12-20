@@ -186,4 +186,4 @@ def save_mr_dataset(filepath: Union[str, Path],
     check_mrds_extension(filepath)
     with open(filepath, "wb") as f:
         # save dict of the object as pickle
-        pickle.dump(mrds_obj.__dict__, f)
+        pickle.dump(mrds_obj, f)

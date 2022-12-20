@@ -1,14 +1,14 @@
 import importlib
-import logging
 import pickle
 from pathlib import Path
 from typing import Union, List
-from log import logger
+
 import MRdataset
-from MRdataset.config import CACHE_DIR, MRDS_EXT
-from MRdataset.log import setup_logger
 from MRdataset.base import BaseDataset
-from MRdataset.utils import valid_dirs, random_name, timestamp
+from MRdataset.utils import valid_dirs, random_name, check_mrds_extension
+from MRdataset.log import logger
+from MRdataset import dicom, bids, fastbids
+from MRdataset.config import VALID_DATASET_STYLES
 
 
 def import_dataset(data_root: Union[str, List[str]] = None,

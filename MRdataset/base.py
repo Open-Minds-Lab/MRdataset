@@ -403,7 +403,7 @@ class Modality(Node):
     Attributes
     ----------
     name : str
-        Identifier/name for the node
+        Identifier/name for the modality
     compliant: bool
         If the modality is fully compliant
     """

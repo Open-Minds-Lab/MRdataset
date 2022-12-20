@@ -25,7 +25,11 @@ TAGS = {
 CACHE_DIR_NAME = ".mrdataset"
 CACHE_DIR = Path.home().resolve() / CACHE_DIR_NAME
 MRDS_EXT = '.mrds.pkl'
-
+VALID_DATASET_STYLES = [
+    'dicom',
+    'bids',
+    'fastbids',
+]
 
 PARAMETER_NAMES = {
     # 'Manufacturer': [0x08, 0x70],

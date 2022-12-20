@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pydicom
 
-from MRdataset import dicom_utils
+from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
+    get_dicom_modality_tag, isSameSet, parse_imaging_params
 from MRdataset import config
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference, files_in_path

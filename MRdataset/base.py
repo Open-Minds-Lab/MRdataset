@@ -226,13 +226,10 @@ class BaseDataset(Node):
         """
         super().__init__(name)
         # Manage directories
-        self.data_root = valid_dirs(data_root)
-
-        self.metadata_root = Path(metadata_root)
-        if not self.metadata_root.exists():
-            self.metadata_root.mkdir(exist_ok=True)
-            # raise FileNotFoundError('Provide a valid /path/to/metadata/dir')
-
+        if data_root:
+            self.data_root = valid_dirs(data_root)
+        else:
+            self.data_root = None
         # TODO : Add a flag to identify instance as a subset
         self.cache_path = None
         self.set_cache_path()

@@ -104,9 +104,9 @@ class Node:
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {} '.format(type(other)))
-        if other in self._compliant_children:
+        if other in self.compliant_list:
             return
-        self._compliant_children.append(other)
+        self.compliant_list.append(other)
 
     def _add_non_compliant_name(self, other: str) -> None:
         """
@@ -118,9 +118,9 @@ class Node:
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {}'.format(type(other)))
-        if other in self._non_compliant_children:
+        if other in self._non_compliant_list:
             return
-        self._non_compliant_children.append(other)
+        self.non_compliant_list.append(other)
 
     def print_tree(self, markerStr: str = "+- ",
                    levelMarkers: Sized = None) -> None:

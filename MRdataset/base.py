@@ -23,18 +23,16 @@ class Node:
         Identifier/name for the node
     """
 
-    def __init__(self, name: str, **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         """
         Constructor for Node class
 
         Parameters
         ----------
-        name : str
-            identifier for instance. For example : name or id
         kwargs : dict
             Additional keyword arguments passed to Node
         """
-        self.name = name
+        self.name = None
         self._sub_nodes = dict()
         self._compliant_list = list()
         self._non_compliant_list = list()
@@ -225,7 +223,7 @@ class BaseDataset(Node):
         directory containing dataset files such as dcm, nii, json, etc
     """
 
-    def __init__(self, name, data_source_folders, **kwargs):
+    def __init__(self, data_source_folders, **kwargs):
         """
         Constructor for BaseDataset class
 
@@ -238,7 +236,7 @@ class BaseDataset(Node):
         kwargs : dict
             Additional keyword arguments passed to BaseDataset
         """
-        super().__init__(name)
+        super().__init__()
         # Manage directories
         if data_source_folders:
             self.data_source_folders = valid_dirs(data_source_folders)

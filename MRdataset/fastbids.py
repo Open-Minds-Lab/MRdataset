@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from MRdataset.core import Project, Run, Modality, Subject, Session
+from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.utils import select_parameters, files_under_folder
 
 # Module-level logger
@@ -9,7 +9,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class FastBIDSDataset(Project):
+class FastBIDSDataset(BaseDataset):
     """
     Container to manage the properties and methods of a BIDS dataset downloaded
     from OpenNeuro. In contrast to BIDSDataset, it doesn't create a BIDSLayout
@@ -95,12 +95,12 @@ class FastBIDSDataset(Project):
             ----------
             filepath : Path
                 path to the file
-            session_node : MRdataset.core.Session
+            session_node : MRdataset.base.Session
                 session node to which the run node has to be added
 
             Returns
             -------
-            session_node : MRdataset.core.Session
+            session_node : MRdataset.base.Session
                 modified session_node which also contains the new run
             """
         filename = filepath.name

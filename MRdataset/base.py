@@ -765,21 +765,15 @@ class Session(Node):
         Key, value pairs specifying the parameters for checking compliance
     """
 
-    def __init__(self, name: str, path=None):
+    def __init__(self, name: str):
         """Constructor
         Parameters
         ----------
         name : str
             Identifier/name for the Session
-        path : str or Path
-            filepath specifying the Session directory
         """
         super().__init__(name)
         self.params = dict()
-        if path:
-            self.path = Path(path).resolve()
-            if not self.path.exists():
-                raise FileNotFoundError('Provide a valid /path/to/session/')
 
     @property
     def runs(self):

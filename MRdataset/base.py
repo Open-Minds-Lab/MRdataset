@@ -270,17 +270,17 @@ class BaseDataset(Node):
     @property
     def modalities(self) -> List["Modality"]:
         """Collection of all Modality Nodes in the BaseDataset"""
-        return self.children
+        return self.sub_nodes
 
     @property
     def compliant_modality_names(self) -> List[str]:
         """List of modality names which are compliant"""
-        return self._compliant_children
+        return self.compliant_list
 
     @property
     def non_compliant_modality_names(self) -> List[str]:
         """List of modality names which are not compliant"""
-        return self._non_compliant_children
+        return self.non_compliant_list
 
     def add_modality(self, new_modality: "Modality") -> None:
         """Add a new Modality Node to list of modalities in the BaseDataset

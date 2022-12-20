@@ -246,3 +246,14 @@ def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
             if not Path(folder).is_dir():
                 raise OSError('Invalid directory {0}'.format(folders))
         return [Path(f).resolve() for f in folders]
+
+
+def check_mrds_extension(filepath: Union[str, Path]):
+    if isinstance(filepath, Path):
+        ext = "".join(filepath.suffixes)
+    elif isinstance(filepath, str):
+        ext = "".join(Path(filepath).suffixes)
+    else:
+        raise NotImplementedError(f"Expected str or pathlib.Path,"
+                                  f" Got {type(filepath)}")
+    assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"

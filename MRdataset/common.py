@@ -147,7 +147,7 @@ def load_mr_dataset(filepath: Union[str, Path],
     dataset : MRdataset.base.BaseDataset
         dataset loaded from the file
     """
-    logger = logging.getLogger('root')
+    check_mrds_extension(filepath)
 
     if Path(filepath).is_file():
         filepath = Path(filepath)
@@ -183,15 +183,7 @@ def save_mr_dataset(filepath: Union[str, Path],
     """
 
     # Extract extension from filename
-    if isinstance(filepath, Path):
-        ext = "".join(filepath.suffixes)
-    elif isinstance(filepath, str):
-        ext = "".join(Path(filepath).suffixes)
-    else:
-        raise NotImplementedError(f"Expected str or pathlib.Path,"
-                                  f" Got {type(filepath)}")
-    assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
-
+    check_mrds_extension(filepath)
     with open(filepath, "wb") as f:
         # save dict of the object as pickle
         pickle.dump(mrds_obj.__dict__, f)

@@ -34,7 +34,7 @@ class DicomDataset(BaseDataset):
 
     def __init__(self,
                  name='mind',
-                 data_root=None,
+                 data_source_folders=None,
                  metadata_root=None,
                  include_phantom=False,
                  save=True,
@@ -47,7 +47,7 @@ class DicomDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_root : Path or str or Iterable
+        data_source_folders : Path or str or Iterable
             directory containing dicom files, supports nested hierarchies
         metadata_root : str or Path
             directory to store cache
@@ -66,7 +66,7 @@ class DicomDataset(BaseDataset):
         >>> from MRdataset import dicom
         >>> dataset = dicom.DicomDataset()
         """
-        super().__init__(name, data_root, metadata_root)
+        super().__init__(name, data_source_folders, metadata_root)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
         if cache_path:
@@ -83,7 +83,7 @@ class DicomDataset(BaseDataset):
         no_files_found = True
         study_ids_found = set()
 
-        for filepath in files_in_path(self.data_root):
+        for filepath in files_in_path(self.data_source_folders):
             no_files_found = False
             try:
                 if not common_dicom.is_dicom_file(filepath):

@@ -22,7 +22,7 @@ class BIDSDataset(BaseDataset):
 
     def __init__(self,
                  name='mind',
-                 data_root=None,
+                 data_source_folders=None,
                  metadata_root=None,
                  save=True,
                  is_complete=True,
@@ -35,7 +35,7 @@ class BIDSDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_root : Path or str
+        data_source_folders : Path or str
             directory containing dicom files, supports nested hierarchies
         metadata_root : str or Path
             directory to store cache
@@ -54,7 +54,7 @@ class BIDSDataset(BaseDataset):
         >>> dataset = BIDSDataset()
         """
 
-        super().__init__(name, data_root, metadata_root)
+        super().__init__(name, data_source_folders, metadata_root)
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
         if cache_path:
@@ -98,13 +98,13 @@ class BIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         print("Started building BIDSLayout .. ")
-        bids_layout = BIDSLayout(self.data_root, validate=False)
+        bids_layout = BIDSLayout(self.data_source_folders, validate=False)
         print("Completed BIDSLayout .. ")
 
         filters = self.get_filters()
         if not bids_layout.get(**filters):
             raise EOFError('No JSON files found at --data_root {}'.format(
-                self.data_root))
+                self.data_source_folders))
 
         for datatype in datatypes:
             modality_obj = self.get_modality(datatype)

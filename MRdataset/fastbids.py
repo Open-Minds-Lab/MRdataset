@@ -20,7 +20,7 @@ class FastBIDSDataset(BaseDataset):
 
     def __init__(self,
                  name='mind',
-                 data_root=None,
+                 data_source_folders=None,
                  metadata_root=None,
                  include_nifti_header=False,
                  save=True,
@@ -33,7 +33,7 @@ class FastBIDSDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_root : Path or str
+        data_source_folders : Path or str
             directory containing dicom files, supports nested hierarchies
         metadata_root : str or Path
             directory to store cache
@@ -46,7 +46,7 @@ class FastBIDSDataset(BaseDataset):
         >>> dataset = FastBIDSDataset()
         """
 
-        super().__init__(name, data_root, metadata_root)
+        super().__init__(name, data_source_folders, metadata_root)
 
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
@@ -62,7 +62,7 @@ class FastBIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         # TODO: Need to handle BIDS datasets without JSON files
-        for file in files_under_folder(self.data_root, '.json'):
+        for file in files_under_folder(self.data_source_folders, '.json'):
             datatype = file.parent.name
             modality_obj = self.get_modality(datatype)
             if modality_obj is None:

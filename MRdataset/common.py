@@ -68,17 +68,6 @@ def import_dataset(data_root: Union[str, List[str]] = None,
     # Check if data_root is valid
     data_root = valid_dirs(data_root)
 
-    # Check if metadata_root is provided by user, otherwise use default
-    if not metadata_root:
-        metadata_root = CACHE_DIR
-        metadata_root.mkdir(exist_ok=True)
-
-    # Check if metadata_root is valid
-    if not Path(metadata_root).is_dir():
-        raise FileNotFoundError('Expected valid directory for --metadata_root '
-                                'argument, Got {0}'.format(metadata_root))
-    metadata_root = Path(metadata_root).resolve()
-
     # Check if name is provided by user, otherwise use random name
     if name is None:
         logger.warning(

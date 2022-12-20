@@ -64,7 +64,7 @@ class FastBIDSDataset(BaseDataset):
         # TODO: Need to handle BIDS datasets without JSON files
         for file in files_under_folder(self.data_source_folders, '.json'):
             datatype = file.parent.name
-            modality_obj = self.get_modality(datatype)
+            modality_obj = self.get_modality_by_name(datatype)
             if modality_obj is None:
                 modality_obj = Modality(datatype)
             nSub = file.parents[2].name

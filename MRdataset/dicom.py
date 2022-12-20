@@ -96,7 +96,7 @@ class DicomDataset(BaseDataset):
                                                    self.include_phantom):
 
                     modality_name = common_dicom.get_dicom_modality_tag(dicom)
-                    modality_obj = self.get_modality(modality_name)
+                    modality_obj = self.get_modality_by_name(modality_name)
                     if modality_obj is None:
                         modality_obj = Modality(modality_name)
 

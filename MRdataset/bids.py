@@ -107,7 +107,7 @@ class BIDSDataset(BaseDataset):
                 self.data_source_folders))
 
         for datatype in datatypes:
-            modality_obj = self.get_modality(datatype)
+            modality_obj = self.get_modality_by_name(datatype)
             if modality_obj is None:
                 modality_obj = Modality(datatype)
 

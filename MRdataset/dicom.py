@@ -61,7 +61,7 @@ class DicomDataset(BaseDataset):
         >>> from MRdataset import dicom
         >>> dataset = dicom.DicomDataset()
         """
-        super().__init__(name, data_source_folders, metadata_root)
+        super().__init__(data_source_folders)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
 

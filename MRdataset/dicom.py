@@ -44,16 +44,10 @@ class DicomDataset(BaseDataset):
             an identifier/name for the dataset
         data_source_folders : Path or str or Iterable
             directory containing dicom files, supports nested hierarchies
-        metadata_root : str or Path
-            directory to store cache
         include_phantom : bool
             whether to include localizer/aahead_scout/phantom/acr
-        save : bool
-            whether to save the dataset to cache
         is_complete : bool
             whether the dataset is complete or partial (default: True)
-        cache_path : str or Path
-            filepath to save the dataset
 
 
         Examples

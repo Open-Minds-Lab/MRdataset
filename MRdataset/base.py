@@ -381,7 +381,7 @@ class BaseDataset(Node):
 
         for modality in other.modalities:
             # Check if modality is present in BaseDataset
-            exist_modality = self.get_modality(modality.name)
+            exist_modality = self.get_modality_by_name(modality.name)
             # If modality doesn't exist
             if exist_modality is None:
                 # Add modality to BaseDataset

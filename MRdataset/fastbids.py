@@ -68,11 +68,11 @@ class FastBIDSDataset(BaseDataset):
             if modality_obj is None:
                 modality_obj = Modality(datatype)
             nSub = file.parents[2].name
-            subject_obj = modality_obj.get_subject(nSub)
+            subject_obj = modality_obj.get_subject_by_name(nSub)
             if subject_obj is None:
                 subject_obj = Subject(nSub)
             nSess = file.parents[1].name
-            session_node = subject_obj.get_session(nSess)
+            session_node = subject_obj.get_session_by_name(nSess)
             if session_node is None:
                 session_node = Session(nSess)
                 session_node = self.parse(session_node,
@@ -112,7 +112,7 @@ class FastBIDSDataset(BaseDataset):
         else:
             raise NotImplementedError(f"Got {ext}, Expects .nii/.json")
         if parameters:
-            run_node = session_node.get_run(filename)
+            run_node = session_node.get_run_by_name(filename)
             if run_node is None:
                 run_node = Run(filename)
             for k, v in parameters.items():

@@ -101,18 +101,18 @@ class DicomDataset(BaseDataset):
                         modality_obj = Modality(modality_name)
 
                     patient_id = str(dicom.get('PatientID', None))
-                    subject_obj = modality_obj.get_subject(patient_id)
+                    subject_obj = modality_obj.get_subject_by_name(patient_id)
                     if subject_obj is None:
                         subject_obj = Subject(patient_id)
 
                     series_num = str(dicom.get('SeriesNumber', None))
-                    session_node = subject_obj.get_session(series_num)
+                    session_node = subject_obj.get_session_by_name(series_num)
                     if session_node is None:
                         session_node = Session(series_num,
                                                Path(filepath).parent)
 
                     run_name = common_dicom.isSameSet(dicom)
-                    run_node = session_node.get_run(run_name)
+                    run_node = session_node.get_run_by_name(run_name)
                     if run_node is None:
                         run_node = Run(run_name)
                         run_node.echo_time = dicom.get('EchoTime', 1.0)

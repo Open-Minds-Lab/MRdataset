@@ -115,7 +115,7 @@ class BIDSDataset(BaseDataset):
             if not layout_subjects:
                 raise EOFError("No Subjects found in dataset")
             for nSub in layout_subjects:
-                subject_obj = modality_obj.get_subject(nSub)
+                subject_obj = modality_obj.get_subject_by_name(nSub)
                 if subject_obj is None:
                     subject_obj = Subject(nSub)
 
@@ -124,7 +124,7 @@ class BIDSDataset(BaseDataset):
                 if not layout_sessions:
                     logger.info("No sessions found. '1' is default "
                                 "session name")
-                    session_node = subject_obj.get_session('1')
+                    session_node = subject_obj.get_session_by_name('1')
                     if session_node is None:
                         session_node = Session('1')
 
@@ -140,7 +140,7 @@ class BIDSDataset(BaseDataset):
                 else:
                     # If there are sessions
                     for nSess in layout_sessions:
-                        session_node = subject_obj.get_session(nSess)
+                        session_node = subject_obj.get_session_by_name(nSess)
                         if session_node is None:
                             session_node = Session(nSess)
                             filters = self.get_filters(subject=nSub,
@@ -194,7 +194,7 @@ class BIDSDataset(BaseDataset):
             else:
                 raise NotImplementedError(f"Got {ext}, Expects .nii/.json")
             if parameters:
-                run_node = session_node.get_run(filename)
+                run_node = session_node.get_run_by_name(filename)
                 if run_node is None:
                     run_node = Run(filename)
                 for k, v in parameters.items():

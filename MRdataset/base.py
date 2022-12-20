@@ -336,13 +336,17 @@ class BaseDataset(Node):
     def save_dataset(self) -> None:
         """Saves dataset cache to disk for faster reloading"""
         if not self.modalities:
-            raise EOFError('Dataset is empty!')
+            raise ValueError('Dataset is empty!')
+        if not self.output_path:
+            raise ValueError('Output path not specified!')
         with open(self.output_path, "wb") as f:
             pickle.dump(self.__dict__, f)
 
     def load_dataset(self) -> None:
         """Loads dataset cache from disk"""
-        if not self.output_path.exists():
+        if not self.output_path:
+            raise ValueError('Output path not specified!')
+        if not self.output_path.is_file():
             raise FileNotFoundError('Provide a valid /path/to/cache/dir/')
         with open(self.output_path, 'rb') as f:
             temp_dict = pickle.load(f)

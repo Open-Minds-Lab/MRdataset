@@ -64,10 +64,6 @@ class DicomDataset(BaseDataset):
         super().__init__(name, data_source_folders, metadata_root)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
-        if cache_path:
-            self.cache_path = Path(cache_path)
-            if save:
-                self.save_dataset()
 
     def walk(self):
         """

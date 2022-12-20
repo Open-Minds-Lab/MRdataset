@@ -214,8 +214,8 @@ class BaseDataset(Node):
     """
     Container to manage properties and issues at the project level.
     Encapsulates all the details necessary for a complete project.
-    A single project may contain multiple modalities, and each modality
-    will have atleast single subject.
+    A single dataset may contain multiple modalities, and each modality
+    expected to have atleast single subject.
 
     Attributes
     ----------

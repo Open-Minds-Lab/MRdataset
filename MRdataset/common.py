@@ -181,8 +181,6 @@ def save_mr_dataset(filepath: Union[str, Path],
     -------
     None
     """
-    # Set cache_path, denotes the path to which dataset saved
-    mrds_obj.set_cache_path(filepath)
 
     # Extract extension from filename
     if isinstance(filepath, Path):

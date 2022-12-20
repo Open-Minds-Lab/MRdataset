@@ -388,14 +388,17 @@ class BaseDataset(Node):
                                         other.data_source_folders]
 
         for modality in other.modalities:
-            # Check if modality is present in BaseDataset
+            # Check if modality is present in self
             exist_modality = self.get_modality_by_name(modality.name)
             # If modality doesn't exist
             if exist_modality is None:
-                # Add modality to BaseDataset
+                # Add modality to self, which would also add all subjects
+                # inside it
                 self.add_modality(modality)
                 continue
-            # If modality already exists
+            # If modality already exists, add all the subjects in it
+            # Remember, the subjects are exclusive in both the datasets
+            # because of the way the jobs were split
             for subject in modality.subjects:
                 # Add subject to modality
                 exist_modality.add_subject(subject)

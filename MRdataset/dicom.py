@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pydicom
 
-from MRdataset import common_dicom
+from MRdataset import dicom_utils
 from MRdataset import config
-from MRdataset.core import Project, Run, Modality, Subject, Session
+from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference, files_in_path
 
 # Module-level logger
@@ -13,7 +13,7 @@ logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
-class DicomDataset(Project):
+class DicomDataset(BaseDataset):
     """
     Container to manage properties and issues of a dataset downloaded from
     XNAT. Expects the data_root to be collection of dicom files, which may
@@ -63,8 +63,8 @@ class DicomDataset(Project):
 
         Examples
         --------
-        >>> from MRdataset import dicom_dataset
-        >>> dataset = dicom_dataset.DicomDataset()
+        >>> from MRdataset import dicom
+        >>> dataset = dicom.DicomDataset()
         """
         super().__init__(name, data_root, metadata_root)
         self.is_complete = is_complete

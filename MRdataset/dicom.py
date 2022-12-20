@@ -72,8 +72,8 @@ class DicomDataset(BaseDataset):
             no_files_found = False
             try:
                 if not is_dicom_file(filepath):
-                    # logger.warning(
-                    #     "DICOM not found in {}".format(filepath.parent))
+                    logger.debug(
+                        "Not a DICOM file : {}".format(filepath))
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if is_valid_inclusion(filepath,

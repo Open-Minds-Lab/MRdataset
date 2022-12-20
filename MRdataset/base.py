@@ -461,20 +461,17 @@ class Modality(Node):
         keys = list(self.get_echo_times())
         if len(self._reference) == 0:
             return None
-        if self.is_multi_echo():
-            if echo_time is None:
-                raise LookupError("Got NoneType for echo time."
-                                  "Specify echo_time,"
-                                  " use one of {}".format(keys))
-            reference = self._reference.get(echo_time, None)
-            if reference is None:
-                raise KeyError("Echo time {} absent. "
-                               "Try one of {}".format(echo_time, keys))
-            else:
-                return reference
+        elif len(self._reference) == 1:
+            return self._reference[keys[0]]
         else:
-            _echo_time = keys[0]
-            return self._reference[_echo_time]
+            if echo_time is None:
+                raise LookupError("Got NoneType for echo time. "
+                                  "Specify echo_time, "
+                                  "Use one of {}".format(keys))
+            if echo_time not in keys:
+                raise LookupError("Echo time {} not found. "
+                                  "Use one of {}".format(echo_time, keys))
+            return self._reference[echo_time]
 
     @property
     def subjects(self) -> List["Subject"]:

@@ -360,6 +360,32 @@ class BaseDataset(Node):
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
 
+    def update_data_sources(self, values: Union[str, Path, list]) -> None:
+        """Update data source folders for the dataset"""
+
+        if isinstance(self.data_source_folders, list):
+            if isinstance(values, list):
+                self.data_source_folders.extend(values)
+            elif isinstance(values, str) or isinstance(values, Path):
+                self.data_source_folders.append(Path(values))
+            else:
+                raise TypeError(f"Expected str or Path or List[str or Path], "
+                                f"got {type(values)}")
+        elif isinstance(self.data_source_folders, str) \
+                or isinstance(self.data_source_folders, Path):
+            if isinstance(values, list):
+                self.data_source_folders = [self.data_source_folders]
+                self.data_source_folders.extend(values)
+            elif isinstance(values, str) or isinstance(values, Path):
+                self.data_source_folders = [self.data_source_folders,
+                                            Path(values)]
+            else:
+                raise TypeError(f"Expected str or Path or List[str or Path],"
+                                f" got {type(values)}")
+        else:
+            raise TypeError(f"Expected str or Path or List[str or Path], got "
+                            f"{type(self.data_source_folders)}")
+
     def merge(self, other: "BaseDataset") -> None:
         """
         Merges at the subject level. Function would work if two partial

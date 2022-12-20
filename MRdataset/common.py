@@ -24,7 +24,7 @@ def import_dataset(data_root: Union[str, List[str]] = None,
                    **_kwargs) -> "BaseDataset":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
-    base.Project. This is the main interface between this package and your
+    base.BaseDataset. This is the main interface between this package and your
     analysis.
 
     Parameters
@@ -113,7 +113,7 @@ def find_dataset_using_style(dataset_style: str):
 
     Returns
     -------
-    dataset: MRdataset.base.Project()
+    dataset: MRdataset.base.BaseDataset()
         dataset container class
     """
     # Import the module "{style}_dataset.py"
@@ -135,7 +135,7 @@ def find_dataset_using_style(dataset_style: str):
     # If no class was found, raise an error
     if dataset is None:
         raise NotImplementedError(
-            "Expected %s to be a subclass of MRdataset.base.Project in % s.py."
+            "Expected %s to be a subclass of MRdataset.base.BaseDataset in % s.py."
             % (target_dataset_class, dataset_modulename))
     # Return the class
     return dataset

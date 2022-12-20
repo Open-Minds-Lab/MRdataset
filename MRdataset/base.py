@@ -15,7 +15,7 @@ logger = logging.getLogger('root')
 class Node:
     """
     An abstract class specifying a generic node in a neuroimaging experiment.
-    It is inherited to create subclasses like Project, Modality, Subject etc.
+    It is inherited to create subclasses like BaseDataset, Modality, Subject etc.
 
     Attributes
     ----------
@@ -213,7 +213,7 @@ class BaseDataset(Node):
 
     def __init__(self, name, data_root, **kwargs):
         """
-        Constructor for Project class
+        Constructor for BaseDataset class
 
         Parameters
         ----------
@@ -222,7 +222,7 @@ class BaseDataset(Node):
         data_root : str or Path
             directory containing dataset with dicom files
         kwargs : dict
-            Additional keyword arguments passed to Project
+            Additional keyword arguments passed to BaseDataset
         """
         super().__init__(name)
         # Manage directories
@@ -253,7 +253,7 @@ class BaseDataset(Node):
 
     @property
     def modalities(self) -> List["Modality"]:
-        """Collection of all Modality Nodes in the Project"""
+        """Collection of all Modality Nodes in the BaseDataset"""
         return self.children
 
     @property
@@ -267,12 +267,12 @@ class BaseDataset(Node):
         return self._non_compliant_children
 
     def add_modality(self, new_modality: "Modality") -> None:
-        """Add a new Modality Node to list of modalities in the Project
+        """Add a new Modality Node to list of modalities in the BaseDataset
 
         Parameters
         ----------
         new_modality : base.Modality
-            new modality node added to the Project
+            new modality node added to the BaseDataset
         """
         if not isinstance(new_modality, Modality):
             raise TypeError(
@@ -347,7 +347,7 @@ class BaseDataset(Node):
                     "There is no guarantee on other datasets")
         # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, BaseDataset):
-            raise TypeError(f'Cannot merge MRdataset.Project and {type(other)}')
+            raise TypeError(f'Cannot merge MRdataset.BaseDataset and {type(other)}')
         # Add a check to ensure that the two datasets are of same style
         if self.style != other.style:
             raise TypeError(f'Cannot merge {self.style} and {other.style}')
@@ -359,11 +359,11 @@ class BaseDataset(Node):
             self.data_root = [self.data_root, other.data_root]
 
         for modality in other.modalities:
-            # Check if modality is present in Project
+            # Check if modality is present in BaseDataset
             exist_modality = self.get_modality(modality.name)
             # If modality doesn't exist
             if exist_modality is None:
-                # Add modality to Project
+                # Add modality to BaseDataset
                 self.add_modality(modality)
                 continue
             # If modality already exists

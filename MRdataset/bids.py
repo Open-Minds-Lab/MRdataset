@@ -15,7 +15,7 @@ logger = logging.getLogger('root')
 class BIDSDataset(BaseDataset):
     """
     Container to manage the properties and methods of a BIDS dataset downloaded
-    from OpenNeuro. It is a subclass of Project. Expects the data_root to
+    from OpenNeuro. It is a subclass of BaseDataset. Expects the data_root to
     contain JSON files for reading image acquisition parameters. Use
     include_nifti_header to extract parameter from nifti headers.
     """

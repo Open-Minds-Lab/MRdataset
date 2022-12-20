@@ -351,13 +351,13 @@ class BaseDataset(Node):
         with open(filepath, "wb") as f:
             pickle.dump(self.__dict__, f)
 
-    def load_dataset(self) -> None:
+    def load_dataset(self, filepath) -> None:
         """Loads dataset cache from disk"""
-        if not self.output_path:
-            raise ValueError('Output path not specified!')
-        if not self.output_path.is_file():
-            raise FileNotFoundError('Provide a valid /path/to/cache/dir/')
-        with open(self.output_path, 'rb') as f:
+        filepath = Path(filepath).resolve()
+        if not filepath.is_file():
+            raise FileNotFoundError('Valid filepath not specified!'
+                                    'Pass a valid filepath')
+        with open(filepath, 'rb') as f:
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
 

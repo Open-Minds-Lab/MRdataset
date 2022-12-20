@@ -231,8 +231,7 @@ class BaseDataset(Node):
         else:
             self.data_root = None
         # TODO : Add a flag to identify instance as a subset
-        self.cache_path = None
-        self.set_cache_path()
+        self.output_path = None
         self.style = self.get_style()
         self.is_complete = True
 
@@ -318,14 +317,14 @@ class BaseDataset(Node):
         """Saves dataset cache to disk for faster reloading"""
         if not self.modalities:
             raise EOFError('Dataset is empty!')
-        with open(self.cache_path, "wb") as f:
+        with open(self.output_path, "wb") as f:
             pickle.dump(self.__dict__, f)
 
     def load_dataset(self) -> None:
         """Loads dataset cache from disk"""
-        if not self.cache_path.exists():
+        if not self.output_path.exists():
             raise FileNotFoundError('Provide a valid /path/to/cache/dir/')
-        with open(self.cache_path, 'rb') as f:
+        with open(self.output_path, 'rb') as f:
             temp_dict = pickle.load(f)
             self.__dict__.update(temp_dict)
 

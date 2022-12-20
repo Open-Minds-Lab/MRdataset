@@ -117,28 +117,17 @@ def find_dataset_using_style(dataset_style: str):
         dataset container class
     """
     # Import the module "{style}_dataset.py"
-    dataset_modulename = "MRdataset.{}_dataset".format(dataset_style)
-    dataset_lib = importlib.import_module(dataset_modulename)
-
-    dataset = None
-    # Find the class in the module
-    target_dataset_class = '{}dataset'.format(dataset_style)
-    # Iterate through the module's attributes
-    for name, cls in dataset_lib.__dict__.items():
-        # If the attribute is a class
-        name_matched = name.lower() == target_dataset_class.lower()
-        # If the class is a subclass of MRdataset.base.Dataset
-        if name_matched and issubclass(cls, BaseDataset):
-            # Use the class
-            dataset = cls
-
-    # If no class was found, raise an error
-    if dataset is None:
+    if dataset_style == 'dicom':
+        dataset_class = dicom.DicomDataset
+    elif dataset_style == 'bids':
+        dataset_class = bids.BIDSDataset
+    elif dataset_style == 'fastbids':
+        dataset_class = fastbids.FastBIDSDataset
+    else:
         raise NotImplementedError(
-            "Expected %s to be a subclass of MRdataset.base.BaseDataset in % s.py."
-            % (target_dataset_class, dataset_modulename))
-    # Return the class
-    return dataset
+            f"Dataset style {dataset_style} is not implemented. Valid choices"
+            f"are {', '.join(VALID_DATASET_STYLES)}")
+    return dataset_class
 
 
 def load_mr_dataset(filepath: Union[str, Path],

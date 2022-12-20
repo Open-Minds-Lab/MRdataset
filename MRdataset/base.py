@@ -373,10 +373,11 @@ class BaseDataset(Node):
             raise TypeError(f'Cannot merge {self.style} and {other.style}')
 
         # Merge the list of folders in the data_root
-        if isinstance(self.data_root, list):
-            self.data_root.extend(other.data_root)
+        if isinstance(self.data_source_folders, list):
+            self.data_source_folders.extend(other.data_source_folders)
         else:
-            self.data_root = [self.data_root, other.data_root]
+            self.data_source_folders = [self.data_source_folders,
+                                        other.data_source_folders]
 
         for modality in other.modalities:
             # Check if modality is present in BaseDataset

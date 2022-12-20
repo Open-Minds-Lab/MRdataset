@@ -77,16 +77,16 @@ class DicomDataset(BaseDataset):
         for filepath in files_in_path(self.data_source_folders):
             no_files_found = False
             try:
-                if not common_dicom.is_dicom_file(filepath):
+                if not is_dicom_file(filepath):
                     # logger.warning(
                     #     "DICOM not found in {}".format(filepath.parent))
                     continue
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
-                if common_dicom.is_valid_inclusion(filepath,
-                                                   dicom,
-                                                   self.include_phantom):
+                if is_valid_inclusion(filepath,
+                                      dicom,
+                                      self.include_phantom):
 
-                    modality_name = common_dicom.get_dicom_modality_tag(dicom)
+                    modality_name = get_dicom_modality_tag(dicom)
                     modality_obj = self.get_modality_by_name(modality_name)
                     if modality_obj is None:
                         modality_obj = Modality(modality_name)
@@ -102,13 +102,13 @@ class DicomDataset(BaseDataset):
                         session_node = Session(series_num,
                                                Path(filepath).parent)
 
-                    run_name = common_dicom.isSameSet(dicom)
+                    run_name = isSameSet(dicom)
                     run_node = session_node.get_run_by_name(run_name)
                     if run_node is None:
                         run_node = Run(run_name)
                         run_node.echo_time = dicom.get('EchoTime', 1.0)
 
-                    dcm_img_params = common_dicom.parse_imaging_params(filepath)
+                    dcm_img_params = parse_imaging_params(filepath)
                     param_diff = param_difference(dcm_img_params,
                                                   run_node.params)
                     if len(run_node.params) == 0:

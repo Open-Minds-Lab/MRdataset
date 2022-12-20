@@ -521,20 +521,20 @@ class Modality(Node):
         """Add subject name (which is not compliant) to the list"""
         self._add_non_compliant_name(subject_name)
 
-    def get_subject(self, name: str) -> Optional["Subject"]:
+    def get_subject_by_name(self, subject_name: str) -> Optional["Subject"]:
         """
         Fetch a Subject Node searching by its name
 
         Parameters
         ----------
-        name : str
+        subject_name : str
 
         Returns
         -------
         None or Subject
             value specified for key if key is in self._children
         """
-        return self._get(name)
+        return self._get(subject_name)
 
     def set_reference(self, params: dict, echo_time=None) -> None:
         """Sets the reference protocol to check compliance
@@ -713,19 +713,19 @@ class Subject(Node):
                 "".format(type(Session), type(new_session)))
         self.add(new_session)
 
-    def get_session(self, name: str) -> Optional["Session"]:
+    def get_session_by_name(self, session_name: str) -> Optional["Session"]:
         """
         Fetch a Session Node searching by its name
         Parameters
         ----------
-        name : str
+        session_name : str
             Identifier/name for the Session Node
 
         Returns
         -------
         None or Session
         """
-        return self._get(name)
+        return self._get(session_name)
 
 
 class Session(Node):
@@ -778,9 +778,9 @@ class Session(Node):
                             .format(type(Run), type(new_run)))
         self.add(new_run)
 
-    def get_run(self, name: str) -> Optional["Run"]:
+    def get_run_by_name(self, run_name: str) -> Optional["Run"]:
         """Fetch a Run Node searching by its name"""
-        return self._get(name)
+        return self._get(run_name)
 
 
 class Run(Node):

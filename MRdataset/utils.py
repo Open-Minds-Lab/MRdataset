@@ -6,7 +6,7 @@ from collections.abc import Hashable, Iterable
 from pathlib import Path
 from typing import List
 
-from MRdataset.config import PARAMETER_NAMES
+from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
 from dictdiffer import diff as dict_diff
 from bids.layout.models import BIDSFile
 import nibabel as nib

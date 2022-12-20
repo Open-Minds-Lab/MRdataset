@@ -220,12 +220,12 @@ class BaseDataset(Node):
     Attributes
     ----------
     name : str
-        Identifier/name for the node
-    data_root : str or Path
-        directory containing dataset with dicom files
+        Identifier/name for the dataset
+    data_source_folders : str or Path
+        directory containing dataset files such as dcm, nii, json, etc
     """
 
-    def __init__(self, name, data_root, **kwargs):
+    def __init__(self, name, data_source_folders, **kwargs):
         """
         Constructor for BaseDataset class
 
@@ -233,17 +233,17 @@ class BaseDataset(Node):
         ----------
         name : str
             Identifier/name for the node
-        data_root : str or Path
-            directory containing dataset with dicom files
+        data_source_folders : str or Path
+            directories containing dataset with dicom files
         kwargs : dict
             Additional keyword arguments passed to BaseDataset
         """
         super().__init__(name)
         # Manage directories
-        if data_root:
-            self.data_root = valid_dirs(data_root)
+        if data_source_folders:
+            self.data_source_folders = valid_dirs(data_source_folders)
         else:
-            self.data_root = None
+            self.data_source_folders = None
         # TODO : Add a flag to identify instance as a subset
         self.output_path = None
         self.style = self.get_style()

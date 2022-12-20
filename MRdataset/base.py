@@ -336,7 +336,7 @@ class BaseDataset(Node):
 
     def merge(self, other: "BaseDataset") -> None:
         """
-        merges only at the subject level. Function would work if two partial
+        Merges at the subject level. Function would work if two partial
         datasets have mutually exclusive subjects in a single modality.
 
         Parameters

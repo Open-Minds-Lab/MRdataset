@@ -238,10 +238,7 @@ class BaseDataset(Node):
         """
         super().__init__()
         # Manage directories
-        if data_source_folders:
-            self.data_source_folders = valid_dirs(data_source_folders)
-        else:
-            self.data_source_folders = None
+        self.data_source_folders = valid_dirs(data_source_folders)
         # TODO : Add a flag to identify instance as a subset
         self.style = self.get_style()
         self.is_complete = True

@@ -468,17 +468,17 @@ class Modality(Node):
     @property
     def subjects(self) -> List["Subject"]:
         """Collection of Subject Nodes in the Modality"""
-        return self.children
+        return self.sub_nodes
 
     @property
     def compliant_subject_names(self) -> List[str]:
         """List of subject names which are compliant"""
-        return self._compliant_children
+        return self._compliant_list
 
     @property
     def non_compliant_subject_names(self) -> List[str]:
         """List of subject names which are not compliant"""
-        return self._non_compliant_children
+        return self._non_compliant_list
 
     def add_subject(self, new_subject: 'Subject') -> None:
         """Add a new Subject Node to list of subjects in the Modality
@@ -689,7 +689,7 @@ class Subject(Node):
     @property
     def sessions(self) -> List["Session"]:
         """Collection of Session Nodes in the Subject"""
-        return self.children
+        return self.sub_nodes
 
     def add_session(self, new_session) -> None:
         """Add a new Session Node to list of sessions in the Subject
@@ -755,7 +755,7 @@ class Session(Node):
     @property
     def runs(self):
         """Collection of Run Nodes in the Session"""
-        return self.children
+        return self.sub_nodes
 
     def add_run(self, new_run: "Run") -> None:
         """Add a new Run Node to list of runs in the Session

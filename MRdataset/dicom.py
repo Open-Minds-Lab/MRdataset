@@ -32,13 +32,9 @@ class DicomDataset(BaseDataset):
     """
 
     def __init__(self,
-                 name='mind',
                  data_source_folders=None,
-                 metadata_root=None,
                  include_phantom=False,
-                 save=True,
                  is_complete=True,
-                 cache_path=None,
                  **_kwargs):
 
         """

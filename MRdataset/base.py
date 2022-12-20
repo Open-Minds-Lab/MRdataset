@@ -209,11 +209,9 @@ class BaseDataset(Node):
         Identifier/name for the node
     data_root : str or Path
         directory containing dataset with dicom files
-    metadata_root : str or Path
-        directory to store cache
     """
 
-    def __init__(self, name, data_root, metadata_root, **kwargs):
+    def __init__(self, name, data_root, **kwargs):
         """
         Constructor for Project class
 
@@ -223,8 +221,6 @@ class BaseDataset(Node):
             Identifier/name for the node
         data_root : str or Path
             directory containing dataset with dicom files
-        metadata_root : str or Path
-            directory to store cache
         kwargs : dict
             Additional keyword arguments passed to Project
         """

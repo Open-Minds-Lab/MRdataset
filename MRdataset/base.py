@@ -297,13 +297,13 @@ class BaseDataset(Node):
                     type(new_modality)))
         self.add(new_modality)
 
-    def get_modality(self, name: str) -> Optional["Modality"]:
+    def get_modality_by_name(self, modality_name: str) -> Optional["Modality"]:
         """Fetch a Modality Node searching by its name. If name not found,
         returns None
 
         Parameters
         ----------
-        name : str
+        modality_name : str
             Key/Identifier to be searched in the dictionary
 
         Returns
@@ -311,7 +311,7 @@ class BaseDataset(Node):
         None or Modality
             value specified for key if key is in self._children
         """
-        return self._get(name)
+        return self._get(modality_name)
 
     def add_compliant_modality_name(self, modality_name: str) -> None:
         """

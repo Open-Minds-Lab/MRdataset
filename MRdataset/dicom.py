@@ -99,8 +99,7 @@ class DicomDataset(BaseDataset):
                     series_num = str(dicom.get('SeriesNumber', None))
                     session_node = subject_obj.get_session_by_name(series_num)
                     if session_node is None:
-                        session_node = Session(series_num,
-                                               Path(filepath).parent)
+                        session_node = Session(series_num)
 
                     run_name = isSameSet(dicom)
                     run_node = session_node.get_run_by_name(run_name)

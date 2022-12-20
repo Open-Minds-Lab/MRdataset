@@ -332,34 +332,6 @@ class BaseDataset(Node):
         """
         self._add_non_compliant_name(modality_name)
 
-    def save_dataset(self, filepath) -> None:
-        """Saves dataset cache to disk for faster reloading"""
-        if not self.modalities:
-            raise ValueError('Dataset is empty!')
-        if not filepath:
-            raise ValueError('Filepath not specified!')
-        if isinstance(filepath, str) or isinstance(filepath, Path):
-            filepath = Path(filepath).resolve()
-        else:
-            raise NotImplementedError(f"Expected str or pathlib.Path,"
-                                      f" Got {type(filepath)} instead")
-
-        ext = "".join(filepath.suffixes)
-        assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
-
-        with open(filepath, "wb") as f:
-            pickle.dump(self.__dict__, f)
-
-    def load_dataset(self, filepath) -> None:
-        """Loads dataset cache from disk"""
-        filepath = Path(filepath).resolve()
-        if not filepath.is_file():
-            raise FileNotFoundError('Valid filepath not specified!'
-                                    'Pass a valid filepath')
-        with open(filepath, 'rb') as f:
-            temp_dict = pickle.load(f)
-            self.__dict__.update(temp_dict)
-
     def update_data_sources(self, values: Union[str, Path, list]) -> None:
         """Update data source folders for the dataset"""
 

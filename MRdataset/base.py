@@ -560,7 +560,7 @@ class Modality(Node):
                              "set_reference first!")
         return len(self._reference) > 1
 
-    def reasons_non_compliance(self, echo_time: float = None) -> dict:
+    def non_compliant_params(self, echo_time: float = None) -> dict:
         """
         Reasons for non-compliance in this modality across all the subjects.
 

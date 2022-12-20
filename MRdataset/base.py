@@ -8,7 +8,7 @@ import pandas as pd
 
 from MRdataset.utils import valid_dirs
 
-logger = logging.getLogger('root')
+from log import logger
 
 
 @total_ordering

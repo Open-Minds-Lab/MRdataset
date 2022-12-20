@@ -156,32 +156,13 @@ def load_mr_dataset(filepath: Union[str, Path],
 
     with open(filepath, 'rb') as f:
         fetched = pickle.load(f)
-        if isinstance(fetched, dict):
-            # If dict is found, create object and update __dict__
-            saved_style = fetched.get('style', None)
-            is_complete = fetched.get('is_complete', None)
-            if is_complete is False:
-                logger.info("Loading a partial dataset.")
-            if saved_style is None:
-                dataset_class = find_dataset_using_style(style)
-            else:
-                dataset_class = find_dataset_using_style(saved_style)
-            dataset = dataset_class(
-                name=fetched['name'],
-                data_root=fetched['data_root'],
-                metadata_root=fetched['metadata_root'],
-                include_phantom=fetched['include_phantom'],
-                reindex=False,
-                is_complete=fetched['is_complete'],
-                save=False,
-                style=fetched['style'],
-                cache_path=fetched['cache_path']
-            )
-            dataset.__dict__.update(fetched)
-            return dataset
-        elif isinstance(fetched, MRdataset.common.BaseDataset):
+        if isinstance(fetched, BaseDataset):
             # If object is found, return object
             return fetched
+        else:
+            # If object is different type, raise error
+            raise TypeError(f"Expected {type(BaseDataset)} "
+                            f"but got {type(fetched)}")
 
 
 def save_mr_dataset(filepath: Union[str, Path],

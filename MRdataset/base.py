@@ -245,7 +245,6 @@ class BaseDataset(Node):
         else:
             self.data_source_folders = None
         # TODO : Add a flag to identify instance as a subset
-        self.output_path = None
         self.style = self.get_style()
         self.is_complete = True
 
@@ -333,7 +332,7 @@ class BaseDataset(Node):
         """
         self._add_non_compliant_name(modality_name)
 
-    def save_dataset(self) -> None:
+    def save_dataset(self, filepath) -> None:
         """Saves dataset cache to disk for faster reloading"""
         if not self.modalities:
             raise ValueError('Dataset is empty!')

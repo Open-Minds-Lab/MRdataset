@@ -415,10 +415,10 @@ class Modality(Node):
         name : str
             Identifier/name for the modality. e.g. DTI-RL, fMRI
         """
-        super().__init__(name)
+        super().__init__()
         self._reference = dict()
         self.compliant = None
-
+        self.name = name
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)
 
@@ -681,7 +681,8 @@ class Subject(Node):
         name : str
             Identifier/name for the Subject node
         """
-        super().__init__(name)
+        super().__init__()
+        self.name = name
 
     @property
     def sessions(self) -> List["Session"]:
@@ -759,7 +760,8 @@ class Session(Node):
         name : str
             Identifier/name for the Session
         """
-        super().__init__(name)
+        super().__init__()
+        self.name = name
         self.params = dict()
 
     @property
@@ -801,7 +803,8 @@ class Run(Node):
         name : str
             Identifier/name for the Run
         """
-        super().__init__(name)
+        super().__init__()
+        self.name = name
         self.echo_time = 0
         # TODO: check if self.error is required
         self.error = False

@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 
 from MRdataset import import_dataset
+from MRdataset.log import logger
 
 
 def main():
@@ -47,6 +48,10 @@ def main():
     if args.include_nifti_header:
         if args.style != 'bids':
             raise SyntaxError('--include_nifti_header for style=bids')
+    if args.verbose:
+        logger.setLevel('INFO')
+    else:
+        logger.setLevel('WARNING')
 
     dataset = import_dataset(data_root=args.data_root,
                              style=args.style,

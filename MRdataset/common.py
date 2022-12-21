@@ -26,7 +26,7 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
 
     Parameters
     ----------
-    data_root : Union[str, List[str]]
+    data_source_folders : Union[str, List[str]]
         path/to/my/dataset containing files
     style : str
         Specify dataset type. Imports the module "{style}_dataset.py",
@@ -63,7 +63,7 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
     >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
     # Check if data_root is valid
-    data_root = valid_dirs(data_root)
+    data_source_folders = valid_dirs(data_source_folders)
 
     # Check if name is provided by user, otherwise use random name
     if name is None:

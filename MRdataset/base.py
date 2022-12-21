@@ -36,6 +36,7 @@ class Node:
         self._sub_nodes = dict()
         self._compliant_list = list()
         self._non_compliant_list = list()
+        self.compliant = None
 
     @property
     def sub_nodes(self):

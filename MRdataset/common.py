@@ -78,14 +78,11 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
 
     # Instantiate dataset class
     dataset = dataset_class(
-        name=name,
-        data_root=data_root,
-        metadata_root=metadata_root,
+        data_source_folders=data_source_folders,
         include_phantom=include_phantom,
+        verbose=verbose,
         include_nifti_header=include_nifti_header,
-        save=save,
         is_complete=is_complete,
-        cache_path=cache_path,
         **_kwargs
     )
     dataset.walk()

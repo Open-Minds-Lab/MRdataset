@@ -90,7 +90,6 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
     # Print dataset summary
     if verbose:
         print(dataset)
-    # Return dataset
     return dataset
 
 

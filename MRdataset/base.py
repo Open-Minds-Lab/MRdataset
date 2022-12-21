@@ -716,6 +716,25 @@ class Subject(Node):
         """
         return self._get(session_name)
 
+    def add_compliant_session_name(self, session_name: str) -> None:
+        """
+        Add session name (which is compliant) to the list
+
+        Parameters
+        ----------
+        session_name : str
+            String value specifying a session
+
+        Returns
+        -------
+
+        """
+        self._add_compliant_name(session_name)
+
+    def add_non_compliant_session_name(self, session_name: str) -> None:
+        """Add session name (which is not compliant) to the list"""
+        self._add_non_compliant_name(session_name)
+
 
 class Session(Node):
     """

@@ -67,7 +67,7 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
 
     # Check if name is provided by user, otherwise use random name
     if name is None:
-        logger.warning(
+        logger.info(
             'Expected a unique identifier for caching data. Got NoneType. '
             'Using a random name. Use --name flag for persistent metadata',
             stacklevel=2)

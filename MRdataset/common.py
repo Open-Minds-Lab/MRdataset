@@ -11,16 +11,13 @@ from MRdataset import dicom, bids, fastbids
 from MRdataset.config import VALID_DATASET_STYLES
 
 
-def import_dataset(data_root: Union[str, List[str]] = None,
+def import_dataset(data_source_folders: Union[str, List[str]] = None,
                    style: str = 'dicom',
                    name: str = None,
                    include_phantom: bool = False,
                    verbose: bool = False,
-                   metadata_root: Union[str, Path] = None,
                    include_nifti_header: bool = False,
-                   save: bool = True,
                    is_complete: bool = True,
-                   cache_path: str = None,
                    **_kwargs) -> "BaseDataset":
     """
     Create dataset as per arguments. This function acts as a Wrapper class for

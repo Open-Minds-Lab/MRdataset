@@ -24,6 +24,8 @@ TAGS = {
 # Constant Paths
 CACHE_DIR_NAME = ".mrdataset"
 CACHE_DIR = Path.home().resolve() / CACHE_DIR_NAME
+CACHE_DIR.mkdir(exist_ok=True)
+
 MRDS_EXT = '.mrds.pkl'
 VALID_DATASET_STYLES = [
     'dicom',

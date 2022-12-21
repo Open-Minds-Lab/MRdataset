@@ -244,7 +244,7 @@ def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
     elif isinstance(folders, Iterable):
         for folder in folders:
             if not Path(folder).is_dir():
-                raise OSError('Invalid directory {0}'.format(folders))
+                raise OSError('Invalid directory {0}'.format(folder))
         return [Path(f).resolve() for f in folders]
 
 

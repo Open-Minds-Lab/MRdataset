@@ -237,6 +237,8 @@ def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
     -------
     List of POSIX Paths that exist on disk
     """
+    if folders is None:
+        raise ValueError('Expected a valid path, Got NoneType')
     if isinstance(folders, str) or isinstance(folders, Path):
         if not Path(folders).is_dir():
             raise OSError('Invalid directory {0}'.format(folders))
@@ -246,6 +248,9 @@ def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
             if not Path(folder).is_dir():
                 raise OSError('Invalid directory {0}'.format(folder))
         return [Path(f).resolve() for f in folders]
+    else:
+        raise NotImplementedError('Expected str or Path or Iterable, '
+                                  f'Got {type(folders)}')
 
 
 def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:

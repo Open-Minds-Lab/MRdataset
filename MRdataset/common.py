@@ -83,6 +83,7 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
         verbose=verbose,
         include_nifti_header=include_nifti_header,
         is_complete=is_complete,
+        name=name,
         **_kwargs
     )
     dataset.walk()

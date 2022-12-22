@@ -35,6 +35,7 @@ class DicomDataset(BaseDataset):
                  data_source_folders=None,
                  include_phantom=False,
                  is_complete=True,
+                 name=None,
                  **_kwargs):
 
         """
@@ -58,6 +59,7 @@ class DicomDataset(BaseDataset):
         super().__init__(data_source_folders)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
+        self.name = name
 
     def walk(self):
         """

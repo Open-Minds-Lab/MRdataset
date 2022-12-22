@@ -177,6 +177,10 @@ def save_mr_dataset(filepath: Union[str, Path],
 
     # Extract extension from filename
     check_mrds_extension(filepath)
+
+    parent_folder = Path(filepath).parent
+    parent_folder.mkdir(exist_ok=True, parents=True)
+
     with open(filepath, "wb") as f:
         # save dict of the object as pickle
         pickle.dump(mrds_obj, f)

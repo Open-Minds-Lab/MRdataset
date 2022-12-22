@@ -268,6 +268,8 @@ def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
     -------
     List of POSIX Paths that exist on disk
     """
+    if files is None:
+        raise ValueError('Expected a valid path or Iterable, Got NoneType')
     if isinstance(files, str) or isinstance(files, Path):
         if not Path(files).is_file():
             raise OSError('Invalid File {0}'.format(files))
@@ -277,6 +279,9 @@ def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
             if not Path(file).is_file():
                 raise OSError('Invalid File {0}'.format(file))
         return [Path(f).resolve() for f in files]
+    else:
+        raise NotImplementedError('Expected str or Path or Iterable, '
+                                  f'Got {type(files)}')
 
 
 def check_mrds_extension(filepath: Union[str, Path]):

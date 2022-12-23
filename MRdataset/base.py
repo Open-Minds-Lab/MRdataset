@@ -14,8 +14,9 @@ from MRdataset.log import logger
 @total_ordering
 class Node:
     """
-    An abstract class specifying a generic node in a neuroimaging experiment.
-    It is inherited to create subclasses like BaseDataset, Modality, Subject etc.
+    The class specifies a generic element in a neuroimaging experiment.
+    It is inherited to create subclasses like BaseDataset, Modality, Subject
+    etc.
 
     Attributes
     ----------
@@ -49,14 +50,14 @@ class Node:
     @property
     def compliant_list(self):
         """
-        Each node can be connected to several compliant sub nodes
+        Each node can maintain a list of compliant sub nodes
         """
         return self._compliant_list
 
     @property
     def non_compliant_list(self):
         """
-        Each node can be connected to several non-compliant sub nodes
+        Each node can maintain a list of compliant sub nodes
         """
         return self._non_compliant_list
 

@@ -62,14 +62,15 @@ class Node:
 
     def add(self, other: "Node") -> None:
         """
-        Adds a child node to self._children dict, if already present
+        Adds a sub-node to self._sub_nodes dict, if already present
         updates it
 
         Parameters
         ----------
         other : Node
-            another Node object that must be added to list of children
+            another Node object that must be added to list of sub_nodes
         """
+        # TODO: consider adding either __copy__ or __deepcopy__ to Node
         if not isinstance(other, Node):
             raise TypeError("must be {}, not {}".format(
                 type(Node),
@@ -78,7 +79,7 @@ class Node:
 
     def _get(self, name: str) -> Optional[Type["Node"]]:
         """
-        Fetches a child node which has the same key as "name". If key is not
+        Fetches a sub_node which has the same key as "name". If key is not
         available, returns None
 
         Parameters
@@ -89,17 +90,17 @@ class Node:
         Returns
         -------
         None or Node
-            value specified for key if key is in self._children
+            value specified for key if key is in self.sub_nodes
         """
         return self._sub_nodes.get(name, None)
 
     def _add_compliant_name(self, other: str) -> None:
         """
-        Add a name to list of compliant children
+        Add a name to list of compliant sub_nodes
         Parameters
         ----------
         other : str
-            Name to be added to list of compliant children
+            Name to be added to list of compliant sub_nodes
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {} '.format(type(other)))
@@ -109,11 +110,11 @@ class Node:
 
     def _add_non_compliant_name(self, other: str) -> None:
         """
-        Add a name to list of non-compliant children
+        Add a name to list of non-compliant sub_nodes
         Parameters
         ----------
         other : str
-            Name to be added to list of non-compliant children
+            Name to be added to list of non-compliant sub_nodes
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {}'.format(type(other)))
@@ -148,7 +149,7 @@ class Node:
             level = len(levelMarkers)
 
         def mapper(draw):
-            # If the node is the last child, don't draw a connection
+            # If the sub_node is the last sub_node, don't draw a connection
             return connectionStr if draw else emptyStr
 
         # Draw the markers for the current level
@@ -158,7 +159,7 @@ class Node:
         # Print the node name
         print(f"{markers}{self.name}")
 
-        # Recursively print the children
+        # Recursively print the sub_nodes
         for i, sub_node in enumerate(self.sub_nodes):
             # If the node is last, don't draw a connection
             isLast = i == len(self.sub_nodes) - 1
@@ -304,7 +305,7 @@ class BaseDataset(Node):
         Returns
         -------
         None or Modality
-            value specified for key if key is in self._children
+            value specified for key if key is in self.sub_nodes
         """
         return self._get(modality_name)
 
@@ -314,7 +315,7 @@ class BaseDataset(Node):
         Parameters
         ----------
         modality_name : str
-            Name to be added to list of compliant children
+            Name to be added to list of compliant sub_nodes
         """
         self._add_compliant_name(modality_name)
 
@@ -521,7 +522,7 @@ class Modality(Node):
         Returns
         -------
         None or Subject
-            value specified for key if key is in self._children
+            value specified for key if key is in self.sub_nodes
         """
         return self._get(subject_name)
 

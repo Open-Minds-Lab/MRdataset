@@ -1,6 +1,6 @@
-===========
-Quickstart
-===========
+==============================================================
+MRdataset : unified interface to various neuroimaging datasets
+==============================================================
 
 
 .. image:: https://img.shields.io/pypi/v/MRdataset.svg

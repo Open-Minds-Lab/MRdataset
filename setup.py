@@ -17,7 +17,7 @@ requirements = [
     'nibabel',
     'pydicom',
     'dictdiffer',
-    'pandas',
+    'pandas>=1.5.2',
     'pybids'
 ]
 

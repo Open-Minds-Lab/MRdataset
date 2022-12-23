@@ -1,31 +1,16 @@
-Welcome to MRdataset's documentation!
-======================================
+MRdataset : unified interface to various neuroimaging datasets
+==============================================================
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Tutorials
+   :maxdepth: 1
 
    installation
-   readme
-
-.. toctree::
-   :maxdepth: 2
-   :caption: How-to Guides & Examples
-
+   usage
+   API
    contributing
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Reference
-
-   modules
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Background
-
    authors
-   history
+
 
 Indices and tables
 ==================

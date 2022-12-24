@@ -45,7 +45,7 @@ class Node:
         Each node can be connected to several sub nodes, generally
         subcomponents of Node
         """
-        return list(self._sub_nodes.values())
+        return sorted(list(self._sub_nodes.values()))
 
     @property
     def compliant_list(self):

@@ -37,7 +37,7 @@ class Node:
         self._sub_nodes = dict()
         self._compliant_list = list()
         self._non_compliant_list = list()
-        self.compliant = None
+        self.compliant = True
 
     @property
     def sub_nodes(self):
@@ -419,7 +419,6 @@ class Modality(Node):
         """
         super().__init__()
         self._reference = dict()
-        self.compliant = None
         self.name = name
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)

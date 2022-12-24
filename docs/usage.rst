@@ -15,6 +15,8 @@ For a BIDS dataset::
 
 API usage
 ----------------------
+The following section provides a brief overview of the API. For more details,
+please refer to the Jupyter Notebook `tutorial`_.
 
 To use MRdataset in a project::
 
@@ -64,4 +66,8 @@ Similarly, to load a dataset::
 
     from MRdataset import load_mr_dataset
     dataset = load_mr_dataset('/home/user/datasets/xyz.mrds.pkl')
+
 Note that the dataset is saved as a pickle file with an extension ``.mrds.pkl``.
+
+.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb
+

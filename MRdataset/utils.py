@@ -135,6 +135,12 @@ def is_hashable(value) -> bool:
     return isinstance(value, Hashable)
 
 
+def make_hashable(value):
+    if is_hashable(value):
+        return value
+    return str(value)
+
+
 def timestamp() -> str:
     """
     Generates time string in the specified format

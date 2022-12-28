@@ -27,17 +27,11 @@ def main():
                           help='show this help message and exit')
     optional.add_argument('--is_partial', action='store_true',
                           help='flag dataset as a partial dataset')
-    optional.add_argument('--skip_save', action='store_true',
-                          help='skip saving dataset to disk')
-    optional.add_argument('--cache_path', type=str,
-                          help='complete path for saving the dataset')
     optional.add_argument('-v', '--verbose', action='store_true',
                           help='allow verbose output on console')
     optional.add_argument('--include_phantom', action='store_true',
                           help='whether to include phantom, localizer, '
                                'aahead_scout')
-    optional.add_argument('--metadata_root', type=str, required=False,
-                          help='directory to store cache')
     optional.add_argument('--include_nifti_header', action='store_true',
                           help='whether to check nifti headers for compliance,'
                                'only used when --style==bids')
@@ -53,16 +47,13 @@ def main():
     else:
         logger.setLevel('WARNING')
 
-    dataset = import_dataset(data_root=args.data_root,
+    dataset = import_dataset(data_source_folders=args.data_root,
                              style=args.style,
                              name=args.name,
                              include_phantom=args.include_phantom,
                              verbose=args.verbose,
-                             metadata_root=args.metadata_root,
                              include_nifti_header=args.include_nifti_header,
-                             save=not args.skip_save,
-                             is_complete=not args.is_partial,
-                             cache_path=args.cache_path)
+                             is_complete=not args.is_partial)
     dataset.walk()
     return dataset
 

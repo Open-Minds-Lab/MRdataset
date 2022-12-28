@@ -172,21 +172,19 @@ class BIDSDataset(BaseDataset):
             modified session_node which also contains the new run
         """
         files = bids_layout.get(**filters)
+        parameters = {}
         for file in files:
             filename = file.filename
-            ext = get_ext(file)
-            if ext == '.json':
-                parameters = select_parameters(file.path, ext)
-            elif ext in ['.nii', '.nii.gz']:
-                parameters = select_parameters(file.path, ext)
-            else:
-                raise NotImplementedError(f"Got {ext}, Expects .nii/.json")
-            if parameters:
-                run_node = session_node.get_run_by_name(filename)
-                if run_node is None:
-                    run_node = Run(filename)
-                for k, v in parameters.items():
-                    run_node.params[k] = v
-                run_node.echo_time = round(parameters.get('EchoTime', 1.0), 4)
-                session_node.add_run(run_node)
+            parameters[filename] = {}
+            params_from_file = select_parameters(file)
+            parameters[filename].update(params_from_file)
+
+        for filename, params in parameters.items():
+            run_node = session_node.get_run_by_name(filename)
+            if run_node is None:
+                run_node = Run(filename)
+            for k, v in parameters.items():
+                run_node.params[k] = v
+            run_node.echo_time = parameters.get('EchoTime', 1.0)
+            session_node.add_run(run_node)
         return session_node

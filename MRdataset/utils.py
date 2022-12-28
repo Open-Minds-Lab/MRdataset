@@ -171,8 +171,6 @@ def select_parameters(filepath, ext) -> dict:
     ----------
     filepath : pathlib.Path or str
         Path pointing to either a JSON or NIfTI file
-    ext : str
-        Argument to choose either a NIfTI file or a JSON file
     Returns
     -------
 
@@ -223,7 +221,12 @@ def get_ext(file: BIDSFile) -> str:
     -------
     file extension as a string
     """
-    return file.tags['extension'].value
+    if isinstance(file, BIDSFile):
+        return file.tags['extension'].value
+    elif isinstance(file, Path):
+        return "".join(file.suffixes)
+    else:
+        raise NotImplementedError('File Format not supported')
 
 
 def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):

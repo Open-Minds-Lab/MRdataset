@@ -136,9 +136,17 @@ def is_hashable(value) -> bool:
 
 
 def make_hashable(value):
-    if is_hashable(value):
-        return value
-    return str(value)
+    if isinstance(value, np.ndarray):
+        values = value.tolist()
+    else:
+        values = value
+    if isinstance(values, Iterable) and not isinstance(values, str):
+        return " ".join([str(x) for x in values])
+    if not isinstance(values, str) and np.isnan(values):
+        return 'NaN'
+    if is_hashable(values):
+        return values
+    return str(values)
 
 
 def timestamp() -> str:

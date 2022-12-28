@@ -7,7 +7,7 @@ import MRdataset
 from MRdataset.base import BaseDataset
 from MRdataset.utils import valid_dirs, random_name, check_mrds_extension
 from MRdataset.log import logger
-from MRdataset import dicom, bids, fastbids
+from MRdataset import dicom, naive_bids, fastbids
 from MRdataset.config import VALID_DATASET_STYLES
 
 
@@ -114,7 +114,7 @@ def find_dataset_using_style(dataset_style: str):
     if dataset_style == 'dicom':
         dataset_class = dicom.DicomDataset
     elif dataset_style == 'bids':
-        dataset_class = bids.BIDSDataset
+        dataset_class = naive_bids.BIDSDataset
     elif dataset_style == 'fastbids':
         dataset_class = fastbids.FastBIDSDataset
     else:

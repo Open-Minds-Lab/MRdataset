@@ -33,6 +33,8 @@ VALID_DATASET_STYLES = [
     'fastbids',
 ]
 
+VALID_BIDS_EXTENSIONS = ['.json', '.nii', '.nii.gz']
+
 PARAMETER_NAMES = {
     # 'Manufacturer': [0x08, 0x70],
     'BodyPartExamined': [0x18, 0x15],

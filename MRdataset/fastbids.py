@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
@@ -53,29 +52,34 @@ class FastBIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         # TODO: Need to handle BIDS datasets without JSON files
-        for file in files_under_folder(self.data_source_folders, '.json'):
-            datatype = file.parent.name
-            modality_obj = self.get_modality_by_name(datatype)
-            if modality_obj is None:
-                modality_obj = Modality(datatype)
-            nSub = file.parents[2].name
-            subject_obj = modality_obj.get_subject_by_name(nSub)
-            if subject_obj is None:
-                subject_obj = Subject(nSub)
-            nSess = file.parents[1].name
-            session_node = subject_obj.get_session_by_name(nSess)
-            if session_node is None:
-                session_node = Session(nSess)
-                session_node = self.parse(session_node,
-                                          file)
-                if session_node.runs:
-                    subject_obj.add_session(session_node)
-                if subject_obj.sessions:
-                    modality_obj.add_subject(subject_obj)
-            if modality_obj.subjects:
-                self.add_modality(modality_obj)
+        for file in files_under_folder(self.data_source_folders):
+            ext = get_ext(file)
+            if ext in VALID_BIDS_EXTENSIONS:
+                self.read_single(file)
         if not self.modalities:
-            raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
+            raise ValueError("Expected Sidecar JSON files in --data_root. Got 0")
+
+    def read_single(self, file):
+        datatype = file.parent.name
+        modality_obj = self.get_modality_by_name(datatype)
+        if modality_obj is None:
+            modality_obj = Modality(datatype)
+        nSub = file.parents[2].name
+        subject_obj = modality_obj.get_subject_by_name(nSub)
+        if subject_obj is None:
+            subject_obj = Subject(nSub)
+        nSess = file.parents[1].name
+        session_node = subject_obj.get_session_by_name(nSess)
+        if session_node is None:
+            session_node = Session(nSess)
+            session_node = self.parse(session_node,
+                                      file)
+            if session_node.runs:
+                subject_obj.add_session(session_node)
+            if subject_obj.sessions:
+                modality_obj.add_subject(subject_obj)
+        if modality_obj.subjects:
+            self.add_modality(modality_obj)
 
     def parse(self, session_node: Session, filepath: Path) -> Session:
         """

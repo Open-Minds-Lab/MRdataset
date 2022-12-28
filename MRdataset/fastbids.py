@@ -98,20 +98,29 @@ class FastBIDSDataset(BaseDataset):
             session_node : MRdataset.base.Session
                 modified session_node which also contains the new run
             """
-        filename = filepath.name
-        ext = filepath.suffix
-        if ext == '.json':
-            parameters = select_parameters(filepath, ext)
-        elif ext in ['.nii', '.nii.gz']:
-            parameters = select_parameters(filepath, ext)
-        else:
-            raise NotImplementedError(f"Got {ext}, Expects .nii/.json")
-        if parameters:
+
+        filename = filepath.stem
+        params_from_file = dict()
+        filepath = filepath.parent / (filepath.stem + '.json')
+        if filepath.is_file():
+            params_from_file.update(select_parameters(filepath))
+
+        if self.include_nifti_header:
+            filepath = filepath.parent/(filepath.stem+'.nii')
+            if filepath.is_file():
+                params_from_file.update(select_parameters(filepath))
+
+            filepath = filepath.parent / (filepath.stem + '.nii.gz')
+            if filepath.is_file():
+                params_from_file.update(select_parameters(filepath))
+
+        if params_from_file:
             run_node = session_node.get_run_by_name(filename)
             if run_node is None:
                 run_node = Run(filename)
-            for k, v in parameters.items():
+            for k, v in params_from_file.items():
                 run_node.params[k] = v
-            run_node.echo_time = round(parameters.get('EchoTime', 1.0), 4)
+            run_node.echo_time = params_from_file.get('EchoTime', 1.0)
             session_node.add_run(run_node)
         return session_node
+

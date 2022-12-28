@@ -161,7 +161,7 @@ def timestamp() -> str:
     return time_string
 
 
-def select_parameters(filepath, ext) -> dict:
+def select_parameters(file) -> dict:
     """
     Reads parameters for BIDS datasets. The filepath can either point to a
      JSON file or a NIfTI file. In case of a NIfTI file the parameters are

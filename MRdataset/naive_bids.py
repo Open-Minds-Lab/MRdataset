@@ -1,14 +1,15 @@
-import logging
 from pathlib import Path
 
-from bids import BIDSLayout
-
+import MRdataset
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.config import datatypes
-from MRdataset.utils import select_parameters, get_ext
+from MRdataset.log import logger
+from MRdataset.utils import select_parameters
+from bids import BIDSLayout
 
-# Module-level logger
-logger = logging.getLogger('root')
+
+# # Module-level logger
+# logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -23,10 +24,7 @@ class BIDSDataset(BaseDataset):
     def __init__(self,
                  name='mind',
                  data_source_folders=None,
-                 metadata_root=None,
-                 save=True,
                  is_complete=True,
-                 cache_path=None,
                  include_nifti_header=False,
                  **_kwargs):
 
@@ -37,30 +35,20 @@ class BIDSDataset(BaseDataset):
             an identifier/name for the dataset
         data_source_folders : Path or str
             directory containing dicom files, supports nested hierarchies
-        metadata_root : str or Path
-            directory to store cache
-        save : bool
-            whether to save the dataset to disk
         is_complete : bool
             whether the dataset is complete
-        cache_path : str or Path
-            directory to store the dataset
         include_nifti_header :
             whether to check nifti headers for compliance,
             only used when --style==bids
         Examples
         --------
-        >>> from MRdataset.bids_dataset import BIDSDataset
+        >>> from MRdataset.naive_bids import BIDSDataset
         >>> dataset = BIDSDataset()
         """
 
-        super().__init__(name, data_source_folders, metadata_root)
+        super().__init__(data_source_folders)
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
-        if cache_path:
-            self.cache_path = Path(cache_path)
-            if save:
-                self.save_dataset()
 
     def get_filters(self, subject: str = None,
                     session: str = None, datatype: str = None):
@@ -113,7 +101,7 @@ class BIDSDataset(BaseDataset):
 
             layout_subjects = bids_layout.get_subjects()
             if not layout_subjects:
-                raise EOFError("No Subjects found in dataset")
+                raise ValueError("No Subjects found in dataset")
             for nSub in layout_subjects:
                 subject_obj = modality_obj.get_subject_by_name(nSub)
                 if subject_obj is None:

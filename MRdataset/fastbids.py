@@ -2,10 +2,8 @@ import logging
 from pathlib import Path
 
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.utils import select_parameters, files_under_folder
-
-# Module-level logger
-logger = logging.getLogger('root')
+from MRdataset.config import VALID_BIDS_EXTENSIONS
+from MRdataset.utils import select_parameters, files_under_folder, get_ext
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -21,11 +19,8 @@ class FastBIDSDataset(BaseDataset):
     def __init__(self,
                  name='mind',
                  data_source_folders=None,
-                 metadata_root=None,
                  include_nifti_header=False,
-                 save=True,
                  is_complete=True,
-                 cache_path=None,
                  **_kwargs):
 
         """
@@ -42,18 +37,14 @@ class FastBIDSDataset(BaseDataset):
             only used when --style==bids
         Examples
         --------
-        >>> from MRdataset.fastbids_dataset import FastBIDSDataset
+        >>> from MRdataset.fastbids import FastBIDSDataset
         >>> dataset = FastBIDSDataset()
         """
 
-        super().__init__(name, data_source_folders, metadata_root)
+        super().__init__(data_source_folders)
 
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
-        if cache_path:
-            self.cache_path = cache_path
-            if save:
-                self.save_dataset()
 
     def walk(self):
         """

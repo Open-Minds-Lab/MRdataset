@@ -125,7 +125,7 @@ def find_dataset_using_style(dataset_style: str):
 
 
 def load_mr_dataset(filepath: Union[str, Path],
-                    style: str = 'dicom') -> BaseDataset:
+                    style: str = 'dicom') -> "BaseDataset":
     """
     Load a dataset from a file
 
@@ -160,7 +160,7 @@ def load_mr_dataset(filepath: Union[str, Path],
 
 
 def save_mr_dataset(filepath: Union[str, Path],
-                    mrds_obj: BaseDataset) -> None:
+                    mrds_obj: "BaseDataset") -> None:
     """
     Save a dataset to a file
 

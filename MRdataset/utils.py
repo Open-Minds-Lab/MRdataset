@@ -181,8 +181,17 @@ def select_parameters(filepath, ext) -> dict:
     #  pass separately? Modify the code.
 
     selected_params = dict()
+
+    if isinstance(file, BIDSFile):
+        file_path = file.path
+    elif isinstance(file, Path):
+        file_path = file
+    else:
+        raise NotImplementedError
+
+    ext = get_ext(file)
     if ext == '.json':
-        with open(filepath, "r") as read_file:
+        with open(file_path, "r") as read_file:
             parameters = json.load(read_file)
 
         for key in parameters:
@@ -190,11 +199,16 @@ def select_parameters(filepath, ext) -> dict:
                 if entry.lower() in key.lower():
                     selected_params[key] = parameters[key]
     elif ext in ['.nii', '.nii.gz']:
-        nii_image = nib.load(filepath)
+        nii_image = nib.load(file_path)
         selected_params['obliquity'] = np.any(
             nib.affines.obliquity(nii_image.affine) > 1e-4)
-        selected_params['voxel_sizes'] = nii_image.header.get_zooms()
-        selected_params['matrix_dims'] = nii_image.shape
+        selected_params['voxel_sizes'] = make_hashable(nii_image.header.get_zooms())
+        selected_params['matrix_dims'] = make_hashable(nii_image.shape)
+        for key, value in nii_image.header.items():
+            if key not in ['sizeof_hdr', 'data_type', 'db_name',
+                           'extents', 'session_error']:
+                value = make_hashable(value)
+                selected_params[key] = value
     return selected_params
 
 

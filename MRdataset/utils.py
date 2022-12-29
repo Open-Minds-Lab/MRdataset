@@ -136,6 +136,8 @@ def is_hashable(value) -> bool:
 
 
 def make_hashable(value):
+    if value is None:
+        return None
     if isinstance(value, np.ndarray):
         values = value.tolist()
     else:

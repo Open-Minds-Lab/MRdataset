@@ -87,7 +87,8 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
         **_kwargs
     )
     dataset.walk()
-
+    if name:
+        dataset.name = name
     # Print dataset summary
     if verbose:
         print(dataset)

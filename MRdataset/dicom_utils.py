@@ -401,7 +401,18 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
 def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
-    https://neurostars.org/t/determining-bids-phaseencodingdirection-from-dicom/612/6 # noqa
+    https://github.com/rordenlab/dcm2niix/issues/652#issuecomment-1323623521
+    https://www.rad.pitt.edu/extract-phase-encoding.html
+                            Polarity
+                    |  1        |   0       |
+    InPlanePED  ROW |  R >> L   |   L >> R  |
+                COL |  A >> P   |   P >> A  |
+
+                            Polarity
+                    |   1   |   0   |
+    InPlanePED  ROW |   i   |   i-  |
+                COL |   j   |   j-  |
+
     Following code only for Siemens, Look into above links for GE, Philips etc.
 
     Parameters
@@ -428,7 +439,7 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
         else:
             return None
 
-        nifti_dim = {'COL': 'i', 'ROW': 'j'}
+        nifti_dim = {'COL': 'j', 'ROW': 'i'}
         ped_to_sign = {0: '-', 1: ''}
         ij = nifti_dim[ped]
         sign = ped_to_sign[phase]

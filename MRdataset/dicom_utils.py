@@ -357,12 +357,40 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
 
 
 def get_csa_props(parameter, corpus):
+    """Extract parameter code from CSA header text
+
+    we want 0x1 from e.g.
+    sAdjData.uiAdjShimMode                = 0x1
+    """
     index = corpus.find(parameter)
     if index == -1:
         return -1
+
     shift = len(parameter)+6
-    code = re.split('\t|\n', corpus[index:index + shift])[2]
-    return code
+    if index + shift > len(corpus):
+        print(f"#WARNING: {parameter} in CSA too short: '{corpus[index:]}'")
+        return -1
+
+    # 6 chars after parameter text, 3rd value
+    param_val = corpus[index:index + shift]
+    code_parts = re.split('\t|\n', param_val)
+    if len(code_parts) >= 3:
+        return code_parts[2]
+
+    # if not above, might look like:
+    # sAdjData.uiAdjShimMode                = 0x1
+
+    # this runs multiple times on every dicom
+    # regexp is expesive? dont use unless we need to
+    match = re.search('=\s*([^\n]+)', corpus[index:])
+    if match:
+        match = match.groups()[0]
+        # above is also a string. dont worry about conversion?
+        # match = int(match, 0)  # 0x1 -> 1
+        return match
+
+    # couldn't figure out
+    return -1
 
 
 def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:

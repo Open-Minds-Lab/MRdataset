@@ -7,6 +7,7 @@ import shutil
 import hypothesis.strategies as st
 from MRdataset import import_dataset
 from MRdataset.simulate import make_compliant_test_dataset
+from MRdataset.common_dicom import get_csa_props
 from hypothesis import given, settings
 
 
@@ -42,3 +43,10 @@ def test_parse_compliant_dataset(num_subjects,
     assert len(mrd_num_subjects) == num_subjects
     shutil.rmtree(fake_ds_dir)
     return
+
+
+def get_csa_props_test():
+    "CSA header looks funny in Pitt 7T (20221130)"
+    text = "blah = 0x1\nxy\nsAdjData.uiAdjShimMode                = 0x1\na = b"
+    shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
+    assert shim_code == '0x1'

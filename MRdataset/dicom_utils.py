@@ -373,7 +373,7 @@ def get_csa_props(parameter, corpus):
 
     # 6 chars after parameter text, 3rd value
     param_val = corpus[index:index + shift]
-    code_parts = re.split('\t|\n', param_val)
+    code_parts = re.split('[\t\n]', param_val)
     if len(code_parts) >= 3:
         return code_parts[2]
 
@@ -382,7 +382,7 @@ def get_csa_props(parameter, corpus):
 
     # this runs multiple times on every dicom
     # regexp is expesive? dont use unless we need to
-    match = re.search('=\s*([^\n]+)', corpus[index:])
+    match = re.search(r'=\s*([^\n]+)', corpus[index:])
     if match:
         match = match.groups()[0]
         # above is also a string. dont worry about conversion?

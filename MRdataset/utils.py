@@ -15,14 +15,14 @@ import typing
 from typing import Union, List, Optional
 
 
-def files_under_folder(path: str, ext: str = None) -> typing.Iterable[Path]:
+def files_under_folder(fpath: str, ext: str = None) -> typing.Iterable[Path]:
     """
     Generates all the files inside the folder recursively. If ext is given
     returns file which have that extension.
 
     Parameters
     ----------
-    path: str
+    fpath: str
         filepath of the directory
     ext: str
         filter files with given extension. For ex. return only .nii files
@@ -31,9 +31,9 @@ def files_under_folder(path: str, ext: str = None) -> typing.Iterable[Path]:
     -------
     generates filepaths
     """
-    if not Path(path).exists():
-        raise FileNotFoundError("Folder doesn't exist")
-    folder_path = Path(path).resolve()
+    if not Path(fpath).exists():
+        raise FileNotFoundError(f"Folder doesn't exist : {fpath}")
+    folder_path = Path(fpath).resolve()
     if ext:
         pattern = '*'+ext
     else:

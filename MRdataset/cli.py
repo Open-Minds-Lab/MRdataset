@@ -20,7 +20,7 @@ def main():
                                'dicom files, supports nested hierarchies')
     optional.add_argument('-s', '--style', type=str, default='dicom',
                           help='choose type of dataset, one of [dicom|other]')
-    optional.add_argument('-n', '--name', type=str,
+    optional.add_argument('-n', '--name', type=str.lower,
                           help='provide a identifier/name for dataset')
     optional.add_argument('-h', '--help', action='help',
                           default=argparse.SUPPRESS,
@@ -54,7 +54,6 @@ def main():
                              verbose=args.verbose,
                              include_nifti_header=args.include_nifti_header,
                              is_complete=not args.is_partial)
-    dataset.walk()
     return dataset
 
 

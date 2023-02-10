@@ -62,8 +62,6 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
     >>> from MRdataset import import_dataset
     >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
-    # Check if data_root is valid
-    data_source_folders = valid_dirs(data_source_folders)
 
     # Check if name is provided by user, otherwise use random name
     if name is None:

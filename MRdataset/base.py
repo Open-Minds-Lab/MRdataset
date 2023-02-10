@@ -578,7 +578,7 @@ class Modality(Node):
 
     def add_non_compliant_param(self, parameter: str, echo_time: float,
                                 reference: Union[str, float],
-                                new_value: Union[str, float], subject_name: str):
+                                new_value: Optional[str, float], subject_name: str):
         """
         This function updates a DataFrame self.non_compliant_data with a new
         row of non_compliant_data.

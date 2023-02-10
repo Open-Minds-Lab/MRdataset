@@ -31,7 +31,7 @@ def files_under_folder(fpath: str, ext: str = None) -> typing.Iterable[Path]:
     -------
     generates filepaths
     """
-    if not Path(fpath).exists():
+    if not Path(fpath).is_dir():
         raise FileNotFoundError(f"Folder doesn't exist : {fpath}")
     folder_path = Path(fpath).resolve()
     if ext:
@@ -231,7 +231,7 @@ def get_ext(file: BIDSFile) -> str:
         raise NotImplementedError('File Format not supported')
 
 
-def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
+def files_in_path(fp_list: Union[Iterable, str], ext: Optional[str] = None):
     """
     If given a single folder, returns the list of all files in the directory.
     If given a list of folders, returns concatenated list of all the files
@@ -239,7 +239,7 @@ def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
 
     Parameters
     ----------
-    folders : List[Path]
+    fp_list : List[Path]
         List of folder paths
     ext : str
         Used to filter files, and select only those which have this extension
@@ -247,12 +247,19 @@ def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
     -------
     List of paths
     """
-    if isinstance(folders, Iterable):
+    if isinstance(fp_list, Iterable):
         files = []
-        for i in folders:
-            files.extend(list(files_under_folder(i, ext)))
+        for i in fp_list:
+            if Path(i).is_dir():
+                files.extend(list(files_under_folder(i, ext)))
+            elif Path(i).is_file():
+                files.append(i)
         return files
-    return list(files_under_folder(folders, ext))
+    elif isinstance(fp_list, str):
+        return list(files_under_folder(fp_list, ext))
+    else:
+        raise NotImplementedError("Expected either Iterable or str type. Got"
+                                  f"{type(fp_list)}")
 
 
 def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:

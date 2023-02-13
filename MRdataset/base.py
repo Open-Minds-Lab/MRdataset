@@ -434,6 +434,10 @@ class Modality(Node):
         super().__init__()
         self._reference = dict()
         self.name = name
+        self.non_compliant_data = None
+        self.clear_non_compliant_data()
+
+    def clear_non_compliant_data(self):
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)
 

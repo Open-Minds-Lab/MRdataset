@@ -375,21 +375,34 @@ class BaseDataset(Node):
 
         self.update_data_sources(other.data_source_folders)
 
-        for modality in other.modalities:
-            # Check if modality is present in self
-            exist_modality = self.get_modality_by_name(modality.name)
-            # If modality doesn't exist
-            if exist_modality is None:
-                # Add modality to self, which would also add all subjects
-                # inside it
-                self.add_modality(modality)
-                continue
-            # If modality already exists, add all the subjects in it
-            # Remember, the subjects are exclusive in both the datasets
-            # because of the way the jobs were split
-            for subject in modality.subjects:
-                # Add subject to modality
-                exist_modality.add_subject(subject)
+        def _update(get_func, other_list, add_func):
+            for new_item in other_list:
+                existing_item = get_func(new_item.name)
+                if existing_item:
+                    if len(new_item.sub_nodes) > 0:
+                        _update(existing_item._get,
+                                new_item.sub_nodes,
+                                existing_item.add)
+                else:
+                    add_func(new_item)
+
+        _update(self.get_modality_by_name, other.modalities, self.add)
+
+        # for modality in other.modalities:
+        #     # Check if modality is present in self
+        #     exist_modality = self.get_modality_by_name(modality.name)
+        #     # If modality doesn't exist
+        #     if exist_modality is None:
+        #         # Add modality to self, which would also add all subjects
+        #         # inside it
+        #         self.add_modality(modality)
+        #         continue
+        #     # If modality already exists, add all the subjects in it
+        #     # Remember, the subjects are exclusive in both the datasets
+        #     # because of the way the jobs were split
+        #     for subject in modality.subjects:
+        #         # Add subject to modality
+        #         exist_modality.add_subject(subject)
 
 
 class Modality(Node):

@@ -15,7 +15,8 @@ import typing
 from typing import Union, List, Optional
 
 
-def files_under_folder(fpath: str, ext: str = None) -> typing.Iterable[Path]:
+def files_under_folder(fpath: Union[str, Path],
+                       ext: str = None) -> typing.Iterable[Path]:
     """
     Generates all the files inside the folder recursively. If ext is given
     returns file which have that extension.
@@ -231,7 +232,7 @@ def get_ext(file: BIDSFile) -> str:
         raise NotImplementedError('File Format not supported')
 
 
-def files_in_path(fp_list: Union[Iterable, str], ext: Optional[str] = None):
+def files_in_path(fp_list: Union[Iterable, str, Path], ext: Optional[str] = None):
     """
     If given a single folder, returns the list of all files in the directory.
     If given a list of folders, returns concatenated list of all the files
@@ -255,7 +256,7 @@ def files_in_path(fp_list: Union[Iterable, str], ext: Optional[str] = None):
             elif Path(i).is_file():
                 files.append(i)
         return files
-    elif isinstance(fp_list, str):
+    elif isinstance(fp_list, str) or isinstance(fp_list, Path):
         return list(files_under_folder(fp_list, ext))
     else:
         raise NotImplementedError("Expected either Iterable or str type. Got"

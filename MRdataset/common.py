@@ -11,7 +11,8 @@ from MRdataset import dicom, naive_bids, fastbids
 from MRdataset.config import VALID_DATASET_STYLES
 
 
-def import_dataset(data_source_folders: Union[str, List[str]] = None,
+# TODO: data_source can be Path or str or List. Modify type hints
+def import_dataset(data_source_folders: Union[str, List[str], Path] = None,
                    style: str = 'dicom',
                    name: str = None,
                    include_phantom: bool = False,

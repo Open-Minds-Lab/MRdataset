@@ -62,6 +62,13 @@ def import_dataset(data_source_folders: Union[str, List[str]] = None,
     >>> from MRdataset import import_dataset
     >>> data = import_dataset('dicom', '/path/to/my/data/')
     """
+    # TODO: Option to curb logger messages inside import_dataset.
+    #  This would ensure option verbose for both python scripts and cli.
+    #  Consider removing it from cli.main
+    if verbose:
+        logger.setLevel('INFO')
+    else:
+        logger.setLevel('WARNING')
 
     # Check if name is provided by user, otherwise use random name
     if name is None:

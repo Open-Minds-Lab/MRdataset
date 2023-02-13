@@ -30,8 +30,8 @@ class Node:
         """
         self.name = None
         self._sub_nodes = dict()
-        self._compliant_list = list()
-        self._non_compliant_list = list()
+        self._compliant_list = set()
+        self._non_compliant_list = set()
         self.compliant = True
 
     @property
@@ -47,14 +47,18 @@ class Node:
         """
         Each node can maintain a list of compliant sub nodes
         """
-        return self._compliant_list
+        # TODO: Check if casting to list is required, or we can just return
+        # a set
+        return list(self._compliant_list)
 
     @property
     def non_compliant_list(self):
         """
         Each node can maintain a list of compliant sub nodes
         """
-        return self._non_compliant_list
+        # TODO: Check if casting to list is required, or we can just return
+        # a set
+        return list(self._non_compliant_list)
 
     def add(self, other: "Node") -> None:
         """
@@ -100,9 +104,9 @@ class Node:
         """
         if not isinstance(other, str):
             raise TypeError('must be str, not {} '.format(type(other)))
-        if other in self.compliant_list:
+        if other in self._compliant_list:
             return
-        self.compliant_list.append(other)
+        self._compliant_list.add(other)
 
     def _add_non_compliant_name(self, other: str) -> None:
         """
@@ -116,7 +120,7 @@ class Node:
             raise TypeError('must be str, not {}'.format(type(other)))
         if other in self._non_compliant_list:
             return
-        self.non_compliant_list.append(other)
+        self._non_compliant_list.add(other)
 
     def print_tree(self, markerStr: str = "+- ",
                    levelMarkers: Sized = None) -> None:

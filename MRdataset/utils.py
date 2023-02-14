@@ -326,6 +326,17 @@ def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
 
 
 def check_mrds_extension(filepath: Union[str, Path]):
+    """
+    Check if the extension of the file is .mrds.pkl
+    Parameters
+    ----------
+    filepath: str or pathlib.Path
+        filepath pointing to the file
+
+    Returns
+    -------
+    None
+    """
     if isinstance(filepath, Path):
         ext = "".join(filepath.suffixes)
     elif isinstance(filepath, str):

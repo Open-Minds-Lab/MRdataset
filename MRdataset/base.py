@@ -1,6 +1,6 @@
 from functools import total_ordering
 from pathlib import Path
-from typing import List, Optional, Type, Sized, Union
+from typing import List, Optional, Type, Sized, Union, Callable
 
 import pandas as pd
 from MRdataset.log import logger
@@ -60,7 +60,7 @@ class Node:
         # a set
         return list(self._non_compliant_list)
 
-    def add(self, other: "Node") -> None:
+    def add_sub_node(self, other: "Node") -> None:
         """
         Adds a sub-node to self._sub_nodes dict, if already present
         updates it
@@ -77,7 +77,7 @@ class Node:
                 type(other)))
         self._sub_nodes[other.name] = other
 
-    def _get(self, name: str) -> Optional[Type["Node"]]:
+    def get_sub_node_by_name(self, name: str) -> Optional[Type["Node"]]:
         """
         Fetches a sub_node which has the same key as "name". If key is not
         available, returns None
@@ -296,7 +296,7 @@ class BaseDataset(Node):
                 "Expected argument of type {}, got {} instead".format(
                     type(Modality),
                     type(new_modality)))
-        self.add(new_modality)
+        self.add_sub_node(new_modality)
 
     def get_modality_by_name(self, modality_name: str) -> Optional["Modality"]:
         """Fetch a Modality Node searching by its name. If name not found,
@@ -312,7 +312,7 @@ class BaseDataset(Node):
         None or Modality
             value specified for key if key is in self.sub_nodes
         """
-        return self._get(modality_name)
+        return self.get_sub_node_by_name(modality_name)
 
     def add_compliant_modality_name(self, modality_name: str) -> None:
         """
@@ -362,8 +362,21 @@ class BaseDataset(Node):
 
     def merge(self, other: "BaseDataset") -> None:
         """
-        Merges at the subject level. Function would work if two partial
-        datasets have mutually exclusive subjects in a single modality.
+        The merging process starts on the modalities level, and it gradually
+        traverses down the tree until all nodes are merged.
+
+        This function merges two trees by traversing each level of the second
+        tree (i.e. other) and finding its corresponding node in the
+        first tree (i.e. self) using the get_func.
+
+        If an exising node is not found in first tree which has same name as the
+        new_node from second tree, new_node is added to the first tree using
+        the add_func. If a existing node is found, the function recursively
+        calls itself with list of sub_nodes (other_list) in new_node.
+        Then it checks if all sub_nodes are present in the existing node.
+
+        The process continues until all nodes in both trees have been merged
+        and a single merged tree is created.
 
         Parameters
         ----------
@@ -382,18 +395,36 @@ class BaseDataset(Node):
 
         self.update_data_sources(other.data_source)
 
-        def _update(get_func, other_list, add_func):
-            for new_item in other_list:
-                existing_item = get_func(new_item.name)
+        def _update(get_sub_node, sub_node_list, add_sub_node):
+            """
+            The merging process starts on the modalities level, and it gradually
+            traverses down the tree recursively until all nodes are merged.
+
+            Parameters
+            ----------
+            get_sub_node : Callable
+                Function to get a sub_node from the current node
+            sub_node_list : List
+                List of sub_nodes to be merged
+            add_sub_node: Callable
+                Function to add a sub_node to the current node
+
+            Returns
+            -------
+            None
+            """
+            for new_item in sub_node_list:
+                existing_item = get_sub_node(new_item.name)
                 if existing_item:
                     if len(new_item.sub_nodes) > 0:
-                        _update(existing_item._get,
+                        _update(existing_item.get_sub_node_by_name,
                                 new_item.sub_nodes,
-                                existing_item.add)
+                                existing_item.add_sub_node)
                 else:
-                    add_func(new_item)
-
-        _update(self.get_modality_by_name, other.modalities, self.add)
+                    add_sub_node(new_item)
+        # The merging process starts on the modalities level, and it gradually
+        # traverses down the tree recursively until all nodes are merged.
+        _update(self.get_modality_by_name, other.modalities, self.add_sub_node)
 
         # for modality in other.modalities:
         #     # Check if modality is present in self
@@ -511,7 +542,7 @@ class Modality(Node):
             raise TypeError(
                 "Expected argument of type {}, got {} instead".format(
                     type(Subject), type(new_subject)))
-        self.add(new_subject)
+        self.add_sub_node(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:
         """
@@ -545,7 +576,7 @@ class Modality(Node):
         None or Subject
             value specified for key if key is in self.sub_nodes
         """
-        return self._get(subject_name)
+        return self.get_sub_node_by_name(subject_name)
 
     def set_reference(self, params: dict, echo_time=None) -> None:
         """Sets the reference protocol to check compliance
@@ -723,7 +754,7 @@ class Subject(Node):
             raise TypeError(
                 "Expected argument of type {}, got {} instead"
                 "".format(type(Session), type(new_session)))
-        self.add(new_session)
+        self.add_sub_node(new_session)
 
     def get_session_by_name(self, session_name: str) -> Optional["Session"]:
         """
@@ -737,7 +768,7 @@ class Subject(Node):
         -------
         None or Session
         """
-        return self._get(session_name)
+        return self.get_sub_node_by_name(session_name)
 
     def add_compliant_session_name(self, session_name: str) -> None:
         """
@@ -800,11 +831,11 @@ class Session(Node):
         if not isinstance(new_run, Run):
             raise TypeError("Expected type {}, got {} instead"
                             .format(type(Run), type(new_run)))
-        self.add(new_run)
+        self.add_sub_node(new_run)
 
     def get_run_by_name(self, run_name: str) -> Optional["Run"]:
         """Fetch a Run Node searching by its name"""
-        return self._get(run_name)
+        return self.get_sub_node_by_name(run_name)
 
 
 class Run(Node):

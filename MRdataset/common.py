@@ -63,6 +63,9 @@ def import_dataset(data_source: Union[str, List[str], Path] = None,
     else:
         logger.setLevel('WARNING')
 
+    if data_source is None:
+        raise ValueError(f"Please provide a valid data source."
+                         f" Got {data_source}")
     # Check if name is provided by user, otherwise use random name
     if name is None:
         logger.info(

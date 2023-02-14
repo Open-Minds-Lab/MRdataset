@@ -263,12 +263,14 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         params['multi_slice_mode'] = csa_values.get('slice_mode', None)
         params['ipat'] = csa_values.get('ipat', None)
         params['shim'] = csa_values.get('shim', None)
-        params["phase_encoding_direction"] = get_phase_encoding(dicom)
+        params['phase_polarity'] = get_phase_polarity(dicom)
+        # params["phase_encoding_direction"] = get_phase_encoding(dicom)
     else:
         params['multi_slice_mode'] = None
         params['ipat'] = None
         params['shim'] = None
-        params['phase_encoding_direction'] = None
+        params['phase_polarity'] = None
+        # params['phase_encoding_direction'] = None
     return params
 
 
@@ -425,6 +427,25 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
         return value / 1000
     else:
         return None
+
+
+def get_phase_polarity(dicom: pydicom.FileDataset) -> Optional[int]:
+    """
+    Get phase polarity from dicom header
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+
+    Returns
+    -------
+    int value for phase polarity
+    """
+    image_header = csareader.read(get_header(dicom, 'image_header_info'))
+    phase_value = utils.safe_get(image_header,
+                                 'tags.PhaseEncodingDirectionPositive.items')
+    if phase_value:
+        return phase_value[0]
+    return None
 
 
 def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:

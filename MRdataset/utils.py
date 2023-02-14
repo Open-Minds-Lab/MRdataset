@@ -1,18 +1,18 @@
 import functools
 import json
 import time
+import typing
 import uuid
 from collections.abc import Hashable, Iterable
 from pathlib import Path
-from typing import List
+from typing import Union, List, Optional
 
-from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
-from dictdiffer import diff as dict_diff
-from bids.layout.models import BIDSFile
 import nibabel as nib
 import numpy as np
-import typing
-from typing import Union, List, Optional
+from bids.layout.models import BIDSFile
+from dictdiffer import diff as dict_diff
+
+from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
 
 
 def files_under_folder(fpath: Union[str, Path],
@@ -172,7 +172,7 @@ def select_parameters(file) -> dict:
 
     Parameters
     ----------
-    filepath : pathlib.Path or str
+    file : pathlib.Path or str
         Path pointing to either a JSON or NIfTI file
     Returns
     -------
@@ -213,7 +213,7 @@ def select_parameters(file) -> dict:
     return selected_params
 
 
-def get_ext(file: BIDSFile) -> str:
+def get_ext(file: Union[BIDSFile, Path]) -> str:
     """
     Extract the extension from a BIDSFile object.
     Parameters

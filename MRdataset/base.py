@@ -248,6 +248,9 @@ class BaseDataset(Node):
         self.is_complete = True
 
     def walk(self):
+        """
+        Walks through the dataset and creates a tree of nodes
+        """
         raise NotImplementedError("walk method must be implemented")
 
     def get_style(self):
@@ -766,8 +769,6 @@ class Session(Node):
     ----------
     name : str
         Identifier/name for the Session
-    path : str or Path
-        filepath specifying the session directory
     params : dict
         Key, value pairs specifying the parameters for checking compliance
     """

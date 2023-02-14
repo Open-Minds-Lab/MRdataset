@@ -35,24 +35,16 @@ def import_dataset(data_source: Union[str, List[str], Path] = None,
     name : str
         Identifier for the dataset, like ADNI. The name used to save cached
         results
-    reindex : bool
-        Similar to --no-cache. Rejects all cached files and rebuilds index.
     include_phantom: bool
         Whether to include non-subject scans like localizer, acr/phantom,
         aahead_scout
     verbose: bool
         The flag allows you to change the verbosity of execution
-    metadata_source: Union[str, Path]
-        change the default cache directory
     include_nifti_header: bool
         whether to check nifti headers for compliance,
         only used when --style==bids
-    save: bool
-        whether to save the dataset or not
     is_complete: bool
         whether the dataset is complete or not
-    cache_path: str
-        path to the save the dataset
     Returns
     -------
     dataset : MRdataset.base.BaseDataset
@@ -131,8 +123,7 @@ def find_dataset_using_style(dataset_style: str):
     return dataset_class
 
 
-def load_mr_dataset(filepath: Union[str, Path],
-                    style: str = 'dicom') -> "BaseDataset":
+def load_mr_dataset(filepath: Union[str, Path]) -> "BaseDataset":
     """
     Load a dataset from a file
 
@@ -140,9 +131,6 @@ def load_mr_dataset(filepath: Union[str, Path],
     ----------
     filepath: Union[str, Path]
         path to the dataset file
-    style : str
-        style of the dataset file. Currently only supports dicom, bids
-
     Returns
     -------
     dataset : MRdataset.base.BaseDataset

@@ -1,15 +1,16 @@
 import logging
+import re
 import warnings
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Union, Optional
 
 import dicom2nifti
 import pydicom
+
 from MRdataset import config
 from MRdataset import utils
-from collections.abc import Iterable
-import re
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
@@ -381,11 +382,11 @@ def get_csa_props(parameter, corpus):
     # sAdjData.uiAdjShimMode                = 0x1
 
     # this runs multiple times on every dicom
-    # regexp is expesive? dont use unless we need to
+    # regexp is expensive? don't use unless we need to
     match = re.search(r'=\s*([^\n]+)', corpus[index:])
     if match:
         match = match.groups()[0]
-        # above is also a string. dont worry about conversion?
+        # above is also a string. don't worry about conversion?
         # match = int(match, 0)  # 0x1 -> 1
         return match
 

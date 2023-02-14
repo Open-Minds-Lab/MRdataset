@@ -16,7 +16,7 @@ class FastBIDSDataset(BaseDataset):
     """
 
     def __init__(self,
-                 name='mind',
+                 name=None,
                  data_source=None,
                  include_nifti_header=False,
                  is_complete=True,
@@ -44,6 +44,7 @@ class FastBIDSDataset(BaseDataset):
 
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
+        self.name = name
 
     def walk(self):
         """
@@ -57,7 +58,8 @@ class FastBIDSDataset(BaseDataset):
             if ext in VALID_BIDS_EXTENSIONS:
                 self.read_single(file)
         if not self.modalities:
-            raise ValueError("Expected Sidecar JSON files in --data_source. Got 0")
+            raise ValueError("Expected Sidecar JSON files in "
+                             "--data_source. Got 0 JSON files.")
 
     def read_single(self, file):
         datatype = file.parent.name

@@ -22,7 +22,7 @@ class BIDSDataset(BaseDataset):
     """
 
     def __init__(self,
-                 name='mind',
+                 name=None,
                  data_source=None,
                  is_complete=True,
                  include_nifti_header=False,
@@ -49,6 +49,7 @@ class BIDSDataset(BaseDataset):
         super().__init__(data_source)
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
+        self.name = name
 
     def get_filters(self, subject: str = None,
                     session: str = None, datatype: str = None):

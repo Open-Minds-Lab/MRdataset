@@ -523,12 +523,12 @@ class Modality(Node):
     @property
     def compliant_subject_names(self) -> List[str]:
         """List of subject names which are compliant"""
-        return self._compliant_list
+        return self.compliant_list
 
     @property
     def non_compliant_subject_names(self) -> List[str]:
         """List of subject names which are not compliant"""
-        return self._non_compliant_list
+        return self.non_compliant_list
 
     def add_subject(self, new_subject: 'Subject') -> None:
         """Add a new Subject Node to list of subjects in the Modality

@@ -221,11 +221,11 @@ class BaseDataset(Node):
     ----------
     name : str
         Identifier/name for the dataset
-    data_source_folders : str or Path
+    data_source : str or Path
         directory containing dataset files such as dcm, nii, json, etc
     """
 
-    def __init__(self, data_source_folders, **kwargs):
+    def __init__(self, data_source, **kwargs):
         """
         Constructor for BaseDataset class
 
@@ -233,16 +233,16 @@ class BaseDataset(Node):
         ----------
         name : str
             Identifier/name for the node
-        data_source_folders : str or Path
+        data_source : str or Path
             directories containing dataset with dicom files
         kwargs : dict
             Additional keyword arguments passed to BaseDataset
         """
         super().__init__()
         # Manage directories
-        if isinstance(data_source_folders, str):
-            data_source_folders = [data_source_folders]
-        self.data_source_folders = data_source_folders
+        if isinstance(data_source, str):
+            data_source = [data_source]
+        self.data_source = data_source
 
         self.style = self.get_style()
         self.is_complete = True
@@ -334,28 +334,28 @@ class BaseDataset(Node):
     def update_data_sources(self, values: Union[str, Path, list]) -> None:
         """Update data source folders for the dataset"""
 
-        if isinstance(self.data_source_folders, list):
+        if isinstance(self.data_source, list):
             if isinstance(values, list):
-                self.data_source_folders.extend(values)
+                self.data_source.extend(values)
             elif isinstance(values, str) or isinstance(values, Path):
-                self.data_source_folders.append(Path(values))
+                self.data_source.append(Path(values))
             else:
                 raise TypeError(f"Expected str or Path or List[str or Path], "
                                 f"got {type(values)}")
-        elif isinstance(self.data_source_folders, str) \
-                or isinstance(self.data_source_folders, Path):
+        elif isinstance(self.data_source, str) \
+                or isinstance(self.data_source, Path):
             if isinstance(values, list):
-                self.data_source_folders = [self.data_source_folders]
-                self.data_source_folders.extend(values)
+                self.data_source = [self.data_source]
+                self.data_source.extend(values)
             elif isinstance(values, str) or isinstance(values, Path):
-                self.data_source_folders = [self.data_source_folders,
+                self.data_source = [self.data_source,
                                             Path(values)]
             else:
                 raise TypeError(f"Expected str or Path or List[str or Path],"
                                 f" got {type(values)}")
         else:
             raise TypeError(f"Expected str or Path or List[str or Path], got "
-                            f"{type(self.data_source_folders)}")
+                            f"{type(self.data_source)}")
 
     def merge(self, other: "BaseDataset") -> None:
         """
@@ -377,7 +377,7 @@ class BaseDataset(Node):
         if self.style != other.style:
             raise TypeError(f'Cannot merge {self.style} and {other.style}')
 
-        self.update_data_sources(other.data_source_folders)
+        self.update_data_sources(other.data_source)
 
         def _update(get_func, other_list, add_func):
             for new_item in other_list:

@@ -12,7 +12,7 @@ class TestMergeDatasets(unittest.TestCase):
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
         cls.complete_dataset = import_dataset(
-            data_source_folders=temp_dir/'test_merge_data/full_data')
+            data_source=temp_dir/'test_merge_data/full_data')
         cls.data_source = temp_dir/'test_merge_data'
 
     def test_modalities(self):
@@ -32,8 +32,8 @@ class TestMergeDatasets(unittest.TestCase):
         self.merge_and_check(folder_path)
 
     def merge_and_check(self, folder_path):
-        ds1 = import_dataset(data_source_folders=folder_path/'set1')
-        ds2 = import_dataset(data_source_folders=folder_path/'set2')
+        ds1 = import_dataset(data_source=folder_path/'set1')
+        ds2 = import_dataset(data_source=folder_path/'set2')
         ds1.merge(ds2)
         assert self.is_same_dataset(ds1, self.complete_dataset)
 

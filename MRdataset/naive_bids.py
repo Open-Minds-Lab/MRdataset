@@ -16,14 +16,14 @@ from bids import BIDSLayout
 class BIDSDataset(BaseDataset):
     """
     Container to manage the properties and methods of a BIDS dataset downloaded
-    from OpenNeuro. It is a subclass of BaseDataset. Expects the data_root to
+    from OpenNeuro. It is a subclass of BaseDataset. Expects the data_source to
     contain JSON files for reading image acquisition parameters. Use
     include_nifti_header to extract parameter from nifti headers.
     """
 
     def __init__(self,
                  name='mind',
-                 data_source_folders=None,
+                 data_source=None,
                  is_complete=True,
                  include_nifti_header=False,
                  **_kwargs):
@@ -33,7 +33,7 @@ class BIDSDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_source_folders : Path or str
+        data_source : Path or str
             directory containing dicom files, supports nested hierarchies
         is_complete : bool
             whether the dataset is complete
@@ -46,7 +46,7 @@ class BIDSDataset(BaseDataset):
         >>> dataset = BIDSDataset()
         """
 
-        super().__init__(data_source_folders)
+        super().__init__(data_source)
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
 
@@ -86,13 +86,13 @@ class BIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         print("Started building BIDSLayout .. ")
-        bids_layout = BIDSLayout(self.data_source_folders, validate=False)
+        bids_layout = BIDSLayout(self.data_source, validate=False)
         print("Completed BIDSLayout .. ")
 
         filters = self.get_filters()
         if not bids_layout.get(**filters):
-            raise EOFError('No JSON files found at --data_root {}'.format(
-                self.data_source_folders))
+            raise EOFError('No JSON files found at --data_source {}'.format(
+                self.data_source))
 
         for datatype in datatypes:
             modality_obj = self.get_modality_by_name(datatype)
@@ -148,7 +148,7 @@ class BIDSDataset(BaseDataset):
             if modality_obj.subjects:
                 self.add_modality(modality_obj)
         if not self.modalities:
-            raise EOFError("Expected Sidecar JSON files in --data_root. Got 0")
+            raise EOFError("Expected Sidecar JSON files in --data_source. Got 0")
 
     def parse(self, session_node: Session,
               filters: dict, bids_layout: BIDSLayout) -> Session:

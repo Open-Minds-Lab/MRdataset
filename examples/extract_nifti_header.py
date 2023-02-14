@@ -76,15 +76,15 @@ def main():
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
 
-    required.add_argument('-d', '--data_root', type=str, required=True,
+    required.add_argument('-d', '--data_source', type=str, required=True,
                           help='directory containing downloaded dataset with '
                                'nifti files, supports nested hierarchies')
 
     args = parser.parse_args()
-    if not Path(args.data_root).is_dir():
-        raise OSError('Expected valid directory for --data_root argument, '
-                      'Got {}'.format(args.data_root))
-    walk(args.data_root)
+    if not Path(args.data_source).is_dir():
+        raise OSError('Expected valid directory for --data_source argument, '
+                      'Got {}'.format(args.data_source))
+    walk(args.data_source)
     return
 
 

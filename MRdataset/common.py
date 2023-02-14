@@ -12,7 +12,7 @@ from MRdataset.config import VALID_DATASET_STYLES
 
 
 # TODO: data_source can be Path or str or List. Modify type hints
-def import_dataset(data_source_folders: Union[str, List[str], Path] = None,
+def import_dataset(data_source: Union[str, List[str], Path] = None,
                    style: str = 'dicom',
                    name: str = None,
                    include_phantom: bool = False,
@@ -27,7 +27,7 @@ def import_dataset(data_source_folders: Union[str, List[str], Path] = None,
 
     Parameters
     ----------
-    data_source_folders : Union[str, List[str]]
+    data_source : Union[str, List[str]]
         path/to/my/dataset containing files
     style : str
         Specify dataset type. Imports the module "{style}_dataset.py",
@@ -42,7 +42,7 @@ def import_dataset(data_source_folders: Union[str, List[str], Path] = None,
         aahead_scout
     verbose: bool
         The flag allows you to change the verbosity of execution
-    metadata_root: Union[str, Path]
+    metadata_source: Union[str, Path]
         change the default cache directory
     include_nifti_header: bool
         whether to check nifti headers for compliance,
@@ -84,7 +84,7 @@ def import_dataset(data_source_folders: Union[str, List[str], Path] = None,
 
     # Instantiate dataset class
     dataset = dataset_class(
-        data_source_folders=data_source_folders,
+        data_source=data_source,
         include_phantom=include_phantom,
         verbose=verbose,
         include_nifti_header=include_nifti_header,

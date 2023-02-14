@@ -15,7 +15,7 @@ def main():
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
 
-    required.add_argument('-d', '--data_root', type=str, required=True,
+    required.add_argument('-d', '--data_source', type=str, required=True,
                           help='directory containing downloaded dataset with '
                                'dicom files, supports nested hierarchies')
     optional.add_argument('-s', '--style', type=str, default='dicom',
@@ -36,9 +36,9 @@ def main():
                           help='whether to check nifti headers for compliance,'
                                'only used when --style==bids')
     args = parser.parse_args()
-    if not Path(args.data_root).is_dir():
-        raise OSError('Expected valid directory for --data_root argument, '
-                      'Got {}'.format(args.data_root))
+    if not Path(args.data_source).is_dir():
+        raise OSError('Expected valid directory for --data_source argument, '
+                      'Got {}'.format(args.data_source))
     if args.include_nifti_header:
         if args.style != 'bids':
             raise SyntaxError('--include_nifti_header for style=bids')
@@ -47,7 +47,7 @@ def main():
     else:
         logger.setLevel('WARNING')
 
-    dataset = import_dataset(data_source_folders=args.data_root,
+    dataset = import_dataset(data_source=args.data_source,
                              style=args.style,
                              name=args.name,
                              include_phantom=args.include_phantom,

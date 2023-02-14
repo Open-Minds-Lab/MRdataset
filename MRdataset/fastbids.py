@@ -17,7 +17,7 @@ class FastBIDSDataset(BaseDataset):
 
     def __init__(self,
                  name='mind',
-                 data_source_folders=None,
+                 data_source=None,
                  include_nifti_header=False,
                  is_complete=True,
                  **_kwargs):
@@ -27,9 +27,9 @@ class FastBIDSDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_source_folders : Path or str
+        data_source : Path or str
             directory containing dicom files, supports nested hierarchies
-        metadata_root : str or Path
+        metadata_source : str or Path
             directory to store cache
         include_nifti_header :
             whether to check nifti headers for compliance,
@@ -40,7 +40,7 @@ class FastBIDSDataset(BaseDataset):
         >>> dataset = FastBIDSDataset()
         """
 
-        super().__init__(data_source_folders)
+        super().__init__(data_source)
 
         self.is_complete = is_complete
         self.include_nifti_header = include_nifti_header
@@ -52,12 +52,12 @@ class FastBIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         # TODO: Need to handle BIDS datasets without JSON files
-        for file in files_under_folder(self.data_source_folders):
+        for file in files_under_folder(self.data_source):
             ext = get_ext(file)
             if ext in VALID_BIDS_EXTENSIONS:
                 self.read_single(file)
         if not self.modalities:
-            raise ValueError("Expected Sidecar JSON files in --data_root. Got 0")
+            raise ValueError("Expected Sidecar JSON files in --data_source. Got 0")
 
     def read_single(self, file):
         datatype = file.parent.name

@@ -17,14 +17,14 @@ logger = logging.getLogger('root')
 class DicomDataset(BaseDataset):
     """
     Container to manage properties and issues of a dataset downloaded from
-    XNAT. Expects the data_root to be collection of dicom files, which may
+    XNAT. Expects the data_source to be collection of dicom files, which may
     belong to different subjects, modalities, sessions or runs.
 
     Attributes
     ----------
     name : str
         Identifier/name for the node
-    data_source_folders : Path or str or Iterable
+    data_source : Path or str or Iterable
         directories containing dicom files, supports nested hierarchies
     include_phantom
         Whether to include non-subject scans like localizer, acr/phantom,
@@ -32,7 +32,7 @@ class DicomDataset(BaseDataset):
     """
 
     def __init__(self,
-                 data_source_folders=None,
+                 data_source=None,
                  include_phantom=False,
                  is_complete=True,
                  name=None,
@@ -43,7 +43,7 @@ class DicomDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_source_folders : Path or str or Iterable
+        data_source : Path or str or Iterable
             directory containing dicom files, supports nested hierarchies
         include_phantom : bool
             whether to include localizer/aahead_scout/phantom/acr
@@ -56,7 +56,7 @@ class DicomDataset(BaseDataset):
         >>> from MRdataset import dicom
         >>> dataset = dicom.DicomDataset()
         """
-        super().__init__(data_source_folders)
+        super().__init__(data_source)
         self.is_complete = is_complete
         self.include_phantom = include_phantom
         self.name = name
@@ -70,7 +70,7 @@ class DicomDataset(BaseDataset):
         no_files_found = True
         study_ids_found = set()
 
-        for filepath in files_in_path(self.data_source_folders):
+        for filepath in files_in_path(self.data_source):
             no_files_found = False
             try:
                 if not is_dicom_file(filepath):

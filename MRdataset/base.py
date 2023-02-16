@@ -1,6 +1,6 @@
 from functools import total_ordering
 from pathlib import Path
-from typing import List, Optional, Type, Sized, Union, Callable
+from typing import List, Optional, Type, Sized, Union
 
 import pandas as pd
 from MRdataset.log import logger
@@ -29,7 +29,7 @@ class Node:
             Additional keyword arguments passed to Node
         """
         self.name = None
-        self._sub_nodes = dict()
+        self._sub_nodes = {}
         self._compliant_list = set()
         self._non_compliant_list = set()
         self.compliant = True
@@ -69,12 +69,15 @@ class Node:
         ----------
         other : Node
             another Node object that must be added to list of sub_nodes
+
+        Raises
+        ------
+        TypeError
+            If other is not of type Node
         """
         # TODO: consider adding either __copy__ or __deepcopy__ to Node
         if not isinstance(other, Node):
-            raise TypeError('must be {}, not {}'.format(
-                type(Node),
-                type(other)))
+            raise TypeError(f'must be {type(Node)}, not {type(other)}')
         self._sub_nodes[other.name] = other
 
     def get_sub_node_by_name(self, name: str) -> Optional[Type['Node']]:
@@ -97,10 +100,16 @@ class Node:
     def _add_compliant_name(self, other: str) -> None:
         """
         Add a name to list of compliant sub_nodes
+
         Parameters
         ----------
         other : str
             Name to be added to list of compliant sub_nodes
+
+        Raises
+        ------
+        TypeError
+            If other is not of type str
         """
         if not isinstance(other, str):
             raise TypeError(f'must be str, not {type(other)}')
@@ -204,10 +213,7 @@ class Node:
         """
         Returns True if the node is not empty, at that level. False otherwise.
         """
-        if len(self.sub_nodes) > 0:
-            return True
-        else:
-            return False
+        return len(self.sub_nodes) > 0
 
 
 class BaseDataset(Node):
@@ -468,7 +474,7 @@ class Modality(Node):
             Identifier/name for the modality. e.g. DTI-RL, fMRI
         """
         super().__init__()
-        self._reference = dict()
+        self._reference = {}
         self.name = name
         self.non_compliant_data = None
         self.clear_non_compliant_data()
@@ -572,6 +578,7 @@ class Modality(Node):
         Parameters
         ----------
         subject_name : str
+            String value specifying a subject
 
         Returns
         -------
@@ -754,8 +761,8 @@ class Subject(Node):
         """
         if not isinstance(new_session, Session):
             raise TypeError(
-                'Expected argument of type {}, got {} instead'
-                ''.format(type(Session), type(new_session)))
+                'Expected argument of type {type(Session)}, '
+                'got {type(new_session} instead')
         self.add_sub_node(new_session)
 
     def get_session_by_name(self, session_name: str) -> Optional['Session']:
@@ -817,7 +824,7 @@ class Session(Node):
         """
         super().__init__()
         self.name = name
-        self.params = dict()
+        self.params = {}
 
     @property
     def runs(self):
@@ -831,10 +838,15 @@ class Session(Node):
         ----------
         new_run : Run
             new run node added to the session
+
+        Raises
+        ------
+        TypeError
+            If the new_run is not of type Run
         """
         if not isinstance(new_run, Run):
-            raise TypeError('Expected type {}, got {} instead'
-                            .format(type(Run), type(new_run)))
+            raise TypeError(f'Expected type {type(Run)}, '
+                            f'got {type(new_run)} instead')
         self.add_sub_node(new_run)
 
     def get_run_by_name(self, run_name: str) -> Optional['Run']:
@@ -864,5 +876,5 @@ class Run(Node):
         self.echo_time = 0
         # TODO: check if self.error is required
         self.error = False
-        self.params = dict()
+        self.params = {}
         self.delta = None

@@ -34,6 +34,14 @@ class Node:
         self._non_compliant_list = set()
         self.compliant = True
 
+    def clear_compliance(self):
+        """
+        Clears the compliance of the node
+        """
+        self.compliant = True
+        self._compliant_list = set()
+        self._non_compliant_list = set()
+
     @property
     def sub_nodes(self):
         """

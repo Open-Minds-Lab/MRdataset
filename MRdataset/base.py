@@ -60,7 +60,7 @@ class Node:
         # a set
         return list(self._non_compliant_list)
 
-    def add_sub_node(self, other: "Node") -> None:
+    def add_sub_node(self, other: 'Node') -> None:
         """
         Adds a sub-node to self._sub_nodes dict, if already present
         updates it
@@ -72,14 +72,14 @@ class Node:
         """
         # TODO: consider adding either __copy__ or __deepcopy__ to Node
         if not isinstance(other, Node):
-            raise TypeError("must be {}, not {}".format(
+            raise TypeError('must be {}, not {}'.format(
                 type(Node),
                 type(other)))
         self._sub_nodes[other.name] = other
 
-    def get_sub_node_by_name(self, name: str) -> Optional[Type["Node"]]:
+    def get_sub_node_by_name(self, name: str) -> Optional[Type['Node']]:
         """
-        Fetches a sub_node which has the same key as "name". If key is not
+        Fetches a sub_node which has the same key as 'name'. If key is not
         available, returns None
 
         Parameters
@@ -103,7 +103,7 @@ class Node:
             Name to be added to list of compliant sub_nodes
         """
         if not isinstance(other, str):
-            raise TypeError('must be str, not {} '.format(type(other)))
+            raise TypeError(f'must be str, not {type(other)}')
         if other in self._compliant_list:
             return
         self._compliant_list.add(other)
@@ -117,12 +117,12 @@ class Node:
             Name to be added to list of non-compliant sub_nodes
         """
         if not isinstance(other, str):
-            raise TypeError('must be str, not {}'.format(type(other)))
+            raise TypeError(f'must be str, not {type(other)}')
         if other in self._non_compliant_list:
             return
         self._non_compliant_list.add(other)
 
-    def print_tree(self, markerStr: str = "+- ",
+    def print_tree(self, markerStr: str = '+- ',
                    levelMarkers: Sized = None) -> None:
         """
         Adapted from
@@ -133,14 +133,14 @@ class Node:
         Parameters
         ----------
         markerStr : str
-            String to print in front of each node  ("+- " by default)
+            String to print in front of each node  ('+- ' by default)
         levelMarkers : list
             Internally used by recursion to indicate where to print markers
             and connections
         """
 
-        emptyStr = " " * len(markerStr)
-        connectionStr = "|" + emptyStr[:-1]
+        emptyStr = ' ' * len(markerStr)
+        connectionStr = '|' + emptyStr[:-1]
 
         if levelMarkers is None:
             level = 0
@@ -153,11 +153,11 @@ class Node:
             return connectionStr if draw else emptyStr
 
         # Draw the markers for the current level
-        markers = "".join(map(mapper, levelMarkers[:-1]))
+        markers = ''.join(map(mapper, levelMarkers[:-1]))
         # Draw the marker for the current node
-        markers += markerStr if level > 0 else ""
+        markers += markerStr if level > 0 else ''
         # Print the node name
-        print(f"{markers}{self.name}")
+        print(f'{markers}{self.name}')
 
         # Recursively print the sub_nodes
         for i, sub_node in enumerate(self.sub_nodes):
@@ -167,19 +167,19 @@ class Node:
 
     def __repr__(self) -> str:
         """String representation for developers"""
-        return "<class MRdataset.base.{}({})>".format(self.__class__.__name__,
+        return '<class MRdataset.base.{}({})>'.format(self.__class__.__name__,
                                                       self.name)
 
     def __str__(self):
         """String representation for users"""
         if len(self.sub_nodes) > 0:
-            return "{} {} with {} {}".format(
+            return '{} {} with {} {}'.format(
                 self.__class__.__name__,
                 self.name,
                 len(self.sub_nodes),
                 self.sub_nodes[0].__class__.__name__)
         else:
-            return "{} {} is empty. Use .walk()".format(self.__class__.__name__,
+            return '{} {} is empty. Use .walk()'.format(self.__class__.__name__,
                                                         self.name)
 
     def __lt__(self, other):
@@ -251,7 +251,7 @@ class BaseDataset(Node):
         """
         Walks through the dataset and creates a tree of nodes
         """
-        raise NotImplementedError("walk method must be implemented")
+        raise NotImplementedError('walk method must be implemented')
 
     def get_style(self):
         """
@@ -263,13 +263,13 @@ class BaseDataset(Node):
             style = classname.split('dataset')[0]
         else:
             raise ValueError("Expected classname with keyword 'dataset'. "
-                             "For example, DicomDataset, BIDSDataset. Got"
-                             "{0} instead. Rename the class as "
-                             "{0}Dataset".format(classname))
+                             'For example, DicomDataset, BIDSDataset. Got'
+                             '{0} instead. Rename the class as '
+                             '{0}Dataset'.format(classname))
         return style
 
     @property
-    def modalities(self) -> List["Modality"]:
+    def modalities(self) -> List['Modality']:
         """Collection of all Modality Nodes in the BaseDataset"""
         return self.sub_nodes
 
@@ -283,7 +283,7 @@ class BaseDataset(Node):
         """List of modality names which are not compliant"""
         return self.non_compliant_list
 
-    def add_modality(self, new_modality: "Modality") -> None:
+    def add_modality(self, new_modality: 'Modality') -> None:
         """Add a new Modality Node to list of modalities in the BaseDataset
 
         Parameters
@@ -293,12 +293,12 @@ class BaseDataset(Node):
         """
         if not isinstance(new_modality, Modality):
             raise TypeError(
-                "Expected argument of type {}, got {} instead".format(
+                'Expected argument of type {}, got {} instead'.format(
                     type(Modality),
                     type(new_modality)))
         self.add_sub_node(new_modality)
 
-    def get_modality_by_name(self, modality_name: str) -> Optional["Modality"]:
+    def get_modality_by_name(self, modality_name: str) -> Optional['Modality']:
         """Fetch a Modality Node searching by its name. If name not found,
         returns None
 
@@ -343,8 +343,8 @@ class BaseDataset(Node):
             elif isinstance(values, str) or isinstance(values, Path):
                 self.data_source.append(Path(values))
             else:
-                raise TypeError(f"Expected str or Path or List[str or Path], "
-                                f"got {type(values)}")
+                raise TypeError(f'Expected str or Path or List[str or Path], '
+                                f'got {type(values)}')
         elif isinstance(self.data_source, str) \
                 or isinstance(self.data_source, Path):
             if isinstance(values, list):
@@ -354,13 +354,13 @@ class BaseDataset(Node):
                 self.data_source = [self.data_source,
                                             Path(values)]
             else:
-                raise TypeError(f"Expected str or Path or List[str or Path],"
-                                f" got {type(values)}")
+                raise TypeError(f'Expected str or Path or List[str or Path],'
+                                f' got {type(values)}')
         else:
-            raise TypeError(f"Expected str or Path or List[str or Path], got "
-                            f"{type(self.data_source)}")
+            raise TypeError(f'Expected str or Path or List[str or Path], got '
+                            f'{type(self.data_source)}')
 
-    def merge(self, other: "BaseDataset") -> None:
+    def merge(self, other: 'BaseDataset') -> None:
         """
         The merging process starts on the modalities level, and it gradually
         traverses down the tree until all nodes are merged.
@@ -383,9 +383,9 @@ class BaseDataset(Node):
         other: BaseDataset
             another partial dataset you want to merge with self.
         """
-        logger.info("Function is meant only for smooth "
-                    " execution of ABCD dataset. "
-                    "There is no guarantee on other datasets")
+        logger.info('Function is meant only for smooth '
+                    ' execution of ABCD dataset. '
+                    'There is no guarantee on other datasets')
         # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, BaseDataset):
             raise TypeError(f'Cannot merge MRdataset.BaseDataset and {type(other)}')
@@ -459,7 +459,9 @@ class Modality(Node):
     """
 
     def __init__(self, name: str) -> None:
-        """Constructor
+        """
+        Constructor
+
         Parameters
         ----------
         name : str
@@ -507,16 +509,16 @@ class Modality(Node):
             return self._reference[keys[0]]
         else:
             if echo_time is None:
-                raise LookupError("Got NoneType for echo time. "
-                                  "Specify echo_time, "
-                                  "Use one of {}".format(keys))
+                raise LookupError('Got NoneType for echo time. '
+                                  'Specify echo_time, '
+                                  'Use one of {}'.format(keys))
             if echo_time not in keys:
-                raise LookupError("Echo time {} not found. "
-                                  "Use one of {}".format(echo_time, keys))
+                raise LookupError('Echo time {} not found. '
+                                  'Use one of {}'.format(echo_time, keys))
             return self._reference[echo_time]
 
     @property
-    def subjects(self) -> List["Subject"]:
+    def subjects(self) -> List['Subject']:
         """Collection of Subject Nodes in the Modality"""
         return self.sub_nodes
 
@@ -540,7 +542,7 @@ class Modality(Node):
         """
         if not isinstance(new_subject, Subject):
             raise TypeError(
-                "Expected argument of type {}, got {} instead".format(
+                'Expected argument of type {}, got {} instead'.format(
                     type(Subject), type(new_subject)))
         self.add_sub_node(new_subject)
 
@@ -563,7 +565,7 @@ class Modality(Node):
         """Add subject name (which is not compliant) to the list"""
         self._add_non_compliant_name(subject_name)
 
-    def get_subject_by_name(self, subject_name: str) -> Optional["Subject"]:
+    def get_subject_by_name(self, subject_name: str) -> Optional['Subject']:
         """
         Fetch a Subject Node searching by its name
 
@@ -591,15 +593,15 @@ class Modality(Node):
 
         if echo_time is None:
             echo_time = 1.0
-            logger.info("echo time is not specified! Using a value of 1.0.")
+            logger.info('echo time is not specified! Using a value of 1.0.')
 
         self._reference[echo_time] = params.copy()
 
     def is_multi_echo(self) -> bool:
         """If the modality is multi-echo modality"""
         if len(self._reference) == 0:
-            raise ValueError("Reference for modality not set. Use "
-                             "set_reference first!")
+            raise ValueError('Reference for modality not set. Use '
+                             'set_reference first!')
         return len(self._reference) > 1
 
     def non_compliant_params(self, echo_time: float = None) -> dict:
@@ -625,7 +627,7 @@ class Modality(Node):
             List of parameters that are non-compliant in this modality
         """
         if echo_time:
-            query_str = "(echo_time==@echo_time)"
+            query_str = '(echo_time==@echo_time)'
             db = self.non_compliant_data.query(query_str)
             return db['parameter'].unique()
         else:
@@ -699,13 +701,13 @@ class Modality(Node):
         """
         # Do not remove brackets, seems redundant but code may break
         # See https://stackoverflow.com/a/57897625
-        query_str = "(parameter==@parameter) & (echo_time==@echo_time)"
+        query_str = '(parameter==@parameter) & (echo_time==@echo_time)'
         db = self.non_compliant_data.query(query_str)
         column_names = list(self.non_compliant_data.columns)
         if column_name not in column_names:
             print(column_name)
-            raise AttributeError('Expected one of {}. '
-                                 'Got {}'.format(column_names, column_name))
+            raise AttributeError(f'Expected one of {column_names}. '
+                                 f'Got {column_name}')
         return db[column_name].unique()
 
 
@@ -738,7 +740,7 @@ class Subject(Node):
         self.name = name
 
     @property
-    def sessions(self) -> List["Session"]:
+    def sessions(self) -> List['Session']:
         """Collection of Session Nodes in the Subject"""
         return self.sub_nodes
 
@@ -752,11 +754,11 @@ class Subject(Node):
         """
         if not isinstance(new_session, Session):
             raise TypeError(
-                "Expected argument of type {}, got {} instead"
-                "".format(type(Session), type(new_session)))
+                'Expected argument of type {}, got {} instead'
+                ''.format(type(Session), type(new_session)))
         self.add_sub_node(new_session)
 
-    def get_session_by_name(self, session_name: str) -> Optional["Session"]:
+    def get_session_by_name(self, session_name: str) -> Optional['Session']:
         """
         Fetch a Session Node searching by its name
         Parameters
@@ -805,7 +807,9 @@ class Session(Node):
     """
 
     def __init__(self, name: str):
-        """Constructor
+        """
+        Constructor
+
         Parameters
         ----------
         name : str
@@ -820,7 +824,7 @@ class Session(Node):
         """Collection of Run Nodes in the Session"""
         return self.sub_nodes
 
-    def add_run(self, new_run: "Run") -> None:
+    def add_run(self, new_run: 'Run') -> None:
         """Add a new Run Node to list of runs in the Session
 
         Parameters
@@ -829,11 +833,11 @@ class Session(Node):
             new run node added to the session
         """
         if not isinstance(new_run, Run):
-            raise TypeError("Expected type {}, got {} instead"
+            raise TypeError('Expected type {}, got {} instead'
                             .format(type(Run), type(new_run)))
         self.add_sub_node(new_run)
 
-    def get_run_by_name(self, run_name: str) -> Optional["Run"]:
+    def get_run_by_name(self, run_name: str) -> Optional['Run']:
         """Fetch a Run Node searching by its name"""
         return self.get_sub_node_by_name(run_name)
 
@@ -847,7 +851,8 @@ class Run(Node):
     """
 
     def __init__(self, name: str):
-        """Constructor
+        """
+        Constructor
 
         Parameters
         ----------

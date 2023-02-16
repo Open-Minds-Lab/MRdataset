@@ -12,7 +12,7 @@ from MRdataset.config import VALID_DATASET_STYLES
 
 
 # TODO: data_source can be Path or str or List. Modify type hints
-def import_dataset(data_source: Union[str, List[str], Path] = None,
+def import_dataset(data_source: Union[str, List, Path] = None,
                    style: str = 'dicom',
                    name: str = None,
                    include_phantom: bool = False,

@@ -34,7 +34,7 @@ class Node:
         self._non_compliant_list = set()
         self.compliant = True
 
-    def clear_compliance(self):
+    def reset_lists(self):
         """
         Clears the compliance of the node
         """
@@ -485,9 +485,11 @@ class Modality(Node):
         self._reference = {}
         self.name = name
         self.non_compliant_data = None
-        self.clear_non_compliant_data()
+        self.reset_compliance()
 
-    def clear_non_compliant_data(self):
+    def reset_compliance(self):
+        self.reset_lists()
+        self._reference = {}
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)
 

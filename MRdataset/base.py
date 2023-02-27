@@ -128,10 +128,16 @@ class Node:
     def _add_non_compliant_name(self, other: str) -> None:
         """
         Add a name to list of non-compliant sub_nodes
+
         Parameters
         ----------
         other : str
             Name to be added to list of non-compliant sub_nodes
+
+        Raises
+        ------
+        TypeError
+            If other is not of type str
         """
         if not isinstance(other, str):
             raise TypeError(f'must be str, not {type(other)}')
@@ -139,8 +145,8 @@ class Node:
             return
         self._non_compliant_list.add(other)
 
-    def print_tree(self, markerStr: str = '+- ',
-                   levelMarkers: Sized = None) -> None:
+    def print_tree(self, marker_str: str = '+- ',
+                   level_markers: Sized = None) -> None:
         """
         Adapted from
         https://simonhessner.de/python-3-recursively-print-structured-tree-including-hierarchy-markers-using-depth-first-search/
@@ -149,55 +155,51 @@ class Node:
 
         Parameters
         ----------
-        markerStr : str
+        marker_str : str
             String to print in front of each node  ('+- ' by default)
-        levelMarkers : list
+        level_markers : list
             Internally used by recursion to indicate where to print markers
             and connections
         """
 
-        emptyStr = ' ' * len(markerStr)
-        connectionStr = '|' + emptyStr[:-1]
+        empty_str = ' ' * len(marker_str)
+        connection_str = '|' + empty_str[:-1]
 
-        if levelMarkers is None:
+        if level_markers is None:
             level = 0
-            levelMarkers = []
+            level_markers = []
         else:
-            level = len(levelMarkers)
+            level = len(level_markers)
 
         def mapper(draw):
             # If the sub_node is the last sub_node, don't draw a connection
-            return connectionStr if draw else emptyStr
+            return connection_str if draw else empty_str
 
         # Draw the markers for the current level
-        markers = ''.join(map(mapper, levelMarkers[:-1]))
+        markers = ''.join(map(mapper, level_markers[:-1]))
         # Draw the marker for the current node
-        markers += markerStr if level > 0 else ''
+        markers += marker_str if level > 0 else ''
         # Print the node name
         print(f'{markers}{self.name}')
 
         # Recursively print the sub_nodes
         for i, sub_node in enumerate(self.sub_nodes):
             # If the node is last, don't draw a connection
-            isLast = i == len(self.sub_nodes) - 1
-            sub_node.print_tree(markerStr, [*levelMarkers, not isLast])
+            is_last = i == len(self.sub_nodes) - 1
+            sub_node.print_tree(marker_str, [*level_markers, not is_last])
 
     def __repr__(self) -> str:
         """String representation for developers"""
-        return '<class MRdataset.base.{}({})>'.format(self.__class__.__name__,
-                                                      self.name)
+        return f'<class MRdataset.base.{self.__class__.__name__}({self.name})>'
 
     def __str__(self):
         """String representation for users"""
         if len(self.sub_nodes) > 0:
-            return '{} {} with {} {}'.format(
-                self.__class__.__name__,
-                self.name,
-                len(self.sub_nodes),
-                self.sub_nodes[0].__class__.__name__)
+            return f'{self.__class__.__name__} {self.name} with ' \
+                   f'{len(self.sub_nodes)} ' \
+                   f'{self.sub_nodes[0].__class__.__name__}'
         else:
-            return '{} {} is empty. Use .walk()'.format(self.__class__.__name__,
-                                                        self.name)
+            return f'{self.__class__.__name__} {self.name} is empty.'
 
     def __lt__(self, other):
         """Comparison operator for sorting"""
@@ -348,31 +350,20 @@ class BaseDataset(Node):
         """
         self._add_non_compliant_name(modality_name)
 
-    def update_data_sources(self, values: Union[str, Path, list]) -> None:
+    def amend_data_src_attribute(self, values: Union[str, Path, list]) -> None:
         """Update data source folders for the dataset"""
-
-        if isinstance(self.data_source, list):
-            if isinstance(values, list):
-                self.data_source.extend(values)
-            elif isinstance(values, str) or isinstance(values, Path):
-                self.data_source.append(Path(values))
-            else:
-                raise TypeError(f'Expected str or Path or List[str or Path], '
-                                f'got {type(values)}')
-        elif isinstance(self.data_source, str) \
-                or isinstance(self.data_source, Path):
-            if isinstance(values, list):
-                self.data_source = [self.data_source]
-                self.data_source.extend(values)
-            elif isinstance(values, str) or isinstance(values, Path):
-                self.data_source = [self.data_source,
-                                            Path(values)]
-            else:
-                raise TypeError(f'Expected str or Path or List[str or Path],'
-                                f' got {type(values)}')
+        if not isinstance(self.data_source, list):
+            list1 = [self.data_source]
         else:
-            raise TypeError(f'Expected str or Path or List[str or Path], got '
-                            f'{type(self.data_source)}')
+            list1 = self.data_source
+
+        if not isinstance(values, list):
+            list2 = [values]
+        else:
+            list2 = values
+
+        combined_list = list1.extend(list2)
+        self.data_source = combined_list
 
     def merge(self, other: 'BaseDataset') -> None:
         """
@@ -402,43 +393,49 @@ class BaseDataset(Node):
                     'There is no guarantee on other datasets')
         # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, BaseDataset):
-            raise TypeError(f'Cannot merge MRdataset.BaseDataset and {type(other)}')
+            raise TypeError(
+                f'Cannot merge MRdataset.BaseDataset and {type(other)}')
         # Add a check to ensure that the two datasets are of same style
         if self.style != other.style:
             raise TypeError(f'Cannot merge {self.style} and {other.style}')
 
-        self.update_data_sources(other.data_source)
+        self.amend_data_src_attribute(other.data_source)
 
-        def _update(get_sub_node, sub_node_list, add_sub_node):
+        def traverse_and_add(get_sub_node_func,
+                             other_sub_node_list,
+                             add_sub_node_func):
             """
             The merging process starts on the modalities level, and it gradually
             traverses down the tree recursively until all nodes are merged.
 
             Parameters
             ----------
-            get_sub_node : Callable
+            get_sub_node_func : Callable
                 Function to get a sub_node from the current node
-            sub_node_list : List
+            other_sub_node_list : List
                 List of sub_nodes to be merged
-            add_sub_node: Callable
+            add_sub_node_func: Callable
                 Function to add a sub_node to the current node
 
             Returns
             -------
             None
             """
-            for new_item in sub_node_list:
-                existing_item = get_sub_node(new_item.name)
+            for new_item in other_sub_node_list:
+                existing_item = get_sub_node_func(new_item.name)
                 if existing_item:
                     if len(new_item.sub_nodes) > 0:
-                        _update(existing_item.get_sub_node_by_name,
-                                new_item.sub_nodes,
-                                existing_item.add_sub_node)
+                        traverse_and_add(existing_item.get_sub_node_by_name,
+                                         new_item.sub_nodes,
+                                         existing_item.add_sub_node)
                 else:
-                    add_sub_node(new_item)
+                    add_sub_node_func(new_item)
+
         # The merging process starts on the modalities level, and it gradually
         # traverses down the tree recursively until all nodes are merged.
-        _update(self.get_modality_by_name, other.modalities, self.add_sub_node)
+        traverse_and_add(get_sub_node_func=self.get_modality_by_name,
+                         other_sub_node_list=other.modalities,
+                         add_sub_node_func=self.add_sub_node)
 
         # for modality in other.modalities:
         #     # Check if modality is present in self
@@ -652,7 +649,8 @@ class Modality(Node):
 
     def add_non_compliant_param(self, parameter: str, echo_time: float,
                                 reference: Union[str, float],
-                                new_value: Union[str, float, None], subject_name: str):
+                                new_value: Union[str, float, None],
+                                subject_name: str):
         """
         This function updates a DataFrame self.non_compliant_data with a new
         row of non_compliant_data.
@@ -715,6 +713,9 @@ class Modality(Node):
         Returns
         -------
         values : List[str]
+
+        Raises
+        _SpecialForm
         """
         # Do not remove brackets, seems redundant but code may break
         # See https://stackoverflow.com/a/57897625
@@ -771,8 +772,8 @@ class Subject(Node):
         """
         if not isinstance(new_session, Session):
             raise TypeError(
-                'Expected argument of type {type(Session)}, '
-                'got {type(new_session} instead')
+                f'Expected argument of type {type(Session)}, '
+                f'got {type(new_session)} instead')
         self.add_sub_node(new_session)
 
     def get_session_by_name(self, session_name: str) -> Optional['Session']:

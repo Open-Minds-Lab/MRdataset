@@ -11,13 +11,14 @@ import pydicom
 
 from MRdataset import config
 from MRdataset import utils
+from MRdataset.log import logger
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     from nibabel.nicom import csareader
 
 
-logger = logging.getLogger('root')
+# logger = logging.getLogger('root')
 
 
 def is_dicom_file(filename: str):
@@ -495,3 +496,37 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
         sign = ped_to_sign[phase]
         return '{}{}'.format(ij, sign)
     return None
+
+
+def combine_varying_params(parameter_diff_list, params):
+    #   If a different slice is read first, it would lead
+    #   to differences in parameters for the run. How to
+    #   reconcile ? For ex. in one case, there was a single
+    #   dcm file with PED, others didn't have this key.
+    #   Depending upon which file is read first, the
+    #   parameters are added to run, which is a serious issue.
+    #   TODO : Can we maintain a list of values, this would make things simple
+    #       especially for multi-echo time modalities. Right now, it has a
+    #       single value for each parameter.
+    # dcm2niix also raises warnings if parameter value varies. For an example
+    # See https://github.com/rordenlab/dcm2niix/blob/bb3a6c35d2bbac6ed95acb2cd0df65f35e79b5fb/console/nii_dicom.cpp#L2352 # noqa
+
+    # If previous value was None, and another dcm file
+    # has a value (not None), replace None in params.
+    for item in parameter_diff_list:
+        if item[0] == 'change':
+            _, parameter_name, [new_value, old_value] = item
+            if new_value is not None:
+                if old_value is None:
+                    params[parameter_name] = new_value
+                else:
+                    logger.warning(
+                        f"Slices with varying {parameter_name}"
+                        f" Expected {old_value}, Got {new_value}")
+        elif item[0] == 'add':
+            logger.debug(f"Not expected. Report event - {item[0]}")
+            for parameter_name, value in item[2]:
+                params[parameter_name] = value
+        else:
+            logger.debug(f"Not expected. Report event - {item[0]}")
+    return params

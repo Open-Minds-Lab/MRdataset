@@ -4,13 +4,15 @@ from pathlib import Path
 import pydicom
 
 from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
-    get_dicom_modality_tag, isSameSet, parse_imaging_params
+    get_dicom_modality_tag, isSameSet, parse_imaging_params, \
+    combine_varying_params
 from MRdataset import config
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.utils import param_difference, files_in_path
+from MRdataset.log import logger
 
 # Module-level logger
-logger = logging.getLogger('root')
+# logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -109,14 +111,9 @@ class DicomDataset(BaseDataset):
                     if len(run_node.params) == 0:
                         run_node.params = dcm_img_params.copy()
                     elif param_diff:
-                        # TODO: print out differing parameter names as warning
-                        param_name = param_diff[0][1]
-                        expect = run_node.params[param_name]
-                        got = dcm_img_params[param_name]
-                        logger.info(f"Slices with varying {param_name}"
-                                    f" in {filepath}."
-                                    f" Expected {expect}, Got {got}")
-
+                        run_node.params = combine_varying_params(
+                                            param_diff,
+                                            run_node.params)
                     session_node.add_run(run_node)
                     subject_obj.add_session(session_node)
                     modality_obj.add_subject(subject_obj)

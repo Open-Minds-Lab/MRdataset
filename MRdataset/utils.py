@@ -232,7 +232,8 @@ def get_ext(file: Union[BIDSFile, Path]) -> str:
         raise NotImplementedError('File Format not supported')
 
 
-def files_in_path(fp_list: Union[Iterable, str, Path], ext: Optional[str] = None):
+def files_in_path(fp_list: Union[Iterable, str, Path],
+                  ext: Optional[str] = None):
     """
     If given a single folder, returns the list of all files in the directory.
     If given a list of folders, returns concatenated list of all the files
@@ -255,7 +256,7 @@ def files_in_path(fp_list: Union[Iterable, str, Path], ext: Optional[str] = None
                 files.extend(list(files_under_folder(i, ext)))
             elif Path(i).is_file():
                 files.append(i)
-        return files
+        return list(set(files))
     elif isinstance(fp_list, str) or isinstance(fp_list, Path):
         return list(files_under_folder(fp_list, ext))
     else:

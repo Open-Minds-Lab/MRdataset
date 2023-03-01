@@ -488,6 +488,8 @@ class Modality(Node):
         self.reset_lists()
         for subject in self.subjects:
             for session in subject.sessions:
+                for run in session.runs:
+                    run.reset_lists()
                 session.reset_lists()
             subject.reset_lists()
 
@@ -893,4 +895,13 @@ class Run(Node):
         # TODO: check if self.error is required
         self.error = False
         self.params = {}
+        self.delta = None
+
+    def reset_lists(self):
+        """
+        Clears the compliance of the node
+        """
+        self.compliant = True
+        self._compliant_list = set()
+        self._non_compliant_list = set()
         self.delta = None

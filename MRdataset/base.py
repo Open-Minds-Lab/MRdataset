@@ -486,6 +486,11 @@ class Modality(Node):
 
     def reset_compliance(self):
         self.reset_lists()
+        for subject in self.subjects:
+            for session in subject.sessions:
+                session.reset_lists()
+            subject.reset_lists()
+
         self._reference = {}
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)

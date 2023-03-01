@@ -256,9 +256,9 @@ def files_in_path(fp_list: Union[Iterable, str, Path],
                 files.extend(list(files_under_folder(i, ext)))
             elif Path(i).is_file():
                 files.append(i)
-        return list(set(files))
+        return sorted(list(set(files)))
     elif isinstance(fp_list, str) or isinstance(fp_list, Path):
-        return list(files_under_folder(fp_list, ext))
+        return sorted(list(files_under_folder(fp_list, ext)))
     else:
         raise NotImplementedError("Expected either Iterable or str type. Got"
                                   f"{type(fp_list)}")

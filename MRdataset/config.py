@@ -48,7 +48,10 @@ PARAMETER_NAMES = {
     'ScanningSequence': [0x18, 0x20],
     'SequenceVariant': [0x18, 0x21],
     'MRAcquisitionType': [0x18, 0x23],
-    'PhaseEncodingSteps': [0x18, 0x89]
+    'PhaseEncodingSteps': [0x18, 0x89],
+    # 'Model': [0x08, 0x1090],
+    # 'SoftwareVersions': [0x18, 0x1020],
+    # 'InstitutionName': [0x08, 0x0080],
 }
 
 datatypes = [

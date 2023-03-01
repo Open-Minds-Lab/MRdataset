@@ -111,7 +111,7 @@ def is_valid_inclusion(filename: str,
 
                 if 'aahead' in series_desc:
                     logger.info("AAhead_Scout: Skipping %s" % filename.parent)
-                    return True
+                    return False
 
                 if is_phantom(dicom):
                     logger.info('ACR/Phantom: %s' % filename.parent)

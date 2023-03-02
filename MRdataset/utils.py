@@ -13,6 +13,7 @@ from bids.layout.models import BIDSFile
 from dictdiffer import diff as dict_diff
 
 from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
+from MRdataset.log import logger
 
 
 def files_under_folder(fpath: Union[str, Path],
@@ -252,6 +253,9 @@ def files_in_path(fp_list: Union[Iterable, str, Path],
     if isinstance(fp_list, Iterable):
         files = []
         for i in fp_list:
+            if str(i) == '' or str(i) == '.' or i == Path():
+                logger.warning("Found an empty string. Skipping")
+                continue
             if Path(i).is_dir():
                 files.extend(list(files_under_folder(i, ext)))
             elif Path(i).is_file():

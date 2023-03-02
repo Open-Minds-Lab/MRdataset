@@ -1,7 +1,7 @@
 import logging
 from logging import Filter
 from MRdataset.config import CACHE_DIR
-from MRdataset.utils import timestamp
+import time
 
 
 def setup_logger(name, filename, level=logging.INFO):
@@ -28,5 +28,5 @@ class DuplicateFilter(Filter):
         return rv
 
 
-log_filename = CACHE_DIR / '{}.log'.format(timestamp())
+log_filename = CACHE_DIR / '{}.log'.format(time.strftime("%m_%d_%Y_%H_%M"))
 logger = setup_logger('root', log_filename, logging.INFO)

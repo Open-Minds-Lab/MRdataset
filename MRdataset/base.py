@@ -291,7 +291,7 @@ class Project(Node):
     Container to manage properties and issues at the project level.
     Encapsulates all the details necessary for a complete project.
     A single project may contain multiple modalities, and each modality
-    will have atleast single subject.
+    will have at least single subject.
 
     Attributes
     ----------
@@ -449,7 +449,7 @@ class Modality(Node):
     Container to manage properties and issues at the modality level.
     Encapsulates all the details necessary for a modality.
     A single modality may contain multiple subjects, and each subject
-    will have atleast single session.
+    will have at least single session.
 
     Attributes
     ----------

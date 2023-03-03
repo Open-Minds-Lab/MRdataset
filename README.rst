@@ -44,12 +44,12 @@ a Generic My NeuroImaging Dataset, inherit ``MRdataset.base.Project`` in a file 
 
          def walk():
          
-            # implement the heirarchy and ways to traverse the dataset
+            # implement the hierarchy and ways to traverse the dataset
             
             # add your logic to parse and handle edge cases etc
 
 
-Thats it! You would be able parse and zip through your dataset easily e.g., when interfacing with `mrQA` or similar.
+That's it! You would be able parse and zip through your dataset easily e.g., when interfacing with `mrQA` or similar.
 
 
 

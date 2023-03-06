@@ -482,6 +482,7 @@ class Modality(Node):
         self._reference = {}
         self.name = name
         self.non_compliant_data = None
+        self._error_subject_names = []
         self.reset_compliance()
 
     def reset_compliance(self):
@@ -494,6 +495,7 @@ class Modality(Node):
             subject.reset_lists()
 
         self._reference = {}
+        self._error_subject_names = []
         cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
         self.non_compliant_data = pd.DataFrame(columns=cols)
 
@@ -584,6 +586,17 @@ class Modality(Node):
     def add_non_compliant_subject_name(self, subject_name: str) -> None:
         """Add subject name (which is not compliant) to the list"""
         self._add_non_compliant_name(subject_name)
+
+    def error_subject_names(self) -> List:
+        """Add subject/sessions for which majority could not
+        be could not be computed
+        """
+        return self._error_subject_names
+
+    def add_error_subject_names(self, value):
+        if not hasattr(self, '_error_subject_names'):
+            self._error_subject_names = []
+        self._error_subject_names.append(value)
 
     def get_subject_by_name(self, subject_name: str) -> Optional['Subject']:
         """

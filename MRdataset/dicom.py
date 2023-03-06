@@ -104,6 +104,7 @@ class DicomDataset(BaseDataset):
                     if run_node is None:
                         run_node = Run(run_name)
                         run_node.echo_time = dicom.get('EchoTime', 1.0)
+                    # TODO: dcm img params doesnt make sense
 
                     dcm_img_params = parse_imaging_params(filepath)
                     param_diff = param_difference(dcm_img_params,

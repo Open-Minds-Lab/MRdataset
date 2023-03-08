@@ -125,6 +125,8 @@ class DicomDataset(BaseDataset):
 
             except config.MRException as mrd_exc:
                 logger.exception(mrd_exc)
+            except PermissionError as e:
+                logger.error(e)
             except Exception as exc:
                 raise exc
         if no_files_found:

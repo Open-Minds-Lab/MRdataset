@@ -1,4 +1,3 @@
-import logging
 import re
 import warnings
 from collections import defaultdict
@@ -14,7 +13,7 @@ from MRdataset import utils
 from MRdataset.log import logger
 
 with warnings.catch_warnings():
-    warnings.filterwarnings("ignore")
+    warnings.filterwarnings('ignore')
     from nibabel.nicom import csareader
 
 
@@ -34,15 +33,15 @@ def is_dicom_file(filename: str):
     -------
     bool : if the file is a DICOM file
     """
-    file_stream = open(filename, 'rb')
-    file_stream.seek(128)
-    data = file_stream.read(4)
-    file_stream.close()
+    with open(filename, 'rb') as file_stream:
+        file_stream.seek(128)
+        data = file_stream.read(4)
+
     if data == b'DICM':
         return True
 
 
-def isSameSet(dicom: pydicom.FileDataset) -> str:
+def is_same_set(dicom: pydicom.FileDataset) -> str:
     """
     Provides a unique id for Series, to which the input dicom file
     belongs to.
@@ -50,6 +49,7 @@ def isSameSet(dicom: pydicom.FileDataset) -> str:
     Parameters
     ----------
     dicom : pydicom.FileDataset
+        dicom object returned by pydicom.dcmread or pydicom.read_file
 
     Returns
     -------
@@ -89,7 +89,7 @@ def is_valid_inclusion(filename: str,
     filename = Path(filename).resolve()
 
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        logger.info("Invalid file: %s" % filename.parent)
+        logger.info('Invalid file: %s', filename.parent)
         return False
 
     # if not header_exists(dicom):
@@ -107,18 +107,18 @@ def is_valid_inclusion(filename: str,
             series_desc = series_desc.lower()
             if not include_phantom:
                 if 'local' in series_desc:
-                    logger.info("Localizer: Skipping %s" % filename.parent)
+                    logger.info('Localizer: Skipping %s', filename.parent)
                     return False
 
                 if 'aahead' in series_desc:
-                    logger.info("AAhead_Scout: Skipping %s" % filename.parent)
+                    logger.info('AAhead_Scout: Skipping %s', filename.parent)
                     return False
 
                 if is_phantom(dicom):
-                    logger.info('ACR/Phantom: %s' % filename.parent)
+                    logger.info('ACR/Phantom: %s', filename.parent)
                     return False
     except AttributeError as e:
-        logger.warning(f"{e} : Series Description not found in %s" % filename)
+        logger.warning('%s :Series Description not found in %s' % (e, filename))
 
     return True
 
@@ -173,7 +173,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
         property1 = dicom.get('ProtocolName', None)
     if property1 is None:
         return 'MR_image'
-    ret_value = str(property1.replace(" ", "_"))
+    ret_value = str(property1.replace(' ', '_'))
     if ret_value:
         return ret_value
     return 'MR_image'
@@ -208,10 +208,10 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         series_header['tags']['MrPhoenixProtocol']['items'][0].split('\n')
         return True
     except Exception as e:
-        logger.info(f"Expects dicom files from Siemens to be able to"
-                         f" read the private header. For other vendors, "
-                         f"private header is skipped. "
-                         f"{e} in {dicom.filename}")
+        logger.info(f'Expects dicom files from Siemens to be able to'
+                    f' read the private header. For other vendors',
+                    f'private header is skipped. '
+                    f'{e} in {dicom.filename}')
         # "Use --skip_private_header to create report".format(e))
         # raise e
         return False
@@ -222,28 +222,34 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     Given a filepath to a .dcm file, the function reader DICOM metadata
     and extracts relevant parameter values for checking compliance.
     The parameters are selected if it is present in config.PARAMETER_NAMES
+
     Parameters
     ----------
     dicom_path: str or Path
         filepath for .dcm file
+
     Returns
     -------
     dict
         contains key, value pairs for relevant parameters
+
+    Raises
+    ------
+
     """
     filepath = Path(dicom_path)
     params = defaultdict()
 
     if not filepath.exists():
-        raise OSError("Expected a valid filepath, Got invalid path : {0}\n"
-                      "Consider re-indexing dataset.".format(filepath))
+        raise OSError(f'Expected a valid filepath,Got invalid path : {filepath}'
+                      f'\n. Consider re-indexing dataset.')
 
     try:
         dicom = pydicom.dcmread(filepath,
                                 stop_before_pixels=True)
     except OSError:
         raise FileNotFoundError(
-            "Unable to read dicom file from disk : {0}".format(filepath)
+            f'Unable to read dicom file from disk : {filepath}'
         )
 
     for k in config.PARAMETER_NAMES.keys():
@@ -257,15 +263,15 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
                 value = str(value)
         params[k] = value
     is3d = params['MRAcquisitionType'] == '3D'
-    params["is3d"] = is3d
-    params["effective_echo_spacing"] = effective_echo_spacing(dicom)
+    params['is3d'] = is3d
+    params['effective_echo_spacing'] = effective_echo_spacing(dicom)
     if header_exists(dicom):
         csa_values = csa_parser(dicom)
         params['multi_slice_mode'] = csa_values.get('slice_mode', None)
         params['ipat'] = csa_values.get('ipat', None)
         params['shim'] = csa_values.get('shim', None)
         params['phase_polarity'] = get_phase_polarity(dicom)
-        # params["phase_encoding_direction"] = get_phase_encoding(dicom)
+        # params['phase_encoding_direction'] = get_phase_encoding(dicom)
     else:
         params['multi_slice_mode'] = None
         params['ipat'] = None
@@ -338,6 +344,11 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
     dict
         Contains multi-slice mode, iPAT and shim_mode
 
+    Raises
+    ------
+    AttributeError
+        If CSA header exists but xProtocol string is missing
+
     """
     series_header = csareader.read(get_header(dicom, 'series_header_info'))
     items = utils.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
@@ -346,11 +357,11 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
     else:
         raise AttributeError('CSA Header exists, but xProtocol is missing')
 
-    slice_code = get_csa_props("sKSpace.ucMultiSliceMode", text)
+    slice_code = get_csa_props('sKSpace.ucMultiSliceMode', text)
     slice_mode = config.SLICE_MODE.get(slice_code, None)
-    ipat_code = get_csa_props("sPat.ucPATMode", text)
+    ipat_code = get_csa_props('sPat.ucPATMode', text)
     ipat = config.PAT.get(ipat_code, None)
-    shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
+    shim_code = get_csa_props('sAdjData.uiAdjShimMode', text)
     shim = config.SHIM.get(shim_code, None)
 
     return {
@@ -370,7 +381,7 @@ def get_csa_props(parameter, corpus):
     if index == -1:
         return -1
 
-    shift = len(parameter)+6
+    shift = len(parameter) + 6
     if index + shift > len(corpus):
         print(f"#WARNING: {parameter} in CSA too short: '{corpus[index:]}'")
         return -1
@@ -411,6 +422,7 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
     Parameters
     ----------
     dicom : pydicom.FileDataset
+        dicom object returned by pydicom.dcmread or pydicom.read_file
 
     Returns
     -------
@@ -433,9 +445,11 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
 def get_phase_polarity(dicom: pydicom.FileDataset) -> Optional[int]:
     """
     Get phase polarity from dicom header
+
     Parameters
     ----------
     dicom : pydicom.FileDataset
+        dicom object returned by pydicom.dcmread or pydicom.read_file
 
     Returns
     -------
@@ -469,6 +483,7 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
     Parameters
     ----------
     dicom : pydicom.FileDataset
+        dicom object returned by pydicom.dcmread or pydicom.read_file
 
     Returns
     -------
@@ -494,7 +509,7 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
         ped_to_sign = {0: '-', 1: ''}
         ij = nifti_dim[ped]
         sign = ped_to_sign[phase]
-        return '{}{}'.format(ij, sign)
+        return f'{ij}{sign}'
     return None
 
 
@@ -520,13 +535,12 @@ def combine_varying_params(parameter_diff_list, params):
                 if old_value is None:
                     params[parameter_name] = new_value
                 else:
-                    logger.warning(
-                        f"Slices with varying {parameter_name}"
-                        f" Expected {old_value}, Got {new_value}")
+                    logger.warning(f'Slices with varying {parameter_name} '
+                                   f'Expected {old_value}, Got {new_value}')
         elif item[0] == 'add':
-            logger.debug(f"Not expected. Report event - {item[0]}")
+            logger.debug('Not expected. Report event - %s', item[0])
             for parameter_name, value in item[2]:
                 params[parameter_name] = value
         else:
-            logger.debug(f"Not expected. Report event - {item[0]}")
+            logger.debug('Not expected. Report event - %s', item[0])
     return params

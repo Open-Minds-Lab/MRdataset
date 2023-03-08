@@ -4,7 +4,7 @@ from pathlib import Path
 import pydicom
 
 from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
-    get_dicom_modality_tag, isSameSet, parse_imaging_params, \
+    get_dicom_modality_tag, is_same_set, parse_imaging_params, \
     combine_varying_params
 from MRdataset import config
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
@@ -99,7 +99,7 @@ class DicomDataset(BaseDataset):
                     if session_node is None:
                         session_node = Session(series_num)
 
-                    run_name = isSameSet(dicom)
+                    run_name = is_same_set(dicom)
                     run_node = session_node.get_run_by_name(run_name)
                     if run_node is None:
                         run_node = Run(run_name)

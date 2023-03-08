@@ -21,7 +21,7 @@ def main():
     optional.add_argument('-s', '--style', type=str, default='dicom',
                           help='choose type of dataset, expected'
                                'one of [dicom|bids|fastbids]')
-    optional.add_argument('-n', '--name', type=str.lower,
+    optional.add_argument('-n', '--name', type=str,
                           help='provide a identifier/name for dataset')
     optional.add_argument('-h', '--help', action='help',
                           default=argparse.SUPPRESS,

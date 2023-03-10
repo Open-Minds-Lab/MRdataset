@@ -1,3 +1,4 @@
+"""Logging setup for MRdataset."""
 import logging
 from logging import Filter
 from MRdataset.config import CACHE_DIR

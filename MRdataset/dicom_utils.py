@@ -1,3 +1,4 @@
+""" Utility functions for dicom files """
 import re
 import warnings
 from collections import defaultdict
@@ -247,10 +248,10 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
     try:
         dicom = pydicom.dcmread(filepath,
                                 stop_before_pixels=True)
-    except OSError:
+    except OSError as exc:
         raise FileNotFoundError(
             f'Unable to read dicom file from disk : {filepath}'
-        )
+        ) from exc
 
     for k in config.PARAMETER_NAMES.keys():
         value = get_param_value_by_name(dicom, k)
@@ -433,7 +434,7 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
 
     if (bwp_phase_encode is None) or (phase_encoding is None):
         return None
-    denominator = (bwp_phase_encode * phase_encoding)
+    denominator = bwp_phase_encode * phase_encoding
     if denominator:
         value = 1000 / denominator
         # Match value to output of dcm2niix
@@ -499,7 +500,7 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
                                  'tags.PhaseEncodingDirectionPositive.items')
     if phase_value:
         phase = phase_value[0]
-        ped_value = get_param_value_by_name(dicom, "PhaseEncodingDirection")
+        ped_value = get_param_value_by_name(dicom, 'PhaseEncodingDirection')
         if ped_value in ['ROW', 'COL']:
             ped = ped_value
         else:

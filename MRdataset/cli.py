@@ -39,7 +39,7 @@ def main():
     args = parser.parse_args()
     if not Path(args.data_source).is_dir():
         raise OSError('Expected valid directory for --data_source argument, '
-                      'Got {}'.format(args.data_source))
+                      f'Got {args.data_source}')
     if args.include_nifti_header:
         if args.style != 'bids':
             raise SyntaxError('--include-nifti-header for style=bids')
@@ -58,5 +58,5 @@ def main():
     return dataset
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())  # pragma: no cover

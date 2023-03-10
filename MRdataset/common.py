@@ -1,14 +1,14 @@
-import importlib
+""" Common functions and classes for MRdataset """
 import pickle
 from pathlib import Path
 from typing import Union, List
 
-import MRdataset
-from MRdataset.base import BaseDataset
-from MRdataset.utils import valid_dirs, random_name, check_mrds_extension
-from MRdataset.log import logger
+
 from MRdataset import dicom, naive_bids, fastbids
+from MRdataset.base import BaseDataset
 from MRdataset.config import VALID_DATASET_STYLES
+from MRdataset.log import logger
+from MRdataset.utils import random_name, check_mrds_extension
 
 
 # TODO: data_source can be Path or str or List. Modify type hints
@@ -19,7 +19,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
                    verbose: bool = False,
                    include_nifti_header: bool = False,
                    is_complete: bool = True,
-                   **_kwargs) -> "BaseDataset":
+                   **_kwargs) -> 'BaseDataset':
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
     base.BaseDataset. This is the main interface between this package and your
@@ -64,8 +64,8 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         logger.setLevel('WARNING')
 
     if data_source is None:
-        raise ValueError(f"Please provide a valid data source."
-                         f" Got {data_source}")
+        raise ValueError(f'Please provide a valid data source.'
+                         f' Got {data_source}')
     # Check if name is provided by user, otherwise use random name
     if name is None:
         logger.info(
@@ -121,12 +121,12 @@ def find_dataset_using_style(dataset_style: str):
         dataset_class = fastbids.FastBIDSDataset
     else:
         raise NotImplementedError(
-            f"Dataset style {dataset_style} is not implemented. Valid choices"
+            f'Dataset style {dataset_style} is not implemented. Valid choices'
             f"are {', '.join(VALID_DATASET_STYLES)}")
     return dataset_class
 
 
-def load_mr_dataset(filepath: Union[str, Path]) -> "BaseDataset":
+def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
     """
     Load a dataset from a file
 
@@ -144,7 +144,7 @@ def load_mr_dataset(filepath: Union[str, Path]) -> "BaseDataset":
     if Path(filepath).is_file():
         filepath = Path(filepath)
     else:
-        raise FileNotFoundError(f"Invalid filepath {filepath}")
+        raise FileNotFoundError(f'Invalid filepath {filepath}')
 
     with open(filepath, 'rb') as f:
         fetched = pickle.load(f)
@@ -153,12 +153,12 @@ def load_mr_dataset(filepath: Union[str, Path]) -> "BaseDataset":
             return fetched
         else:
             # If object is different type, raise error
-            raise TypeError(f"Expected {type(BaseDataset)} "
-                            f"but got {type(fetched)}")
+            raise TypeError(f'Expected {type(BaseDataset)} '
+                            f'but got {type(fetched)}')
 
 
 def save_mr_dataset(filepath: Union[str, Path],
-                    mrds_obj: "BaseDataset") -> None:
+                    mrds_obj: 'BaseDataset') -> None:
     """
     Save a dataset to a file
 
@@ -180,6 +180,6 @@ def save_mr_dataset(filepath: Union[str, Path],
     parent_folder = Path(filepath).parent
     parent_folder.mkdir(exist_ok=True, parents=True)
 
-    with open(filepath, "wb") as f:
+    with open(filepath, 'wb') as f:
         # save dict of the object as pickle
         pickle.dump(mrds_obj, f)

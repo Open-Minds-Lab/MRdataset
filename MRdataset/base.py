@@ -1,3 +1,4 @@
+"""Module containing the base class for all MRdataset objects"""
 from functools import total_ordering
 from pathlib import Path
 from typing import List, Optional, Type, Sized, Union
@@ -276,12 +277,12 @@ class BaseDataset(Node):
         """
         classname = self.__class__.__name__.lower()
         if 'dataset' in classname:
-            style = classname.split('dataset')[0]
+            style = classname.split('dataset', maxsplit=1)[0]
         else:
             raise ValueError("Expected classname with keyword 'dataset'. "
                              'For example, DicomDataset, BIDSDataset. Got'
-                             '{0} instead. Rename the class as '
-                             '{0}Dataset'.format(classname))
+                             f'{classname} instead. Rename the class as '
+                             f'{classname}Dataset')
         return style
 
     @property
@@ -309,9 +310,8 @@ class BaseDataset(Node):
         """
         if not isinstance(new_modality, Modality):
             raise TypeError(
-                'Expected argument of type {}, got {} instead'.format(
-                    type(Modality),
-                    type(new_modality)))
+                f'Expected argument of type {type(Modality)}, '
+                f'got {type(new_modality)} instead')
         self.add_sub_node(new_modality)
 
     def get_modality_by_name(self, modality_name: str) -> Optional['Modality']:
@@ -533,10 +533,10 @@ class Modality(Node):
             if echo_time is None:
                 raise LookupError('Got NoneType for echo time. '
                                   'Specify echo_time, '
-                                  'Use one of {}'.format(keys))
+                                  f'Use one of {keys}')
             if echo_time not in keys:
-                raise LookupError('Echo time {} not found. '
-                                  'Use one of {}'.format(echo_time, keys))
+                raise LookupError(f'Echo time {echo_time} not found. '
+                                  f'Use one of {keys}')
             return self._reference[echo_time]
 
     @property
@@ -564,8 +564,8 @@ class Modality(Node):
         """
         if not isinstance(new_subject, Subject):
             raise TypeError(
-                'Expected argument of type {}, got {} instead'.format(
-                    type(Subject), type(new_subject)))
+                f'Expected argument of type {type(Subject)}, '
+                f'got {type(new_subject)} instead')
         self.add_sub_node(new_subject)
 
     def add_compliant_subject_name(self, subject_name: str) -> None:

@@ -1,15 +1,15 @@
-import logging
 from pathlib import Path
 
 import pydicom
 
+from MRdataset import config
+from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
     get_dicom_modality_tag, is_same_set, parse_imaging_params, \
     combine_varying_params
-from MRdataset import config
-from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.utils import param_difference, files_in_path
 from MRdataset.log import logger
+from MRdataset.utils import param_difference, files_in_path
+
 
 # Module-level logger
 # logger = logging.getLogger('root')

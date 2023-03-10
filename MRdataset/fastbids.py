@@ -1,3 +1,4 @@
+""" FastBIDSDataset class to manage BIDS datasets without BIDSLayout object"""
 from pathlib import Path
 
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
@@ -58,22 +59,22 @@ class FastBIDSDataset(BaseDataset):
             if ext in VALID_BIDS_EXTENSIONS:
                 self.read_single(file)
         if not self.modalities:
-            raise ValueError("Expected Sidecar JSON files in "
-                             "--data_source. Got 0 JSON files.")
+            raise ValueError('Expected Sidecar JSON files in '
+                             '--data_source. Got 0 JSON files.')
 
     def read_single(self, file):
         datatype = file.parent.name
         modality_obj = self.get_modality_by_name(datatype)
         if modality_obj is None:
             modality_obj = Modality(datatype)
-        nSub = file.parents[2].name
-        subject_obj = modality_obj.get_subject_by_name(nSub)
+        n_sub = file.parents[2].name
+        subject_obj = modality_obj.get_subject_by_name(n_sub)
         if subject_obj is None:
-            subject_obj = Subject(nSub)
-        nSess = file.parents[1].name
-        session_node = subject_obj.get_session_by_name(nSess)
+            subject_obj = Subject(n_sub)
+        n_sess = file.parents[1].name
+        session_node = subject_obj.get_session_by_name(n_sess)
         if session_node is None:
-            session_node = Session(nSess)
+            session_node = Session(n_sess)
             session_node = self.parse(session_node,
                                       file)
             if session_node.runs:
@@ -102,7 +103,7 @@ class FastBIDSDataset(BaseDataset):
             """
 
         filename = filepath.stem
-        params_from_file = dict()
+        params_from_file = {}
         filepath = filepath.parent / (filepath.stem + '.json')
         if filepath.is_file():
             params_from_file.update(select_parameters(filepath))

@@ -1,15 +1,10 @@
-from pathlib import Path
+"""BIDS dataset class for MRdataset"""
+from bids import BIDSLayout
 
-import MRdataset
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.config import datatypes
 from MRdataset.log import logger
 from MRdataset.utils import select_parameters
-from bids import BIDSLayout
-
-
-# # Module-level logger
-# logger = logging.getLogger('root')
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -86,14 +81,14 @@ class BIDSDataset(BaseDataset):
         Extracts relevant parameters and stores it in project. Creates
         a desirable hierarchy for a neuroimaging experiment
         """
-        print("Started building BIDSLayout .. ")
+        print('Started building BIDSLayout .. ')
         bids_layout = BIDSLayout(self.data_source, validate=False)
-        print("Completed BIDSLayout .. ")
+        print('Completed BIDSLayout .. ')
 
         filters = self.get_filters()
         if not bids_layout.get(**filters):
-            raise EOFError('No JSON files found at --data_source {}'.format(
-                self.data_source))
+            raise EOFError(f'No JSON files found at --data_source'
+                           f' {self.data_source}')
 
         for datatype in datatypes:
             modality_obj = self.get_modality_by_name(datatype)
@@ -102,22 +97,22 @@ class BIDSDataset(BaseDataset):
 
             layout_subjects = bids_layout.get_subjects()
             if not layout_subjects:
-                raise ValueError("No Subjects found in dataset")
-            for nSub in layout_subjects:
-                subject_obj = modality_obj.get_subject_by_name(nSub)
+                raise ValueError('No Subjects found in dataset')
+            for n_sub in layout_subjects:
+                subject_obj = modality_obj.get_subject_by_name(n_sub)
                 if subject_obj is None:
-                    subject_obj = Subject(nSub)
+                    subject_obj = Subject(n_sub)
 
-                layout_sessions = bids_layout.get_sessions(subject=nSub)
+                layout_sessions = bids_layout.get_sessions(subject=n_sub)
 
                 if not layout_sessions:
-                    logger.info("No sessions found. '1' is default "
-                                "session name")
+                    logger.info('No sessions found. 1 is default '
+                                'session name')
                     session_node = subject_obj.get_session_by_name('1')
                     if session_node is None:
                         session_node = Session('1')
 
-                    filters = self.get_filters(subject=nSub, datatype=datatype)
+                    filters = self.get_filters(subject=n_sub, datatype=datatype)
                     # {'subject': nSub,
                     #        'datatype': datatype,
                     #        'extension': 'json'}
@@ -128,12 +123,12 @@ class BIDSDataset(BaseDataset):
                         subject_obj.add_session(session_node)
                 else:
                     # If there are sessions
-                    for nSess in layout_sessions:
-                        session_node = subject_obj.get_session_by_name(nSess)
+                    for n_sess in layout_sessions:
+                        session_node = subject_obj.get_session_by_name(n_sess)
                         if session_node is None:
-                            session_node = Session(nSess)
-                            filters = self.get_filters(subject=nSub,
-                                                       session=nSess,
+                            session_node = Session(n_sess)
+                            filters = self.get_filters(subject=n_sub,
+                                                       session=n_sess,
                                                        datatype=datatype)
                             # {'subject': nSub,
                             # 'session': nSess,
@@ -149,7 +144,8 @@ class BIDSDataset(BaseDataset):
             if modality_obj.subjects:
                 self.add_modality(modality_obj)
         if not self.modalities:
-            raise EOFError("Expected Sidecar JSON files in --data_source. Got 0")
+            raise EOFError('Expected Sidecar JSON files in --data_source.'
+                           ' Got 0')
 
     def parse(self, session_node: Session,
               filters: dict, bids_layout: BIDSLayout) -> Session:

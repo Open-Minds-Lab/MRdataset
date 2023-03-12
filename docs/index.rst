@@ -1,12 +1,14 @@
-MRdataset : unified interface to various neuroimaging datasets
-==============================================================
+.. include:: ../README.rst
+.. include:: ./usage.rst
 
 
+
+Further
+=======
 .. toctree::
    :maxdepth: 1
 
    installation
-   usage
    API
    contributing
    authors

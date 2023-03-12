@@ -18,7 +18,7 @@ which can be used to import BIDS dataset and DICOM dataset.
    :show-inheritance:
 
 
-.. automodule:: MRdataset.bids
+.. automodule:: MRdataset.naive_bids
    :members:
    :undoc-members:
    :show-inheritance:
@@ -41,14 +41,6 @@ Subject, Run etc.in a neuroimaging experiment.
    :show-inheritance:
 
 .. automodule:: MRdataset.common
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: MRdataset
    :members:
    :undoc-members:
    :show-inheritance:

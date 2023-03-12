@@ -3,11 +3,11 @@ Command line usage
 
 MRdataset can be used on the command line interface. For a DICOM dataset::
 
-    mrds --data-root /path/to/dataset --style dicom
+    mrds --data-source /path/to/dataset --style dicom
 
 For a BIDS dataset::
 
-    mrds --data-root /path/to/dataset --style bids
+    mrds --data-source /path/to/dataset --style bids
 
 
 API usage
@@ -29,8 +29,8 @@ First of all, you have to import the relevant module::
 Given a valid folder path to a dataset of MR images (e.g. DICOM images),
 it creates a dataset.::
 
-    data_root = '/home/user/datasets/ABCD'
-    dataset = import_dataset(data_root=data_root,
+    data_folder = '/home/user/datasets/ABCD'
+    dataset = import_dataset(data_source=data_folder,
                              style='dicom',
                              name='ABCD')
 
@@ -45,8 +45,8 @@ NID (NeuroImaging Dataset), inherit ``MRdataset.base.BaseDataset`` in a file
 
     from MRdataset.base import BaseDataset
     class NIDDataset(BaseDataset):
-        def __init__(data_sources):
-            super().init(data_sources)
+        def __init__(data_source):
+            super().init(data_source)
             pass
 
          def walk():

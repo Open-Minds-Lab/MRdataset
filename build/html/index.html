@@ -85,11 +85,11 @@
 <section id="command-line-usage">
 <h2>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this heading"></a></h2>
 <p>MRdataset can be used on the command line interface. For a DICOM dataset:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">dicom</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">dicom</span>
 </pre></div>
 </div>
 <p>For a BIDS dataset:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">bids</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">bids</span>
 </pre></div>
 </div>
 </section>
@@ -109,8 +109,8 @@ such as <code class="docutils literal notranslate"><span class="pre">dicom</span
 </div>
 <p>Given a valid folder path to a dataset of MR images (e.g. DICOM images),
 it creates a dataset.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_root</span> <span class="o">=</span> <span class="s1">&#39;/home/user/datasets/ABCD&#39;</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_root</span><span class="o">=</span><span class="n">data_root</span><span class="p">,</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_folder</span> <span class="o">=</span> <span class="s1">&#39;/home/user/datasets/ABCD&#39;</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_source</span><span class="o">=</span><span class="n">data_folder</span><span class="p">,</span>
                          <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
                          <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ABCD&#39;</span><span class="p">)</span>
 </pre></div>
@@ -124,8 +124,8 @@ NID (NeuroImaging Dataset), inherit <code class="docutils literal notranslate"><
 <code class="docutils literal notranslate"><span class="pre">NID_dataset.py</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
 <span class="k">class</span> <span class="nc">NIDDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">data_sources</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">data_sources</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
         <span class="k">pass</span>
 
      <span class="k">def</span> <span class="nf">walk</span><span class="p">():</span>

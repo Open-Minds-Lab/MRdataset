@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MRdataset : unified interface to various neuroimaging datasets &mdash; MRdataset 0+untagged.671.g9ca8170.dirty documentation</title>
+  <title>Command line usage &mdash; MRdataset 0+untagged.671.g9ca8170.dirty documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,7 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -30,7 +29,7 @@
 
           
           
-          <a href="#" class="icon icon-home">
+          <a href="index.html" class="icon icon-home">
             MRdataset
           </a>
               <div class="version">
@@ -57,17 +56,17 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">MRdataset</a>
+          <a href="index.html">MRdataset</a>
       </nav>
 
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">MRdataset : unified interface to various neuroimaging datasets</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Command line usage</li>
       <li class="wy-breadcrumbs-aside">
-              <a href="https://github.com/Open-Minds-Lab/mrQA/blob/master/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/Open-Minds-Lab/mrQA/blob/master/docs/usage.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
   </ul>
   <hr/>
@@ -75,15 +74,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mrdataset-unified-interface-to-various-neuroimaging-datasets">
-<h1>MRdataset : unified interface to various neuroimaging datasets<a class="headerlink" href="#mrdataset-unified-interface-to-various-neuroimaging-datasets" title="Permalink to this heading"></a></h1>
-<a class="reference external image-reference" href="https://pypi.python.org/pypi/MRdataset"><img alt="https://img.shields.io/pypi/v/MRdataset.svg" src="https://img.shields.io/pypi/v/MRdataset.svg" /></a>
-<ul class="simple">
-<li><p>a unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc</p></li>
-<li><p>Documentation: <a class="reference external" href="https://open-minds-lab.github.io/MRdataset/">https://open-minds-lab.github.io/MRdataset/</a></p></li>
-</ul>
-<section id="command-line-usage">
-<h2>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this heading"></a></h2>
+  <section id="command-line-usage">
+<h1>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this heading"></a></h1>
 <p>MRdataset can be used on the command line interface. For a DICOM dataset:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mrds</span> <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="n">root</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dataset</span> <span class="o">--</span><span class="n">style</span> <span class="n">dicom</span>
 </pre></div>
@@ -94,7 +86,7 @@
 </div>
 </section>
 <section id="api-usage">
-<h2>API usage<a class="headerlink" href="#api-usage" title="Permalink to this heading"></a></h2>
+<h1>API usage<a class="headerlink" href="#api-usage" title="Permalink to this heading"></a></h1>
 <p>The following section provides a brief overview of the API. For more details,
 please refer to the Jupyter Notebook <a class="reference external" href="https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb">tutorial</a>.</p>
 <p>To use MRdataset in a project:</p>
@@ -144,34 +136,12 @@ dataset. For example, to save a dataset:</p>
 </pre></div>
 </div>
 <p>Note that the dataset is saved as a pickle file with an extension <code class="docutils literal notranslate"><span class="pre">.mrds.pkl</span></code>.</p>
-<section id="further">
-<h3>Further<a class="headerlink" href="#further" title="Permalink to this heading"></a></h3>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
-</ul>
-</div>
-</section>
-<section id="indices-and-tables">
-<h3>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h3>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-</section>
-</section>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

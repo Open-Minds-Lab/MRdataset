@@ -28,17 +28,17 @@ From sources
 
 The sources for MRdataset can be downloaded from the `Github repo`_.
 
-You can either clone the public repository:
+You can clone the public repository:
 
 .. code-block:: console
 
     $ git clone git://github.com/Open-Minds-Lab/MRdataset
+..
+    Or download the `tarball`_:
 
-Or download the `tarball`_:
+    .. code-block:: console
 
-.. code-block:: console
-
-    $ curl -OJL https://github.com/Open-Minds-Lab/MRdataset/tarball/master
+        $ curl -OJL https://github.com/Open-Minds-Lab/MRdataset/tarball/master
 
 Once you have a copy of the source, you can install it with:
 

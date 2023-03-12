@@ -33,7 +33,8 @@ import MRdataset
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
-              'sphinx.ext.napoleon']
+              'sphinx.ext.napoleon',
+              'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -49,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'MRdataset'
-copyright = "2022, Harsh Sinha"
+copyright = "2023, Harsh Sinha"
 author = "Harsh Sinha"
 
 # The version info for the project you're documenting, acts as replacement
@@ -66,7 +67,7 @@ release = MRdataset.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -168,5 +169,7 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+# -- Options for MathJAX support ---------------------------------------
+mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
 
 

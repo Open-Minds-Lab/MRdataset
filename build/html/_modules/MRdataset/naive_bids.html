@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MRdataset.naive_bids &mdash; MRdataset 0+untagged.671.g9ca8170.dirty documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            MRdataset
+          </a>
+              <div class="version">
+                0+untagged.671.g9ca8170.dirty
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MRdataset</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">MRdataset.naive_bids</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for MRdataset.naive_bids</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;BIDS dataset class for MRdataset&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">bids</span> <span class="kn">import</span> <span class="n">BIDSLayout</span>
+
+<span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">Modality</span><span class="p">,</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">MRdataset.config</span> <span class="kn">import</span> <span class="n">datatypes</span>
+<span class="kn">from</span> <span class="nn">MRdataset.log</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="n">select_parameters</span>
+
+
+<span class="c1"># TODO: check what if each variable is None. Apply try catch</span>
+<div class="viewcode-block" id="BIDSDataset"><a class="viewcode-back" href="../../API.html#MRdataset.naive_bids.BIDSDataset">[docs]</a><span class="k">class</span> <span class="nc">BIDSDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container to manage the properties and methods of a BIDS dataset downloaded</span>
+<span class="sd">    from OpenNeuro. It is a subclass of BaseDataset. Expects the data_source to</span>
+<span class="sd">    contain JSON files for reading image acquisition parameters. Use</span>
+<span class="sd">    include_nifti_header to extract parameter from nifti headers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">is_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">include_nifti_header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            an identifier/name for the dataset</span>
+<span class="sd">        data_source : Path or str</span>
+<span class="sd">            directory containing dicom files, supports nested hierarchies</span>
+<span class="sd">        is_complete : bool</span>
+<span class="sd">            whether the dataset is complete</span>
+<span class="sd">        include_nifti_header :</span>
+<span class="sd">            whether to check nifti headers for compliance,</span>
+<span class="sd">            only used when --style==bids</span>
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from MRdataset.naive_bids import BIDSDataset</span>
+<span class="sd">        &gt;&gt;&gt; dataset = BIDSDataset()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span> <span class="o">=</span> <span class="n">is_complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_nifti_header</span> <span class="o">=</span> <span class="n">include_nifti_header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="BIDSDataset.get_filters"><a class="viewcode-back" href="../../API.html#MRdataset.naive_bids.BIDSDataset.get_filters">[docs]</a>    <span class="k">def</span> <span class="nf">get_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given subject id, session id, and datatype, the function would create</span>
+<span class="sd">        a dictionary to fetch the appropriate file from BIDS Layout. It just</span>
+<span class="sd">        creates the filter dictionary, doesn&#39;t fetch the files itself.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subject : subject id</span>
+<span class="sd">        session : session id</span>
+<span class="sd">        datatype : one of datatypes like anat, func, dwi etc</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict to specify the filter parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extension&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]}</span>
+        <span class="k">if</span> <span class="n">subject</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+        <span class="k">if</span> <span class="n">datatype</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;datatype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datatype</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_nifti_header</span><span class="p">:</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nii.gz&#39;</span><span class="p">)</span>
+            <span class="n">filters</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;nii&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filters</span></div>
+
+<div class="viewcode-block" id="BIDSDataset.walk"><a class="viewcode-back" href="../../API.html#MRdataset.naive_bids.BIDSDataset.walk">[docs]</a>    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses the file tree to populate them in a desirable hierarchy.</span>
+<span class="sd">        Extracts relevant parameters and stores it in project. Creates</span>
+<span class="sd">        a desirable hierarchy for a neuroimaging experiment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Started building BIDSLayout .. &#39;</span><span class="p">)</span>
+        <span class="n">bids_layout</span> <span class="o">=</span> <span class="n">BIDSLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Completed BIDSLayout .. &#39;</span><span class="p">)</span>
+
+        <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">filters</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No JSON files found at --data_source&#39;</span>
+                           <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
+            <span class="n">modality_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modality_by_name</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modality_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">modality_obj</span> <span class="o">=</span> <span class="n">Modality</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
+
+            <span class="n">layout_subjects</span> <span class="o">=</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get_subjects</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">layout_subjects</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No Subjects found in dataset&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n_sub</span> <span class="ow">in</span> <span class="n">layout_subjects</span><span class="p">:</span>
+                <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">modality_obj</span><span class="o">.</span><span class="n">get_subject_by_name</span><span class="p">(</span><span class="n">n_sub</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">subject_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">n_sub</span><span class="p">)</span>
+
+                <span class="n">layout_sessions</span> <span class="o">=</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get_sessions</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">n_sub</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">layout_sessions</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No sessions found. 1 is default &#39;</span>
+                                <span class="s1">&#39;session name&#39;</span><span class="p">)</span>
+                    <span class="n">session_node</span> <span class="o">=</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">get_session_by_name</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+                    <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">n_sub</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+                    <span class="c1"># {&#39;subject&#39;: nSub,</span>
+                    <span class="c1">#        &#39;datatype&#39;: datatype,</span>
+                    <span class="c1">#        &#39;extension&#39;: &#39;json&#39;}</span>
+                    <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
+                                              <span class="n">filters</span><span class="p">,</span>
+                                              <span class="n">bids_layout</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">session_node</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
+                        <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If there are sessions</span>
+                    <span class="k">for</span> <span class="n">n_sess</span> <span class="ow">in</span> <span class="n">layout_sessions</span><span class="p">:</span>
+                        <span class="n">session_node</span> <span class="o">=</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">get_session_by_name</span><span class="p">(</span><span class="n">n_sess</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">n_sess</span><span class="p">)</span>
+                            <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_filters</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">n_sub</span><span class="p">,</span>
+                                                       <span class="n">session</span><span class="o">=</span><span class="n">n_sess</span><span class="p">,</span>
+                                                       <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
+                            <span class="c1"># {&#39;subject&#39;: nSub,</span>
+                            <span class="c1"># &#39;session&#39;: nSess,</span>
+                            <span class="c1"># &#39;datatype&#39;: datatype,</span>
+                            <span class="c1"># &#39;extension&#39;: &#39;json&#39;}</span>
+                            <span class="n">session_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">session_node</span><span class="p">,</span>
+                                                      <span class="n">filters</span><span class="p">,</span>
+                                                      <span class="n">bids_layout</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">session_node</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
+                            <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
+                    <span class="n">modality_obj</span><span class="o">.</span><span class="n">add_subject</span><span class="p">(</span><span class="n">subject_obj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modality_obj</span><span class="o">.</span><span class="n">subjects</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_modality</span><span class="p">(</span><span class="n">modality_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">modalities</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s1">&#39;Expected Sidecar JSON files in --data_source.&#39;</span>
+                           <span class="s1">&#39; Got 0&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BIDSDataset.parse"><a class="viewcode-back" href="../../API.html#MRdataset.naive_bids.BIDSDataset.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_node</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span>
+              <span class="n">filters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">bids_layout</span><span class="p">:</span> <span class="n">BIDSLayout</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Session</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extracts parameters for a run. Adds the new run node to session node,</span>
+<span class="sd">        returns modified session node.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        session_node : MRdataset.base.Session</span>
+<span class="sd">            session node to which the run node has to be added</span>
+<span class="sd">        filters : dict</span>
+<span class="sd">            dictionary defining arguments like subject, session, datatype to</span>
+<span class="sd">            extract corresponding files from a BIDS Layout object</span>
+<span class="sd">        bids_layout : bids.BIDSLayout</span>
+<span class="sd">            data structure which encapsulates the entire BIDS data structure</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        session_node : MRdataset.base.Session</span>
+<span class="sd">            modified session_node which also contains the new run</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">bids_layout</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">**</span><span class="n">filters</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">filename</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">params_from_file</span> <span class="o">=</span> <span class="n">select_parameters</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params_from_file</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">run_node</span> <span class="o">=</span> <span class="n">session_node</span><span class="o">.</span><span class="n">get_run_by_name</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">run_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">run_node</span> <span class="o">=</span> <span class="n">Run</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">run_node</span><span class="o">.</span><span class="n">echo_time</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">session_node</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">run_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">session_node</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Harsh Sinha.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

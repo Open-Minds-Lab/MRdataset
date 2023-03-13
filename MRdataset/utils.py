@@ -1,5 +1,6 @@
 import functools
 import json
+import tempfile
 import time
 import typing
 import uuid
@@ -9,11 +10,10 @@ from typing import Union, List, Optional
 
 import nibabel as nib
 import numpy as np
-from bids.layout.models import BIDSFile
-from dictdiffer import diff as dict_diff
-
 from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
 from MRdataset.log import logger
+from bids.layout.models import BIDSFile
+from dictdiffer import diff as dict_diff
 
 
 def files_under_folder(fpath: Union[str, Path],
@@ -380,3 +380,15 @@ def is_same_dataset(dataset1, dataset2):
                     assert run1.name == run2.name
                     assert run1.params == run2.params
     return True
+
+
+def is_writable(dir_path):
+    try:
+        with tempfile.TemporaryFile(dir=dir_path) as testfile:
+            testfile.write("OS write to directory test.")
+            logger.info(f"Created temp file in {dir_path}")
+    except (OSError, IOError) as e:
+        logger.error(e)
+        return False
+    return True
+

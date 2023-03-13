@@ -34,6 +34,7 @@ def is_dicom_file(filename: str):
     -------
     bool : if the file is a DICOM file
     """
+    # TODO: Read dicom file : 1
     with open(filename, 'rb') as file_stream:
         file_stream.seek(128)
         data = file_stream.read(4)
@@ -68,7 +69,7 @@ def is_same_set(dicom: pydicom.FileDataset) -> str:
     return run_name
 
 
-def is_valid_inclusion(filename: str,
+def is_valid_inclusion(filepath: str,
                        dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:
     """
@@ -76,7 +77,7 @@ def is_valid_inclusion(filename: str,
 
     Parameters
     ----------
-    filename : str or Path
+    filepath : str or Path
         filename for raising the warning
     dicom : pydicom.FileDataset
         dicom object returned by pydicom.dcmread or pydicom.read_file
@@ -87,10 +88,10 @@ def is_valid_inclusion(filename: str,
     -------
     bool
     """
-    filename = Path(filename).resolve()
+    filepath = Path(filepath).resolve()
 
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        logger.info('Invalid file: %s', filename.parent)
+        logger.info('Invalid file: %s', filepath.parent)
         return False
 
     # if not header_exists(dicom):
@@ -108,18 +109,18 @@ def is_valid_inclusion(filename: str,
             series_desc = series_desc.lower()
             if not include_phantom:
                 if 'local' in series_desc:
-                    logger.info('Localizer: Skipping %s', filename.parent)
+                    logger.info('Localizer: Skipping %s', filepath.parent)
                     return False
 
                 if 'aahead' in series_desc:
-                    logger.info('AAhead_Scout: Skipping %s', filename.parent)
+                    logger.info('AAhead_Scout: Skipping %s', filepath.parent)
                     return False
 
                 if is_phantom(dicom):
-                    logger.info('ACR/Phantom: %s', filename.parent)
+                    logger.info('ACR/Phantom: %s', filepath.parent)
                     return False
     except AttributeError as e:
-        logger.warning('%s :Series Description not found in %s' % (e, filename))
+        logger.warning('%s :Series Description not found in %s' % (e, filepath))
 
     return True
 
@@ -246,6 +247,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
                       f'\n. Consider re-indexing dataset.')
 
     try:
+        # TODO: Read dicom file : 3
         dicom = pydicom.dcmread(filepath,
                                 stop_before_pixels=True)
     except OSError as exc:
@@ -514,7 +516,7 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
     return None
 
 
-def combine_varying_params(parameter_diff_list, params):
+def combine_varying_params(parameter_diff_list, params, filepath):
     #   If a different slice is read first, it would lead
     #   to differences in parameters for the run. How to
     #   reconcile ? For ex. in one case, there was a single
@@ -537,7 +539,8 @@ def combine_varying_params(parameter_diff_list, params):
                     params[parameter_name] = new_value
                 else:
                     logger.warning(f'Slices with varying {parameter_name} '
-                                   f'Expected {old_value}, Got {new_value}')
+                                   f'Expected {old_value}, Got {new_value} in '
+                                   f'{filepath}')
         elif item[0] == 'add':
             logger.debug('Not expected. Report event - %s', item[0])
             for parameter_name, value in item[2]:

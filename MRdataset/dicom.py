@@ -79,6 +79,7 @@ class DicomDataset(BaseDataset):
                     logger.debug(
                         "Not a DICOM file : {}".format(filepath))
                     continue
+                # TODO: Read dicom file : 2
                 dicom = pydicom.read_file(filepath, stop_before_pixels=True)
                 if is_valid_inclusion(filepath,
                                       dicom,
@@ -114,7 +115,8 @@ class DicomDataset(BaseDataset):
                     elif param_diff:
                         run_node.params = combine_varying_params(
                                             param_diff,
-                                            run_node.params)
+                                            run_node.params,
+                                            filepath)
                     session_node.add_run(run_node)
                     subject_obj.add_session(session_node)
                     modality_obj.add_subject(subject_obj)

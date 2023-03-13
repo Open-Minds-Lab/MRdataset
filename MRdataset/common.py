@@ -115,9 +115,9 @@ def find_dataset_using_style(dataset_style: str):
     # Import the module "{style}_dataset.py"
     if dataset_style == 'dicom':
         dataset_class = dicom.DicomDataset
-    elif dataset_style == 'bids':
+    elif dataset_style == 'pybids':
         dataset_class = naive_bids.BIDSDataset
-    elif dataset_style == 'fastbids':
+    elif dataset_style == 'bids':
         dataset_class = fastbids.FastBIDSDataset
     else:
         raise NotImplementedError(

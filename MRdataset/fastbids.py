@@ -2,8 +2,9 @@
 from pathlib import Path
 
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.config import VALID_BIDS_EXTENSIONS
-from MRdataset.utils import select_parameters, files_under_folder, get_ext
+from MRdataset.config import VALID_BIDS_EXTENSIONS, VALID_DATATYPES
+from MRdataset.log import logger
+from MRdataset.utils import select_parameters, files_in_path, get_ext
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -54,7 +55,7 @@ class FastBIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         # TODO: Need to handle BIDS datasets without JSON files
-        for file in files_under_folder(self.data_source):
+        for file in files_in_path(self.data_source):
             ext = get_ext(file)
             if ext in VALID_BIDS_EXTENSIONS:
                 self.read_single(file)
@@ -64,14 +65,20 @@ class FastBIDSDataset(BaseDataset):
 
     def read_single(self, file):
         datatype = file.parent.name
+        if datatype not in VALID_DATATYPES:
+            return
         modality_obj = self.get_modality_by_name(datatype)
         if modality_obj is None:
             modality_obj = Modality(datatype)
+        n_sess = file.parents[1].name
         n_sub = file.parents[2].name
+        if 'sub' in n_sess:
+            logger.info('Sessions dont exist')
+            n_sess = 'ses-01'
+            n_sub = file.parents[1].name
         subject_obj = modality_obj.get_subject_by_name(n_sub)
         if subject_obj is None:
             subject_obj = Subject(n_sub)
-        n_sess = file.parents[1].name
         session_node = subject_obj.get_session_by_name(n_sess)
         if session_node is None:
             session_node = Session(n_sess)
@@ -109,7 +116,7 @@ class FastBIDSDataset(BaseDataset):
             params_from_file.update(select_parameters(filepath))
 
         if self.include_nifti_header:
-            filepath = filepath.parent/(filepath.stem+'.nii')
+            filepath = filepath.parent / (filepath.stem + '.nii')
             if filepath.is_file():
                 params_from_file.update(select_parameters(filepath))
 
@@ -123,7 +130,10 @@ class FastBIDSDataset(BaseDataset):
                 run_node = Run(filename)
             for k, v in params_from_file.items():
                 run_node.params[k] = v
-            run_node.echo_time = params_from_file.get('EchoTime', 1.0)
+            echo_time = params_from_file.get('EchoTime', 1.0)
+            if not isinstance(echo_time, (int, float)):
+                echo_time = 1.0
+            run_node.echo_time = echo_time
             session_node.add_run(run_node)
         return session_node
 

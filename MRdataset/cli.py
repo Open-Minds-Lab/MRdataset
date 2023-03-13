@@ -20,7 +20,7 @@ def main():
                                'dicom files, supports nested hierarchies')
     optional.add_argument('-s', '--style', type=str, default='dicom',
                           help='choose type of dataset, expected'
-                               'one of [dicom|bids|fastbids]')
+                               'one of [dicom|bids|pybids]')
     optional.add_argument('-n', '--name', type=str,
                           help='provide a identifier/name for dataset')
     optional.add_argument('-h', '--help', action='help',

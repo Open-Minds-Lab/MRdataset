@@ -54,7 +54,7 @@ PARAMETER_NAMES = {
     # 'InstitutionName': [0x08, 0x0080],
 }
 
-datatypes = [
+VALID_DATATYPES = [
     'anat',
     'beh',
     'dwi',

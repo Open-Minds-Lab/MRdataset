@@ -112,7 +112,7 @@ def make_bids_test_dataset(num_noncompliant_subjects,
     layout = BIDSLayout(dest_dir.as_posix())
     subjects = layout.get_subjects()
 
-    for i, modality in enumerate(MRdataset.config.datatypes):
+    for i, modality in enumerate(MRdataset.config.VALID_DATATYPES):
         count = num_noncompliant_subjects[i]
         non_compliant_subjects = set()
         for sub in subjects:

@@ -192,6 +192,9 @@ def select_parameters(file) -> dict:
         raise NotImplementedError
 
     ext = get_ext(file)
+    if file_path.name.startswith('.bidsignore'):
+        return selected_params
+
     if ext == '.json':
         with open(file_path, "r") as read_file:
             parameters = json.load(read_file)
@@ -199,7 +202,7 @@ def select_parameters(file) -> dict:
         for key in parameters:
             for entry in PARAMETER_NAMES:
                 if entry.lower() in key.lower():
-                    selected_params[key] = parameters[key]
+                    selected_params[key] = make_hashable(parameters[key])
     elif ext in ['.nii', '.nii.gz']:
         nii_image = nib.load(file_path)
         selected_params['obliquity'] = np.any(

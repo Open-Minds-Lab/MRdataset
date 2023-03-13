@@ -2,7 +2,7 @@
 from bids import BIDSLayout
 
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.config import datatypes
+from MRdataset.config import VALID_DATATYPES
 from MRdataset.log import logger
 from MRdataset.utils import select_parameters
 
@@ -28,7 +28,7 @@ class BIDSDataset(BaseDataset):
         ----------
         name : str
             an identifier/name for the dataset
-        data_source : Path or str
+        data_source : Path or str or List
             directory containing dicom files, supports nested hierarchies
         is_complete : bool
             whether the dataset is complete
@@ -82,15 +82,20 @@ class BIDSDataset(BaseDataset):
         a desirable hierarchy for a neuroimaging experiment
         """
         print('Started building BIDSLayout .. ')
-        bids_layout = BIDSLayout(self.data_source, validate=False)
+        if isinstance(self.data_source, list):
+            data_source = self.data_source[0]
+        else:
+            data_source = self.data_source
+
+        bids_layout = BIDSLayout(data_source, validate=False)
         print('Completed BIDSLayout .. ')
 
         filters = self.get_filters()
         if not bids_layout.get(**filters):
             raise EOFError(f'No JSON files found at --data_source'
-                           f' {self.data_source}')
+                           f' {data_source}')
 
-        for datatype in datatypes:
+        for datatype in VALID_DATATYPES:
             modality_obj = self.get_modality_by_name(datatype)
             if modality_obj is None:
                 modality_obj = Modality(datatype)

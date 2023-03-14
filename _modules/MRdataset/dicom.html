@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>MRdataset.dicom &mdash; MRdataset 0.1.4+49.gda25889.dirty documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> MRdataset
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.4+49.gda25889.dirty
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">MRdataset : unified interface to various neuroimaging datasets</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MRdataset</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>MRdataset.dicom</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for MRdataset.dicom</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">pydicom</span>
+
+<span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">Modality</span><span class="p">,</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">MRdataset.dicom_utils</span> <span class="kn">import</span> <span class="n">is_dicom_file</span><span class="p">,</span> <span class="n">is_valid_inclusion</span><span class="p">,</span> \
+    <span class="n">get_dicom_modality_tag</span><span class="p">,</span> <span class="n">is_same_set</span><span class="p">,</span> <span class="n">parse_imaging_params</span><span class="p">,</span> \
+    <span class="n">combine_varying_params</span>
+<span class="kn">from</span> <span class="nn">MRdataset.log</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="n">param_difference</span><span class="p">,</span> <span class="n">files_in_path</span>
+
+
+<span class="c1"># Module-level logger</span>
+<span class="c1"># logger = logging.getLogger(&#39;root&#39;)</span>
+
+
+<span class="c1"># TODO: check what if each variable is None. Apply try catch</span>
+<div class="viewcode-block" id="DicomDataset"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset">[docs]</a><span class="k">class</span> <span class="nc">DicomDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Container to manage properties and issues of a dataset downloaded from</span>
+<span class="sd">    XNAT. Expects the data_source to be collection of dicom files, which may</span>
+<span class="sd">    belong to different subjects, modalities, sessions or runs.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Identifier/name for the node</span>
+<span class="sd">    data_source : Path or str or Iterable</span>
+<span class="sd">        directories containing dicom files, supports nested hierarchies</span>
+<span class="sd">    include_phantom</span>
+<span class="sd">        Whether to include non-subject scans like localizer, acr/phantom,</span>
+<span class="sd">        head_scout</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">data_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">include_phantom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">is_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            an identifier/name for the dataset</span>
+<span class="sd">        data_source : Path or str or Iterable</span>
+<span class="sd">            directory containing dicom files, supports nested hierarchies</span>
+<span class="sd">        include_phantom : bool</span>
+<span class="sd">            whether to include localizer/aahead_scout/phantom/acr</span>
+<span class="sd">        is_complete : bool</span>
+<span class="sd">            whether the dataset is complete or partial (default: True)</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; from MRdataset import dicom</span>
+<span class="sd">        &gt;&gt;&gt; dataset = dicom.DicomDataset()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span> <span class="o">=</span> <span class="n">is_complete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span> <span class="o">=</span> <span class="n">include_phantom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="DicomDataset.walk"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset.walk">[docs]</a>    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieves filenames in the directory tree, verifies if it is dicom</span>
+<span class="sd">        file, extracts relevant parameters and stores it in project. Creates</span>
+<span class="sd">        a desirable hierarchy for a neuroimaging experiment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">no_files_found</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">study_ids_found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">files_in_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="p">):</span>
+            <span class="n">no_files_found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dicom_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Not a DICOM file : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+                    <span class="k">continue</span>
+                <span class="c1"># TODO: Read dicom file : 2</span>
+                <span class="n">dicom</span> <span class="o">=</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">stop_before_pixels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_valid_inclusion</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span>
+                                      <span class="n">dicom</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span><span class="p">):</span>
+
+                    <span class="n">modality_name</span> <span class="o">=</span> <span class="n">get_dicom_modality_tag</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
+                    <span class="n">modality_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modality_by_name</span><span class="p">(</span><span class="n">modality_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">modality_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">modality_obj</span> <span class="o">=</span> <span class="n">Modality</span><span class="p">(</span><span class="n">modality_name</span><span class="p">)</span>
+
+                    <span class="n">patient_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PatientID&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                    <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">modality_obj</span><span class="o">.</span><span class="n">get_subject_by_name</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">subject_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
+
+                    <span class="n">series_num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;SeriesNumber&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                    <span class="n">session_node</span> <span class="o">=</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">get_session_by_name</span><span class="p">(</span><span class="n">series_num</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">series_num</span><span class="p">)</span>
+
+                    <span class="n">run_name</span> <span class="o">=</span> <span class="n">is_same_set</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
+                    <span class="n">run_node</span> <span class="o">=</span> <span class="n">session_node</span><span class="o">.</span><span class="n">get_run_by_name</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">run_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">run_node</span> <span class="o">=</span> <span class="n">Run</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
+                        <span class="n">run_node</span><span class="o">.</span><span class="n">echo_time</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                    <span class="c1"># TODO: dcm img params doesnt make sense</span>
+
+                    <span class="n">dcm_img_params</span> <span class="o">=</span> <span class="n">parse_imaging_params</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+                    <span class="n">param_diff</span> <span class="o">=</span> <span class="n">param_difference</span><span class="p">(</span><span class="n">dcm_img_params</span><span class="p">,</span>
+                                                  <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">run_node</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">dcm_img_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">param_diff</span><span class="p">:</span>
+                        <span class="n">run_node</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">combine_varying_params</span><span class="p">(</span>
+                                            <span class="n">param_diff</span><span class="p">,</span>
+                                            <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+                                            <span class="n">filepath</span><span class="p">)</span>
+                    <span class="n">session_node</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">run_node</span><span class="p">)</span>
+                    <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
+                    <span class="n">modality_obj</span><span class="o">.</span><span class="n">add_subject</span><span class="p">(</span><span class="n">subject_obj</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_modality</span><span class="p">(</span><span class="n">modality_obj</span><span class="p">)</span>
+
+                    <span class="c1"># Collect all unique study ids found in DICOM</span>
+                    <span class="n">study_ids_found</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">StudyID</span><span class="p">))</span>
+
+            <span class="k">except</span> <span class="n">config</span><span class="o">.</span><span class="n">MRException</span> <span class="k">as</span> <span class="n">mrd_exc</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">mrd_exc</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exc</span>
+        <span class="k">if</span> <span class="n">no_files_found</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Read 0 files&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_ids_found</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">MultipleProjectsInDataset</span><span class="p">(</span><span class="n">study_ids_found</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2023, Harsh Sinha.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

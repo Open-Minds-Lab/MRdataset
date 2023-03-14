@@ -11,4 +11,7 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Yaroslav Halchenko
+* Tanupat Boonchalermvichien
+* Will Foran
+

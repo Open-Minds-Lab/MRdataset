@@ -6,6 +6,11 @@
 Further
 =======
 .. toctree::
+    :hidden:
+
+    self
+
+.. toctree::
    :maxdepth: 1
 
    installation

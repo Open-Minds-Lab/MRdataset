@@ -384,7 +384,7 @@ def is_same_dataset(dataset1, dataset2):
 
 def is_writable(dir_path):
     try:
-        with tempfile.TemporaryFile(dir=dir_path) as testfile:
+        with tempfile.TemporaryFile(dir=dir_path, mode='w') as testfile:
             testfile.write("OS write to directory test.")
             logger.info(f"Created temp file in {dir_path}")
     except (OSError, IOError) as e:

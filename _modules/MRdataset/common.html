@@ -1,47 +1,95 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MRdataset.common &mdash; MRdataset 0+untagged.680.g1207d68 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+  <title>MRdataset.common &mdash; MRdataset 0.1.4+52.ge4a5f6e documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
 
           
+            <a href="../../index.html" class="icon icon-home"> MRdataset
           
-          <a href="../../index.html" class="icon icon-home">
-            MRdataset
+
+          
           </a>
+
+          
+            
+            
               <div class="version">
-                0+untagged.680.g1207d68
+                0.1.4+52.ge4a5f6e
               </div>
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">MRdataset : unified interface to various neuroimaging datasets</a></li>
 </ul>
@@ -52,30 +100,69 @@
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">MRdataset</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">MRdataset.common</li>
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>MRdataset.common</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <h1>Source code for MRdataset.common</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot; Common functions and classes for MRdataset &quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
@@ -92,7 +179,7 @@
 
 <span class="c1"># TODO: data_source can be Path or str or List. Modify type hints</span>
 <div class="viewcode-block" id="import_dataset"><a class="viewcode-back" href="../../API.html#MRdataset.common.import_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_dataset</span><span class="p">(</span><span class="n">data_source</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                   <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
+                   <span class="n">ds_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
                    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                    <span class="n">include_phantom</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -108,8 +195,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    data_source : Union[str, List[str]]</span>
 <span class="sd">        path/to/my/dataset containing files</span>
-<span class="sd">    style : str</span>
-<span class="sd">        Specify dataset type. Imports the module &quot;{style}_dataset.py&quot;,</span>
+<span class="sd">    ds_format : str</span>
+<span class="sd">        Specify dataset type. Imports the module &quot;{ds_format}_dataset.py&quot;,</span>
 <span class="sd">        which will instantiate {Style}Dataset().</span>
 <span class="sd">    name : str</span>
 <span class="sd">        Identifier for the dataset, like ADNI. The name used to save cached</span>
@@ -121,7 +208,7 @@
 <span class="sd">        The flag allows you to change the verbosity of execution</span>
 <span class="sd">    include_nifti_header: bool</span>
 <span class="sd">        whether to check nifti headers for compliance,</span>
-<span class="sd">        only used when --style==bids</span>
+<span class="sd">        only used when --ds_format==bids</span>
 <span class="sd">    is_complete: bool</span>
 <span class="sd">        whether the dataset is complete or not</span>
 <span class="sd">    Returns</span>
@@ -153,8 +240,8 @@
             <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">random_name</span><span class="p">()</span>
 
-    <span class="c1"># Find dataset class using style</span>
-    <span class="n">dataset_class</span> <span class="o">=</span> <span class="n">find_dataset_using_style</span><span class="p">(</span><span class="n">style</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="c1"># Find dataset class using ds_format</span>
+    <span class="n">dataset_class</span> <span class="o">=</span> <span class="n">find_dataset_using_ds_format</span><span class="p">(</span><span class="n">ds_format</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
 
     <span class="c1"># Instantiate dataset class</span>
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset_class</span><span class="p">(</span>
@@ -175,15 +262,15 @@
     <span class="k">return</span> <span class="n">dataset</span></div>
 
 
-<div class="viewcode-block" id="find_dataset_using_style"><a class="viewcode-back" href="../../API.html#MRdataset.common.find_dataset_using_style">[docs]</a><span class="k">def</span> <span class="nf">find_dataset_using_style</span><span class="p">(</span><span class="n">dataset_style</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="find_dataset_using_ds_format"><a class="viewcode-back" href="../../API.html#MRdataset.common.find_dataset_using_ds_format">[docs]</a><span class="k">def</span> <span class="nf">find_dataset_using_ds_format</span><span class="p">(</span><span class="n">dataset_ds_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Imports the module &quot;{style}_dataset.py&quot;, which will instantiate</span>
+<span class="sd">    Imports the module &quot;{ds_format}_dataset.py&quot;, which will instantiate</span>
 <span class="sd">    {Style}Dataset(). For future, please ensure that any {Style}Dataset</span>
 <span class="sd">    is a subclass of MRdataset.base.Dataset</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    dataset_style : str</span>
+<span class="sd">    dataset_ds_format : str</span>
 <span class="sd">        Specify the type of dataset</span>
 
 <span class="sd">    Returns</span>
@@ -191,16 +278,16 @@
 <span class="sd">    dataset: MRdataset.base.BaseDataset()</span>
 <span class="sd">        dataset container class</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Import the module &quot;{style}_dataset.py&quot;</span>
-    <span class="k">if</span> <span class="n">dataset_style</span> <span class="o">==</span> <span class="s1">&#39;dicom&#39;</span><span class="p">:</span>
+    <span class="c1"># Import the module &quot;{ds_format}_dataset.py&quot;</span>
+    <span class="k">if</span> <span class="n">dataset_ds_format</span> <span class="o">==</span> <span class="s1">&#39;dicom&#39;</span><span class="p">:</span>
         <span class="n">dataset_class</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">DicomDataset</span>
-    <span class="k">elif</span> <span class="n">dataset_style</span> <span class="o">==</span> <span class="s1">&#39;pybids&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">dataset_ds_format</span> <span class="o">==</span> <span class="s1">&#39;pybids&#39;</span><span class="p">:</span>
         <span class="n">dataset_class</span> <span class="o">=</span> <span class="n">naive_bids</span><span class="o">.</span><span class="n">BIDSDataset</span>
-    <span class="k">elif</span> <span class="n">dataset_style</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">dataset_ds_format</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
         <span class="n">dataset_class</span> <span class="o">=</span> <span class="n">fastbids</span><span class="o">.</span><span class="n">FastBIDSDataset</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Dataset style </span><span class="si">{</span><span class="n">dataset_style</span><span class="si">}</span><span class="s1"> is not implemented. Valid choices&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;Dataset ds_format </span><span class="si">{</span><span class="n">dataset_ds_format</span><span class="si">}</span><span class="s1"> is not implemented. Valid choices&#39;</span>
             <span class="sa">f</span><span class="s2">&quot;are </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_DATASET_STYLES</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dataset_class</span></div>
 
@@ -265,30 +352,46 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Harsh Sinha.</p>
-  </div>
+    <p>
+        &#169; Copyright 2023, Harsh Sinha.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

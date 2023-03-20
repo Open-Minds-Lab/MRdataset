@@ -3,11 +3,11 @@ Command line usage
 
 MRdataset can be used on the command line interface. For a DICOM dataset::
 
-    mrds --data-source /path/to/dataset --style dicom
+    mrds --data-source /path/to/dataset --format dicom
 
 For a BIDS dataset::
 
-    mrds --data-source /path/to/dataset --style bids
+    mrds --data-source /path/to/dataset --format bids
 
 
 API usage
@@ -20,7 +20,7 @@ To use MRdataset in a project::
     import MRdataset
 
 The most important method is ``import_dataset``. The dataset type
-such as ``dicom`` or ``bids`` can be specified using the ``style`` argument.
+such as ``dicom`` or ``bids`` can be specified using the ``ds_format`` argument.
 
 First of all, you have to import the relevant module::
 
@@ -31,11 +31,11 @@ it creates a dataset.::
 
     data_folder = '/home/user/datasets/ABCD'
     dataset = import_dataset(data_source=data_folder,
-                             style='dicom',
+                             ds_format='dicom',
                              name='ABCD')
 
 By default, the ``import_dataset`` expects a DICOM dataset. However, this can
-be changed using ``style`` argument. For example, use ``style='bids'`` for
+be changed using ``ds_format`` argument. For example, use ``ds_format='bids'`` for
 importing a BIDS dataset.
 
 The library is highly extensible, and a developer can extend it to their own

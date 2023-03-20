@@ -261,7 +261,7 @@ class BaseDataset(Node):
             data_source = [data_source]
         self.data_source = data_source
 
-        self.style = self.get_style()
+        self.ds_format = self.get_ds_format()
         self.is_complete = True
 
     def walk(self):
@@ -270,20 +270,20 @@ class BaseDataset(Node):
         """
         raise NotImplementedError('walk method must be implemented')
 
-    def get_style(self):
+    def get_ds_format(self):
         """
-        Extracts style from classname
+        Extracts ds_format from classname
         For example, returns 'dicom', given DicomDataset class
         """
         classname = self.__class__.__name__.lower()
         if 'dataset' in classname:
-            style = classname.split('dataset', maxsplit=1)[0]
+            ds_format = classname.split('dataset', maxsplit=1)[0]
         else:
             raise ValueError("Expected classname with keyword 'dataset'. "
                              'For example, DicomDataset, BIDSDataset. Got'
                              f'{classname} instead. Rename the class as '
                              f'{classname}Dataset')
-        return style
+        return ds_format
 
     @property
     def modalities(self) -> List['Modality']:
@@ -395,9 +395,9 @@ class BaseDataset(Node):
         if not isinstance(other, BaseDataset):
             raise TypeError(
                 f'Cannot merge MRdataset.BaseDataset and {type(other)}')
-        # Add a check to ensure that the two datasets are of same style
-        if self.style != other.style:
-            raise TypeError(f'Cannot merge {self.style} and {other.style}')
+        # Add a check to ensure that the two datasets are of same ds_format
+        if self.ds_format != other.ds_format:
+            raise TypeError(f'Cannot merge {self.ds_format} and {other.ds_format}')
 
         self.amend_data_src_attribute(other.data_source)
 

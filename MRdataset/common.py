@@ -13,7 +13,7 @@ from MRdataset.utils import random_name, check_mrds_extension
 
 # TODO: data_source can be Path or str or List. Modify type hints
 def import_dataset(data_source: Union[str, List, Path] = None,
-                   style: str = 'dicom',
+                   ds_format: str = 'dicom',
                    name: str = None,
                    include_phantom: bool = False,
                    verbose: bool = False,
@@ -29,8 +29,8 @@ def import_dataset(data_source: Union[str, List, Path] = None,
     ----------
     data_source : Union[str, List[str]]
         path/to/my/dataset containing files
-    style : str
-        Specify dataset type. Imports the module "{style}_dataset.py",
+    ds_format : str
+        Specify dataset type. Imports the module "{ds_format}_dataset.py",
         which will instantiate {Style}Dataset().
     name : str
         Identifier for the dataset, like ADNI. The name used to save cached
@@ -42,7 +42,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         The flag allows you to change the verbosity of execution
     include_nifti_header: bool
         whether to check nifti headers for compliance,
-        only used when --style==bids
+        only used when --ds_format==bids
     is_complete: bool
         whether the dataset is complete or not
     Returns
@@ -74,8 +74,8 @@ def import_dataset(data_source: Union[str, List, Path] = None,
             stacklevel=2)
         name = random_name()
 
-    # Find dataset class using style
-    dataset_class = find_dataset_using_style(style.lower())
+    # Find dataset class using ds_format
+    dataset_class = find_dataset_using_ds_format(ds_format.lower())
 
     # Instantiate dataset class
     dataset = dataset_class(
@@ -96,15 +96,15 @@ def import_dataset(data_source: Union[str, List, Path] = None,
     return dataset
 
 
-def find_dataset_using_style(dataset_style: str):
+def find_dataset_using_ds_format(dataset_ds_format: str):
     """
-    Imports the module "{style}_dataset.py", which will instantiate
+    Imports the module "{ds_format}_dataset.py", which will instantiate
     {Style}Dataset(). For future, please ensure that any {Style}Dataset
     is a subclass of MRdataset.base.Dataset
 
     Parameters
     ----------
-    dataset_style : str
+    dataset_ds_format : str
         Specify the type of dataset
 
     Returns
@@ -112,16 +112,16 @@ def find_dataset_using_style(dataset_style: str):
     dataset: MRdataset.base.BaseDataset()
         dataset container class
     """
-    # Import the module "{style}_dataset.py"
-    if dataset_style == 'dicom':
+    # Import the module "{ds_format}_dataset.py"
+    if dataset_ds_format == 'dicom':
         dataset_class = dicom.DicomDataset
-    elif dataset_style == 'pybids':
+    elif dataset_ds_format == 'pybids':
         dataset_class = naive_bids.BIDSDataset
-    elif dataset_style == 'bids':
+    elif dataset_ds_format == 'bids':
         dataset_class = fastbids.FastBIDSDataset
     else:
         raise NotImplementedError(
-            f'Dataset style {dataset_style} is not implemented. Valid choices'
+            f'Dataset ds_format {dataset_ds_format} is not implemented. Valid choices'
             f"are {', '.join(VALID_DATASET_STYLES)}")
     return dataset_class
 

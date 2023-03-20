@@ -35,7 +35,7 @@ class FastBIDSDataset(BaseDataset):
             directory to store cache
         include_nifti_header :
             whether to check nifti headers for compliance,
-            only used when --style==bids
+            only used when --ds_format==bids
         Examples
         --------
         >>> from MRdataset.fastbids import FastBIDSDataset

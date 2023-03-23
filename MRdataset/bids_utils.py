@@ -89,10 +89,17 @@ def combine_entity_labels(filepath, datatype):
     filepath = Path(filepath)
     exts = ''.join(filepath.suffixes)
     filename = str(filepath).replace(exts, '')
-    match = re.search('(?<=ses-)[^_]+(_[^_]+)*$', filename).group()
-    if not match:
-        match = re.search('(?<=sub-)[^_]+(_[^_]+)*$', filename).group()
-    suffix = re.search('(?<=_)[^_]+(_[^_]+)*$', match).group()
+    suffix = ''
+    match1 = re.search('(?<=ses-)[^_]+(_[^_]+)*$', filename)
+    if not match1:
+        match1 = re.search('(?<=sub-)[^_]+(_[^_]+)*$', filename)
+    if match1:
+        match1 = match1.group()
+        match2 = re.search('(?<=_)[^_]+(_[^_]+)*$', match1)
+        if match2:
+            suffix = match2.group()
+        else:
+            suffix = match1
     return f'{datatype}_{suffix}'
     # split_kv_pairs = filename.split('_')
     # if not split_kv_pairs:

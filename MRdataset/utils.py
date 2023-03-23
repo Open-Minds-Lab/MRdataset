@@ -1,5 +1,4 @@
 import functools
-import json
 import tempfile
 import time
 import typing
@@ -8,11 +7,9 @@ from collections.abc import Hashable, Iterable
 from pathlib import Path
 from typing import Union, List, Optional
 
-import nibabel as nib
 import numpy as np
-from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
+from MRdataset.config import MRDS_EXT
 from MRdataset.log import logger
-from bids.layout.models import BIDSFile
 from dictdiffer import diff as dict_diff
 
 
@@ -163,77 +160,6 @@ def timestamp() -> str:
     """
     time_string = time.strftime("%m_%d_%Y_%H_%M")
     return time_string
-
-
-def select_parameters(file) -> dict:
-    """
-    Reads parameters for BIDS datasets. The filepath can either point to a
-     JSON file or a NIfTI file. In case of a NIfTI file the parameters are
-     extracted from the header.
-
-    Parameters
-    ----------
-    file : pathlib.Path or str
-        Path pointing to either a JSON or NIfTI file
-    Returns
-    -------
-
-    """
-    # TODO: filepath should already have the extension, why do you need to
-    #  pass separately? Modify the code.
-
-    selected_params = dict()
-
-    if isinstance(file, BIDSFile):
-        file_path = file.path
-    elif isinstance(file, Path):
-        file_path = file
-    else:
-        raise NotImplementedError
-
-    ext = get_ext(file)
-    if file_path.name.startswith('.bidsignore'):
-        return selected_params
-
-    if ext == '.json':
-        with open(file_path, "r") as read_file:
-            parameters = json.load(read_file)
-
-        for key in parameters:
-            for entry in PARAMETER_NAMES:
-                if entry.lower() in key.lower():
-                    selected_params[key] = make_hashable(parameters[key])
-    elif ext in ['.nii', '.nii.gz']:
-        nii_image = nib.load(file_path)
-        selected_params['obliquity'] = np.any(
-            nib.affines.obliquity(nii_image.affine) > 1e-4)
-        selected_params['voxel_sizes'] = make_hashable(nii_image.header.get_zooms())
-        selected_params['matrix_dims'] = make_hashable(nii_image.shape)
-        for key, value in nii_image.header.items():
-            if key not in ['sizeof_hdr', 'data_type', 'db_name',
-                           'extents', 'session_error']:
-                value = make_hashable(value)
-                selected_params[key] = value
-    return selected_params
-
-
-def get_ext(file: Union[BIDSFile, Path]) -> str:
-    """
-    Extract the extension from a BIDSFile object.
-    Parameters
-    ----------
-    file : A BIDSFile object
-
-    Returns
-    -------
-    file extension as a string
-    """
-    if isinstance(file, BIDSFile):
-        return file.tags['extension'].value
-    elif isinstance(file, Path):
-        return "".join(file.suffixes)
-    else:
-        raise NotImplementedError('File Format not supported')
 
 
 def files_in_path(fp_list: Union[Iterable, str, Path],

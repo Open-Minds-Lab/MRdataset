@@ -4,7 +4,7 @@ from bids import BIDSLayout
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.config import VALID_DATATYPES
 from MRdataset.log import logger
-from MRdataset.utils import select_parameters
+from MRdataset.bids_utils import select_parameters
 
 
 # TODO: check what if each variable is None. Apply try catch

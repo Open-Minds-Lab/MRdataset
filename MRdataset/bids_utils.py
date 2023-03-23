@@ -18,6 +18,9 @@ def is_valid_bidsfile(filepath) -> bool:
     if filepath.name.startswith('.bidsignore'):
         return False
     parents = [p.name for p in filepath.parents]
+    check_sub = ['sub' in p for p in parents]
+    if not any(check_sub):
+        return False
     if 'sourcedata' in parents:
         return False
     if 'derivatives' in parents:

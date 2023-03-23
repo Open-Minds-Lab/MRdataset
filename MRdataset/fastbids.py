@@ -60,8 +60,7 @@ class FastBIDSDataset(BaseDataset):
             if ext in VALID_BIDS_EXTENSIONS:
                 self.read_single(file)
         if not self.modalities:
-            raise ValueError('Expected Sidecar JSON files in '
-                             '--data_source. Got 0 JSON files.')
+            raise DatasetEmptyException
 
     def read_single(self, file):
         datatype = file.parent.name

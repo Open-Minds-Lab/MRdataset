@@ -148,6 +148,12 @@ class MRdatasetWarning(Exception):
 #     """"""
 #     pass
 
+class DatasetEmptyException(MRException):
+    def __init__(self):
+        super().__init__('Expected Sidecar DICOM/JSON files in '
+                         '--data_source. Got 0 DICOM/JSON files.')
+
+
 class ChangingParamsInSeries(MRException):
     """Custom error that is raised when parameter values are different for
     different slices even though the SeriesInstanceUID is same."""

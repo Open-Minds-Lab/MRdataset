@@ -2,7 +2,7 @@ import json
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Union
-
+import re
 import nibabel as nib
 import numpy as np
 from bids.layout import BIDSFile
@@ -85,18 +85,26 @@ def parse(session_node: Session,
     return session_node
 
 
-def combine_entity_labels(filename, datatype):
-    split_kv_pairs = filename.split('_')
-    if not split_kv_pairs:
-        raise ValueError("Filename doesn't have any entity values")
-    entity_dict = {
-        'suffix': split_kv_pairs[-1]
-    }
-    for item in split_kv_pairs[:-1]:
-        key, value = item.split('-')
-        if key not in ['sub', 'ses']:
-            entity_dict[key] = value
-    return f'{datatype}_{join_entities(entity_dict)}'
+def combine_entity_labels(filepath, datatype):
+    filepath = Path(filepath)
+    exts = ''.join(filepath.suffixes)
+    filename = str(filepath).replace(exts, '')
+    match = re.search('(?<=ses-)[^_]+(_[^_]+)*$', filename).group()
+    if not match:
+        match = re.search('(?<=sub-)[^_]+(_[^_]+)*$', filename).group()
+    suffix = re.search('(?<=_)[^_]+(_[^_]+)*$', match).group()
+    return f'{datatype}_{suffix}'
+    # split_kv_pairs = filename.split('_')
+    # if not split_kv_pairs:
+    #     raise ValueError("Filename doesn't have any entity values")
+    # entity_dict = {
+    #     'suffix': split_kv_pairs[-1]
+    # }
+    # for item in split_kv_pairs[:-1]:
+    #     key, value = item.split('-')
+    #     if key not in ['sub', 'ses']:
+    #         entity_dict[key] = value
+    # return f'{datatype}_{join_entities(entity_dict)}'
 
 
 def join_entities(entity_dict):

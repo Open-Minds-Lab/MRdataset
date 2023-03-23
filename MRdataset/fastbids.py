@@ -70,7 +70,7 @@ class FastBIDSDataset(BaseDataset):
             logger.info('Sessions dont exist')
             n_sess = 'ses-01'
             n_sub = filepath.parents[1].name
-        modality_name = combine_entity_labels(filepath.stem, datatype)
+        modality_name = combine_entity_labels(filepath.name, datatype)
         modality_obj = self.get_modality_by_name(modality_name)
         if modality_obj is None:
             modality_obj = Modality(modality_name)

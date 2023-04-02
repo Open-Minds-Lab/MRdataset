@@ -77,9 +77,11 @@ def parse(session_node: Session,
             run_node = Run(filename)
         for k, v in params_from_file.items():
             run_node.params[k] = v
-        echo_time = params_from_file.get('EchoTime', 1.0)
-        if not isinstance(echo_time, (int, float)):
-            echo_time = 1.0
+        # ignore echo_time for BIDS dataset, already incorporated in
+        # echo entity
+        echo_time = 1.0
+        # if not isinstance(echo_time, (int, float)):
+        #     echo_time = 1.0
         run_node.echo_time = echo_time
         session_node.add_run(run_node)
     return session_node

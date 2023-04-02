@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>API Reference &mdash; MRdataset 0.1.4+52.ge4a5f6e documentation</title>
+  <title>API Reference &mdash; MRdataset 0.1.5 documentation</title>
   
 
   
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0.1.4+52.ge4a5f6e
+                0.1.5
               </div>
             
           
@@ -303,29 +303,8 @@ object for the dataset. Instead, it uses the file structure to extract
 information about the dataset. Therefore, it is much faster than
 BIDSDataset.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="MRdataset.fastbids.FastBIDSDataset.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#MRdataset.base.Session" title="MRdataset.base.Session"><span class="pre">Session</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#MRdataset.base.Session" title="MRdataset.base.Session"><span class="pre">Session</span></a></span></span><a class="reference internal" href="_modules/MRdataset/fastbids.html#FastBIDSDataset.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.fastbids.FastBIDSDataset.parse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extracts parameters for a file. Adds the parameters as a
-new run node to given session node, returns modified session node.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>Path</em>) – path to the file</p></li>
-<li><p><strong>session_node</strong> (<a class="reference internal" href="#MRdataset.base.Session" title="MRdataset.base.Session"><em>MRdataset.base.Session</em></a>) – session node to which the run node has to be added</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>session_node</strong> – modified session_node which also contains the new run</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#MRdataset.base.Session" title="MRdataset.base.Session">MRdataset.base.Session</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="MRdataset.fastbids.FastBIDSDataset.read_single">
-<span class="sig-name descname"><span class="pre">read_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/fastbids.html#FastBIDSDataset.read_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.fastbids.FastBIDSDataset.read_single" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">read_single</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/MRdataset/fastbids.html#FastBIDSDataset.read_single"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#MRdataset.fastbids.FastBIDSDataset.read_single" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

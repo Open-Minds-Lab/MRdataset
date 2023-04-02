@@ -88,32 +88,39 @@ def parse(session_node: Session,
 
 
 def combine_entity_labels(filepath, datatype):
-    filepath = Path(filepath)
-    exts = ''.join(filepath.suffixes)
-    filename = str(filepath).replace(exts, '')
-    suffix = ''
-    match1 = re.search('(?<=ses-)[^_]+(_[^_]+)*$', filename)
-    if not match1:
-        match1 = re.search('(?<=sub-)[^_]+(_[^_]+)*$', filename)
-    if match1:
-        match1 = match1.group()
-        match2 = re.search('(?<=_)[^_]+(_[^_]+)*$', match1)
-        if match2:
-            suffix = match2.group()
-        else:
-            suffix = match1
-    return f'{datatype}_{suffix}'
-    # split_kv_pairs = filename.split('_')
-    # if not split_kv_pairs:
-    #     raise ValueError("Filename doesn't have any entity values")
-    # entity_dict = {
-    #     'suffix': split_kv_pairs[-1]
-    # }
-    # for item in split_kv_pairs[:-1]:
-    #     key, value = item.split('-')
-    #     if key not in ['sub', 'ses']:
-    #         entity_dict[key] = value
-    # return f'{datatype}_{join_entities(entity_dict)}'
+    filename = Path(filepath).stem
+    # exts = ''.join(filepath.suffixes)
+    # filename = str(filepath).replace(exts, '')
+    # suffix = ''
+    # match1 = re.search('(?<=ses-)[^_]+(_[^_]+)*$', filename)
+    # if not match1:
+    #     match1 = re.search('(?<=sub-)[^_]+(_[^_]+)*$', filename)
+    # if match1:
+    #     match1 = match1.group()
+    #     match2 = re.search('(?<=_)[^_]+(_[^_]+)*$', match1)
+    #     if match2:
+    #         suffix = match2.group()
+    #     else:
+    #         suffix = match1
+    # return f'{datatype}_{suffix}'
+    split_kv_pairs = filename.split('_')
+    if not split_kv_pairs:
+        raise ValueError("Filename doesn't have any entity values")
+    entity_dict = {}
+    suffix = split_kv_pairs[-1]
+    # Skipping the last item because it is the suffix
+    # Skipped entties are: sub, ses, rec, run, recording
+    # Entities not found any: ce, mod
+    for item in split_kv_pairs[:-1]:
+        key, value = item.split('-')
+        if key not in ['sub', 'ses', 'rec', 'run', 'recording']:
+            entity_dict[key] = value
+    joined_entities = join_entities(entity_dict)
+    complete_string = [datatype]
+    if joined_entities:
+        complete_string.append(joined_entities)
+    complete_string.append(suffix)
+    return '_'.join(complete_string)
 
 
 def join_entities(entity_dict):

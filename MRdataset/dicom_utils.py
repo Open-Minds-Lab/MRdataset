@@ -40,6 +40,32 @@ def is_dicom_file(filename: str):
         return True
 
 
+def get_run_id(dicom: pydicom.FileDataset) -> str:
+    """
+    Provides a unique id for Run based on SeriesInstanceUID and EchoTime
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+
+    Returns
+    -------
+    Series identifier to which this DICOM should be added to
+    """
+
+    run_name = dicom.get('SeriesInstanceUID', None)
+
+    # echo_num = dicom.get('EchoNumbers', None)
+    # if echo_num:
+    #     run_name = run_name + '_e' + str(dicom.EchoNumbers)
+
+    # echo_time = dicom.get('EchoTime', None)
+    # if echo_time:
+    #     run_name = run_name + '_e' + str(dicom.EchoTime)
+
+    return run_name
+
+
 def isSameSet(dicom: pydicom.FileDataset) -> str:
     """
     Provides a unique id for Series, to which the input dicom file
@@ -146,6 +172,37 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     if age == '001D':
         return True
     return False
+
+
+def get_sequence(dicom: pydicom.FileDataset) -> str:
+    """
+    Infer modality through dicom tags. In most cases series_description
+    should explain the modality of the volume, otherwise either use sequence
+    name or protocol name from DICOM metadata
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    str
+    """
+
+    value = dicom.get('SequenceName', None)
+    if value is None:
+        value = dicom.get('SeriesDescription', None)
+    if value is None:
+        value = dicom.get('ProtocolName', None)
+
+    if value is None:
+        raise ValueError('Could not query '
+                         'SequenceName / SeriesDescription / ProtocolName')
+
+    # value = str(value.replace(" ", "_"))
+
+    return value
 
 
 def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:

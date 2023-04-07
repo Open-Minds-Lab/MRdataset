@@ -197,10 +197,10 @@ def get_sequence(dicom: pydicom.FileDataset) -> str:
         value = dicom.get('ProtocolName', None)
 
     if value is None:
-        raise ValueError('Could not query '
-                         'SequenceName / SeriesDescription / ProtocolName')
+        raise ValueError('Could not query either '
+                         'SequenceName or SeriesDescription or ProtocolName')
 
-    # value = str(value.replace(" ", "_"))
+    value = str(value.replace(" ", "_"))
 
     return value
 
@@ -302,19 +302,18 @@ def parse_imaging_params(dicom: pydicom.FileDataset) -> dict:
 
     params["is3d"] = params['MRAcquisitionType'] == '3D'
 
-    params["effective_echo_spacing"] = effective_echo_spacing(dicom)
+    params["EffectiveEchoSpacing"] = effective_echo_spacing(dicom)
 
     if header_exists(dicom):
         csa_header, csa_values = parse_csa_params(dicom)
         params.update(csa_values)
-
     else:
         # TODO consider throwing a warning when expected header doesnt exist
         # TODO need ways to specific parameter could not be read or queryable etc
-        params['multi_slice_mode'] = None
+        params['MultiSliceMode'] = None
         params['ipat'] = None
         params['shim'] = None
-        params['phase_encoding_direction'] = None
+        params['PhaseEncodingDirection'] = None
 
     return params
 
@@ -412,10 +411,10 @@ def parse_csa_params(dicom: pydicom.FileDataset,
 
     ped = get_phase_encoding(dicom, csa_header)
 
-    values = {'multi_slice_mode': slice_mode,
+    values = {'MultiSliceMode': slice_mode,
               'ipat': ipat,
               'shim': shim,
-              'phase_encoding_direction': ped}
+              'PhaseEncodingDirection': ped}
 
     return csa_header, values
 

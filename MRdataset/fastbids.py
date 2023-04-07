@@ -64,14 +64,14 @@ class FastBIDSDataset(BaseDataset):
         modality_obj = self.get_modality_by_name(datatype)
         if modality_obj is None:
             modality_obj = Modality(datatype)
-        nSub = file.parents[2].name
-        subject_obj = modality_obj.get_subject_by_name(nSub)
+        subject_name = file.parents[2].name
+        subject_obj = modality_obj.get_subject_by_name(subject_name)
         if subject_obj is None:
-            subject_obj = Subject(nSub)
-        nSess = file.parents[1].name
-        session_node = subject_obj.get_session_by_name(nSess)
+            subject_obj = Subject(subject_name)
+        sess_name = file.parents[1].name
+        session_node = subject_obj.get_session_by_name(sess_name)
         if session_node is None:
-            session_node = Session(nSess)
+            session_node = Session(sess_name)
             session_node = self.parse(session_node,
                                       file)
             if session_node.runs:

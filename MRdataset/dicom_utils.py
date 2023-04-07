@@ -319,7 +319,9 @@ def parse_imaging_params(dicom: pydicom.FileDataset) -> dict:
     return params
 
 
-def get_param_value_by_name(dicom: pydicom.FileDataset, name: str):
+def get_param_value_by_name(dicom: pydicom.FileDataset,
+                            name: str,
+                            not_found_value=None):
     """
     Extracts value from dicom metadata looking up the corresponding HEX tag
     in config.PARAMETER_NAMES
@@ -332,16 +334,20 @@ def get_param_value_by_name(dicom: pydicom.FileDataset, name: str):
     name : str
         parameter name such as MagneticFieldStrength or Manufacturer
 
+    not_found_value : object
+        value to be returned if name is not found
+
     Returns
     -------
     This method return a value for the given key. If key is not available,
     then returns default value None.
     """
     # TODO: consider name.lower()
-    data = dicom.get(config.PARAMETER_NAMES[name], None)
+    data = dicom.get(config.PARAMETER_NAMES[name], not_found_value)
     if data:
         return data.value
-    return None
+    else:
+        return not_found_value
 
 
 def get_header(dicom: pydicom.FileDataset, name: str):
@@ -368,14 +374,19 @@ def get_header(dicom: pydicom.FileDataset, name: str):
     return None
 
 
-def csa_parser(dicom: pydicom.FileDataset) -> dict:
+def parse_csa_params(dicom: pydicom.FileDataset,
+                     not_found_value=None
+                     ) -> dict:
     """
-    Handles the private CSA header from Siemens formatted raw scanner.
+    Returns params parsed from private CSA header from Siemens scanner exported DICOM
 
     Parameters
     ----------
     dicom : pydicom.FileDataset
         dicom object read from pydicom.read_file
+
+    not_found_value : object
+        value to be returned if a parameter is not found
 
     Returns
     -------
@@ -391,11 +402,13 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
         raise AttributeError('CSA Header exists, but xProtocol is missing')
 
     slice_code = get_csa_props("sKSpace.ucMultiSliceMode", text)
-    slice_mode = config.SLICE_MODE.get(slice_code, None)
+    slice_mode = config.SLICE_MODE.get(slice_code, not_found_value)
+
     ipat_code = get_csa_props("sPat.ucPATMode", text)
-    ipat = config.PAT.get(ipat_code, None)
+    ipat = config.PAT.get(ipat_code, not_found_value)
+
     shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
-    shim = config.SHIM.get(shim_code, None)
+    shim = config.SHIM.get(shim_code, not_found_value)
 
     return {
         'slice_mode': slice_mode,
@@ -474,7 +487,11 @@ def effective_echo_spacing(dicom: pydicom.FileDataset) -> Optional[float]:
         return None
 
 
-def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
+def get_phase_encoding(dicom: pydicom.FileDataset,
+                       csa_header,
+                       not_found_value=None
+                       ) -> Optional[str]:
+
     """
     https://github.com/rordenlab/dcm2niix/blob/23d087566a22edd4f50e4afe829143cb8f6e6720/console/nii_dicom_batch.cpp
     https://github.com/rordenlab/dcm2niix/issues/652#issuecomment-1323623521
@@ -495,6 +512,11 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
     ----------
     dicom : pydicom.FileDataset
 
+    csa_header : csa_header
+
+    not_found_value : object or str
+        value to be returned if parameter is not found
+
     Returns
     -------
     string formatted phase encoding direction
@@ -513,11 +535,12 @@ def get_phase_encoding(dicom: pydicom.FileDataset) -> Optional[str]:
         if ped_value in ['ROW', 'COL']:
             ped = ped_value
         else:
-            return None
+            return not_found_value
 
         nifti_dim = {'COL': 'j', 'ROW': 'i'}
         ped_to_sign = {0: '-', 1: ''}
         ij = nifti_dim[ped]
         sign = ped_to_sign[phase]
         return '{}{}'.format(ij, sign)
-    return None
+
+    return not_found_value

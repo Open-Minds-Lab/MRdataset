@@ -298,11 +298,78 @@ def files_in_folders(folders: Union[Iterable, Path, str], ext: Optional[str] = N
     return
 
 
+def folders_with_min_files(root: Union[Path, str],
+                           pattern: Optional[str] = "*.dcm",
+                           min_count=3) -> list[Path]:
+    """
+    Returns all the folders with at least min_count of files matching the pattern
+    One at time via generator.
+
+    Parameters
+    ----------
+    root : List[Path]
+        List of folder paths
+    pattern : str
+        pattern to filter files
+
+    min_count : int
+        size representing the number of files in folder matching the input pattern
+
+    Returns
+    -------
+    List of folders
+    """
+
+    if not isinstance(root, (Path, str)):
+        raise ValueError('root must be a Path-like object (str or Path)')
+
+    root = Path(root).resolve()
+    if not root.exists():
+        raise ValueError('Root folder does not exist')
+
+    terminals = find_terminal_folders(root, pattern=pattern)
+
+    out_list = list()
+    for folder in terminals:
+        if len([file_ for file_ in folder.rglob(pattern)]) >= min_count:
+            yield folder
+
+    return
+
+
 def is_iterable_but_not_str(input_obj):
     """Boolean check for iterables that are not strings and of a minimum length"""
 
     if not (not isinstance(input_obj, str) and isinstance(input_obj, Iterable)):
         return False
+
+
+def is_folder_with_no_subfolders(fpath):
+    """"""
+
+    sub_dirs = [file_ for file_ in fpath.iterdir() if file_.is_dir()]
+
+    return len(sub_dirs) < 1, sub_dirs
+
+
+def find_terminal_folders(root, pattern='*.dcm', min_count=3):
+
+    no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
+
+    if no_more_subdirs:
+        return [root, ]
+
+    terminal = list()
+    for sd1 in sub_dirs:
+        no_more_subdirs, sdirs2 = is_folder_with_no_subfolders(sd1)
+        if no_more_subdirs:
+            if len([file_ for file_ in sd1.glob(pattern)]) >= min_count:
+                terminal.append(sd1)
+        else:
+            for sd2 in sdirs2:
+                terminal.extend(find_terminal_folders(sd2))
+
+    return terminal
 
 
 def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:

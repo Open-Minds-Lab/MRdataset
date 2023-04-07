@@ -391,11 +391,11 @@ def parse_csa_params(dicom: pydicom.FileDataset,
     Returns
     -------
     dict
-        Contains multi-slice mode, iPAT and shim_mode
+        Contains PED, multi-slice mode, iPAT and shim_mode
 
     """
-    series_header = csareader.read(get_header(dicom, 'series_header_info'))
-    items = utils.safe_get(series_header, 'tags.MrPhoenixProtocol.items')
+    csa_header = csareader.read(get_header(dicom, 'series_header_info'))
+    items = utils.safe_get(csa_header, 'tags.MrPhoenixProtocol.items')
     if items:
         text = items[0]
     else:
@@ -410,11 +410,14 @@ def parse_csa_params(dicom: pydicom.FileDataset,
     shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
     shim = config.SHIM.get(shim_code, not_found_value)
 
-    return {
-        'slice_mode': slice_mode,
-        'ipat': ipat,
-        'shim': shim
-    }
+    ped = get_phase_encoding(dicom, csa_header)
+
+    values = {'multi_slice_mode': slice_mode,
+              'ipat': ipat,
+              'shim': shim,
+              'phase_encoding_direction': ped}
+
+    return csa_header, values
 
 
 def get_csa_props(parameter, corpus):
@@ -526,8 +529,8 @@ def get_phase_encoding(dicom: pydicom.FileDataset,
     #     is_skip = True
     # if echo_train_length > 1:
     #     is_skip = False
-    image_header = csareader.read(get_header(dicom, 'image_header_info'))
-    phase_value = utils.safe_get(image_header,
+
+    phase_value = utils.safe_get(csa_header,
                                  'tags.PhaseEncodingDirectionPositive.items')
     if phase_value:
         phase = phase_value[0]

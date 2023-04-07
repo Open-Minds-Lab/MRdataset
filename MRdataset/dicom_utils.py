@@ -272,37 +272,25 @@ def header_exists(dicom: pydicom.FileDataset) -> bool:
         return False
 
 
-def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
+def parse_imaging_params(dicom: pydicom.FileDataset) -> dict:
     """
     Given a filepath to a .dcm file, the function reader DICOM metadata
     and extracts relevant parameter values for checking compliance.
     The parameters are selected if it is present in config.PARAMETER_NAMES
     Parameters
     ----------
-    dicom_path: str or Path
-        filepath for .dcm file
+    dicom: pydicom.FileDataset
+
     Returns
     -------
     dict
         contains key, value pairs for relevant parameters
     """
-    filepath = Path(dicom_path)
+
     params = defaultdict()
 
-    if not filepath.exists():
-        raise OSError("Expected a valid filepath, Got invalid path : {0}\n"
-                      "Consider re-indexing dataset.".format(filepath))
-
-    try:
-        dicom = pydicom.dcmread(filepath,
-                                stop_before_pixels=True)
-    except OSError:
-        raise FileNotFoundError(
-            "Unable to read dicom file from disk : {0}".format(filepath)
-        )
-
-    for k in config.PARAMETER_NAMES.keys():
-        value = get_param_value_by_name(dicom, k)
+    for pname in config.PARAMETER_NAMES.keys():
+        value = get_param_value_by_name(dicom, pname)
         # the value should be hashable
         # a dictionary will be used later to count the majority value
         if not isinstance(value, str):
@@ -310,21 +298,24 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
                 value = '_'.join(value)
             elif not utils.is_hashable(value):
                 value = str(value)
-        params[k] = value
-    is3d = params['MRAcquisitionType'] == '3D'
-    params["is3d"] = is3d
+        params[pname] = value
+
+    params["is3d"] = params['MRAcquisitionType'] == '3D'
+
     params["effective_echo_spacing"] = effective_echo_spacing(dicom)
+
     if header_exists(dicom):
-        csa_values = csa_parser(dicom)
-        params['multi_slice_mode'] = csa_values.get('slice_mode', None)
-        params['ipat'] = csa_values.get('ipat', None)
-        params['shim'] = csa_values.get('shim', None)
-        params["phase_encoding_direction"] = get_phase_encoding(dicom)
+        csa_header, csa_values = parse_csa_params(dicom)
+        params.update(csa_values)
+
     else:
+        # TODO consider throwing a warning when expected header doesnt exist
+        # TODO need ways to specific parameter could not be read or queryable etc
         params['multi_slice_mode'] = None
         params['ipat'] = None
         params['shim'] = None
         params['phase_encoding_direction'] = None
+
     return params
 
 

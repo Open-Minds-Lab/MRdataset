@@ -1,15 +1,15 @@
 import logging
+import re
 import warnings
 from collections import defaultdict
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional
 
 import dicom2nifti
 import pydicom
-from MRdataset import config
-from MRdataset import utils
-from collections.abc import Iterable
-import re
+
+from MRdataset import config, utils
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")

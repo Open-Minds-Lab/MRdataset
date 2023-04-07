@@ -3,11 +3,11 @@ from pathlib import Path
 
 import pydicom
 
-from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
-    get_dicom_modality_tag, isSameSet, parse_imaging_params
 from MRdataset import config
-from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.utils import param_difference, files_in_path
+from MRdataset.base import BaseDataset, Modality, Run, Session, Subject
+from MRdataset.dicom_utils import (get_dicom_modality_tag, isSameSet, is_dicom_file,
+                                   is_valid_inclusion, parse_imaging_params)
+from MRdataset.utils import files_in_path, param_difference
 
 # Module-level logger
 logger = logging.getLogger('root')
@@ -73,6 +73,7 @@ class DicomDataset(BaseDataset):
         for filepath in files_in_path(self.data_source_folders):
             no_files_found = False
             try:
+                # TODO how often is this true?
                 if not is_dicom_file(filepath):
                     logger.debug(
                         "Not a DICOM file : {}".format(filepath))
@@ -104,6 +105,7 @@ class DicomDataset(BaseDataset):
                         run_node.echo_time = dicom.get('EchoTime', 1.0)
 
                     dcm_img_params = parse_imaging_params(filepath)
+
                     param_diff = param_difference(dcm_img_params,
                                                   run_node.params)
                     if len(run_node.params) == 0:

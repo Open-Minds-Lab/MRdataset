@@ -255,6 +255,56 @@ def files_in_path(folders: Union[Iterable, str], ext: Optional[str] = None):
     return list(files_under_folder(folders, ext))
 
 
+def files_in_folders(folders: Union[Iterable, Path, str], ext: Optional[str] = None):
+    """
+    Returns all the files matching the pattern inside each folder.
+    One at time via generator.
+
+    Parameters
+    ----------
+    folders : List[Path]
+        List of folder paths
+    ext : str
+        Extension or pattern to filter files
+
+    Returns
+    -------
+    List of paths
+    """
+
+    if (not isinstance(folders, Iterable)) and isinstance(folders, (Path, str)):
+        folders = [folders, ]
+
+    valid_folders = list()
+    for folder in folders:
+        vfp = Path(folder).resolve()
+        if vfp.exists():
+            valid_folders.append(folder)
+
+    if len(valid_folders) < 1:
+        raise IOError('None of the paths are valid or exist!')
+
+    if ext:
+        pattern = '*' + ext
+    else:
+        pattern = '*'
+
+    for vfp in valid_folders:
+        for file in vfp.rglob(pattern):
+            # If it is regular file (not hidden, leading dot) and not a directory
+            if file.is_file() and (not file.name.startswith('.')):
+                yield file
+
+    return
+
+
+def is_iterable_but_not_str(input_obj):
+    """Boolean check for iterables that are not strings and of a minimum length"""
+
+    if not (not isinstance(input_obj, str) and isinstance(input_obj, Iterable)):
+        return False
+
+
 def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
     """
     If given a single path, the function will just check if it's valid.

@@ -6,7 +6,7 @@ from protocol import ImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
-from MRdataset.utils import files_in_folders
+from MRdataset.utils import files_in_folders, folders_with_min_files
 from MRdataset.dicom_utils import (is_valid_inclusion,
                                    get_dicom_modality_tag, get_run_id,
                                    parse_imaging_params)
@@ -24,8 +24,7 @@ from MRdataset.config import TAGS
 #   https://bids-specification.readthedocs.io/en/stable/appendices/entities.html
 #
 # dicom2nifti logic for naming files:
-# https://github.com/icometrix/dicom2nifti/blob
-# /ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
+# https://github.com/icometrix/dicom2nifti/blob/ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
 #
 
 class Run(UserDict):
@@ -133,33 +132,55 @@ class DicomDataset(BaseDataset, ABC):
         super().__init__(root=root, name=name, format='DICOM')
 
         self.include_phantoms = include_phantoms
+        self.pattern = "*.dcm"
+        self.min_count = 3  # min slice count to be considered a volume
 
 
     def traverse(self):
         """default method to traverse the dataset"""
 
-        for dcm_path in files_in_folders([self.root, ]):
+        sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
 
-            try:
-                dicom = dcmread(dcm_path, stop_before_pixels=True)
-            except InvalidDicomError as ide:
-                print(f'Invalid DICOM file at {dcm_path}')
-                continue
+        for folder in sub_folders:
 
-            if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
-                continue
+            # within a folder, a volume can be multi-echo
 
-            #   name: SeriesNumber_Suffix
-            #   priority for suffix: SeriesDescription, SequenceName, ProtocolName
-            seq_name = get_sequence(dicom)
-            print(f'{seq_name}')
+            dcm_files = list(folder.glob(self.pattern))
 
-            patient_id = str(dicom.get('PatientID', None))
+            # run some basic validation of these dcm slice collection
+            #   SeriesInstanceUID must match
+            #   parameter values must match, except echo time
+            first_slice = ImagingSequence(dicom=dcm_files[0],
+                                          name='first')
+            non_compl = list()
+            for dcm in dcm_files[1:]:
+                cur_slice = ImagingSequence(dicom=dcm, name='current')
+                if not cur_slice == first_slice:
+                    non_compl.append(cur_slice)
 
-            # series number is a proxy for session?
-            series_num = str(dicom.get('SeriesNumber', None))
+            for dcm_path in dcm_files:
 
-            run_name = dicom.get('SeriesInstanceUID', None)  # get_run_id(dicom)
+                try:
+                    dicom = dcmread(dcm_path, stop_before_pixels=True)
+                except InvalidDicomError as ide:
+                    print(f'Invalid DICOM file at {dcm_path}')
+                    continue
 
-            params = parse_imaging_params(dicom)
-            print()
+                if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
+                    continue
+
+                #   name: SeriesNumber_Suffix
+                #   priority order: SeriesDescription, SequenceName, ProtocolName
+                seq_name = get_sequence(dicom)
+                print(f'{seq_name}')
+
+                subject_id = str(dicom.get('PatientID', None))
+
+                # series number is a proxy for session?
+                series_num = str(dicom.get('SeriesNumber', None))
+                session_id = series_num
+
+                run_name = dicom.get('SeriesInstanceUID', None)  # get_run_id(dicom)
+
+                params = parse_imaging_params(dicom)
+                print()

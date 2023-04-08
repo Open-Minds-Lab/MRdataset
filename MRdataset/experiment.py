@@ -110,8 +110,8 @@ class BaseDataset(ABC):
 
 
     @abstractmethod
-    def traverse(self):
-        """default method to traverse the dataset"""
+    def load(self):
+        """default method to load the dataset"""
 
 
     def add(self, dcm):
@@ -135,38 +135,44 @@ class DicomDataset(BaseDataset, ABC):
         self.min_count = 3  # min slice count to be considered a volume
 
 
-    def traverse(self):
-        """default method to traverse the dataset"""
+    def load(self):
+        """default method to load the dataset"""
 
         sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
 
         for folder in sub_folders:
 
-            # within a folder, a volume can be multi-echo
+            seq_name, seq_info, subject_id, session_id, run_name = \
+                self._process_slice_collection(folder)
 
-            dcm_files = list(folder.glob(self.pattern))
+            print(f'{seq_name}')
 
-            # run some basic validation of these dcm slice collection
-            #   SeriesInstanceUID must match
-            #   parameter values must match, except echo time
-            first_slice = ImagingSequence(dicom=dcm_files[0],
-                                          name='first')
-            non_compl = list()
-            for dcm in dcm_files[1:]:
-                cur_slice = ImagingSequence(dicom=dcm, name='current')
-                if not cur_slice == first_slice:
-                    non_compl.append(cur_slice)
+        print()
 
-            for dcm_path in dcm_files:
 
-                try:
-                    dicom = dcmread(dcm_path, stop_before_pixels=True)
-                except InvalidDicomError as ide:
-                    print(f'Invalid DICOM file at {dcm_path}')
-                    continue
+    def _process_slice_collection(self, folder):
+        """reads the dicom slices and runs some basic validation on them!"""
 
-                if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
-                    continue
+        # within a folder, a volume can be multi-echo, so we must read them all
+        #   and find a way to capture
+
+        dcm_files = list(sorted(folder.glob(self.pattern)))
+
+        # run some basic validation of these dcm slice collection
+        #   SeriesInstanceUID must match
+        #   parameter values must match, except echo time
+
+        non_compl = list()
+        for idx, dcm_path in enumerate(dcm_files):
+
+            try:
+                dicom = dcmread(dcm_path, stop_before_pixels=True)
+            except InvalidDicomError as ide:
+                print(f'Invalid DICOM file at {dcm_path}')
+                continue
+
+            if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
+                continue
 
             seq_name, subject_id, session_id, run_name = get_metadata(dicom)
 

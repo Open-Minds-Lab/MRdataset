@@ -40,6 +40,26 @@ def is_dicom_file(filename: str):
         return True
 
 
+def get_metadata(dicom):
+    """Returns basic metadata such as subject, session and run IDs"""
+
+    if not isinstance(dicom, pydicom.FileDataset):
+        raise TypeError('Input must be a pre-read pydicom object.')
+
+    #   name: SeriesNumber_Suffix
+    #   priority order: SeriesDescription, SequenceName, ProtocolName
+    seq_name = get_sequence(dicom)
+
+    subject_id = str(dicom.get('PatientID', None))
+
+    # series number is a proxy for session?
+    session_id = str(dicom.get('SeriesNumber', None))
+
+    run_name = dicom.get('SeriesInstanceUID', None)
+
+    return seq_name, subject_id, session_id, run_name
+
+
 def get_run_id(dicom: pydicom.FileDataset) -> str:
     """
     Provides a unique id for Run based on SeriesInstanceUID and EchoTime

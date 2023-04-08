@@ -7,8 +7,7 @@ from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
 from MRdataset.utils import files_in_folders, folders_with_min_files
-from MRdataset.dicom_utils import (is_valid_inclusion,
-                                   get_dicom_modality_tag, get_run_id,
+from MRdataset.dicom_utils import (is_valid_inclusion, get_metadata,
                                    parse_imaging_params)
 from MRdataset.dicom_utils import get_sequence
 from MRdataset.config import TAGS
@@ -169,18 +168,23 @@ class DicomDataset(BaseDataset, ABC):
                 if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
                     continue
 
-                #   name: SeriesNumber_Suffix
-                #   priority order: SeriesDescription, SequenceName, ProtocolName
-                seq_name = get_sequence(dicom)
-                print(f'{seq_name}')
+            seq_name, subject_id, session_id, run_name = get_metadata(dicom)
 
-                subject_id = str(dicom.get('PatientID', None))
+            if idx == 0:
+                first_slice = ImagingSequence(dicom=dicom, name=f'First.{seq_name}')
+            else:
+                cur_slice = ImagingSequence(dicom=dicom, name=f'Current.{seq_name}')
 
-                # series number is a proxy for session?
-                series_num = str(dicom.get('SeriesNumber', None))
-                session_id = series_num
+                if not cur_slice == first_slice:  # noqa
+                    non_compl.append(cur_slice)
 
-                run_name = dicom.get('SeriesInstanceUID', None)  # get_run_id(dicom)
+        first_slice.multi_echo = False
+        if len(non_compl) > 1:
+            echo_times = set()
+            echo_times.add(first_slice['EchoTime'].value)
+            for ncs in non_compl:
+                echo_times.add(ncs['EchoTime'].value)
+            if len(echo_times) > 1:
+                first_slice.multi_echo = True
 
-                params = parse_imaging_params(dicom)
-                print()
+        return seq_name, first_slice, subject_id, session_id, run_name  # noqa

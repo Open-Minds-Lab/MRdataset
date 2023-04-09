@@ -37,6 +37,7 @@ VALID_BIDS_EXTENSIONS = ['.json', '.nii', '.nii.gz']
 
 PARAMETER_NAMES = {
     # 'Manufacturer': [0x08, 0x70],
+    'EchoNumbers': [0x18, 0x86],
     'BodyPartExamined': [0x18, 0x15],
     'EchoTime': [0x18, 0x81],
     'RepetitionTime': [0x18, 0x80],

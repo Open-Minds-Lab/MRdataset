@@ -58,14 +58,22 @@ def is_same_set(dicom: pydicom.FileDataset) -> str:
     Series identifier to which this DICOM should be added to
     """
     series_uid = dicom.get('SeriesInstanceUID', None)
-    # echo_num = dicom.get('EchoNumbers', None)
-    echo_time = dicom.get('EchoTime', None)
-    # if echo_num:
-    #     run_name = series_uid + '_e' + str(dicom.EchoNumbers)
-    if echo_time:
-        run_name = series_uid + '_e' + str(dicom.EchoTime)
+    # Convert pydicom.valuerep.MultiValue to int
+    try:
+        echo_num = int(dicom.get('EchoNumbers', None))
+    except TypeError as e:
+        echo_num = 1
+        logger.warning(f'Got {e}')
+    # Need to convert pydicom.valuerep.DSfloat to float
+    # echo_time = float(dicom.get('EchoTime', None))
+    if echo_num > 1:
+        run_name = series_uid + '_en_' + str(echo_num)
     else:
         run_name = series_uid
+    #     run_name = series_uid
+    # else:
+    # else:
+    # run_name = series_uid
     return run_name
 
 
@@ -261,7 +269,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         # a dictionary will be used later to count the majority value
         if not isinstance(value, str):
             if isinstance(value, Iterable):
-                value = '_'.join(value)
+                value = '_'.join([str(i) for i in sorted(value)])
             elif not utils.is_hashable(value):
                 value = str(value)
         params[k] = value

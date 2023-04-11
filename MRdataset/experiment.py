@@ -202,6 +202,46 @@ class BaseDataset(ABC):
             pickle.dump(self, out_file)
 
 
+    def traverse_horizontal(self, seq_id):
+        """method to traverse the dataset horizontally
+            i.e., same sequence, across subjects
+        """
+
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                for run in self._tree_map[subj][sess]:
+                    if seq_id in self._tree_map[subj][sess][run]:
+                        yield (subj, sess, run,
+                               self._tree_map[subj][sess][run][seq_id])
+
+
+    def traverse_vertical(self, seq_one, seq_two):
+        """
+         method to traverse the dataset horizontally
+            i.e., within subject, across sequences
+
+
+        Returns
+        -------
+        tuple_ids_data : tuple
+            tuple of subj, sess, run, seq_one, seq_two
+        """
+
+        count = 0
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                for run in self._tree_map[subj][sess]:
+                    # checking for subset relationship
+                    if {seq_one, seq_two} <= self._tree_map[subj][sess][run].keys():
+                        count = count + 1
+                        yield (subj, sess, run,
+                               self._tree_map[subj][sess][run][seq_one],
+                               self._tree_map[subj][sess][run][seq_two])
+
+        if count < 1:
+            print('There were no sessions/runs with both these sequences!')
+
+
 class DicomDataset(BaseDataset, ABC):
     """Class to represent a DICOM dataset"""
 

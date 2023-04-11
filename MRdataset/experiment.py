@@ -108,14 +108,36 @@ class BaseDataset(ABC):
         self.format = format
         self.subjects = subjects
 
+        self._tree_map = dict()
+        self._flat_map = dict()
+
 
     @abstractmethod
     def load(self):
         """default method to load the dataset"""
 
 
-    def add(self, dcm):
+    def _tree_add_node(self, subject_id, session_id, run_id, seq_name, seq_info):
+        """helper to add nodes deep in the tree"""
+
+        if subject_id not in self._tree_map:
+            self._tree_map[subject_id] = dict()
+
+        if session_id not in self._tree_map[subject_id]:
+            self._tree_map[subject_id][session_id] = dict()
+
+        if run_id not in self._tree_map[subject_id][session_id]:
+            self._tree_map[subject_id][session_id][run_id] = dict()
+
+        self._tree_map[subject_id][session_id][run_id][seq_name] = seq_info
+
+
+    def add(self, subject_id, session_id, run_id, seq_name, seq):
         """adds a given subject, session or run to the dataset"""
+
+        if (subject_id, session_id, run_id) not in self._flat_map:
+            self._flat_map[(subject_id, session_id, run_id, seq_name)] = seq
+            self._tree_add_node(subject_id, session_id, run_id, seq_name, seq)
 
 
 class DicomDataset(BaseDataset, ABC):
@@ -142,8 +164,10 @@ class DicomDataset(BaseDataset, ABC):
 
         for folder in sub_folders:
 
-            seq_name, seq_info, subject_id, session_id, run_name = \
+            seq_name, seq_info, subject_id, session_id, run_id = \
                 self._process_slice_collection(folder)
+
+            self.add(subject_id, session_id, run_id, seq_name, seq_info)
 
             print(f'{seq_name}')
 

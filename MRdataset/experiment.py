@@ -1,3 +1,4 @@
+import pickle
 from abc import ABC, abstractmethod
 from collections import UserDict
 from pathlib import Path
@@ -156,9 +157,34 @@ class DicomDataset(BaseDataset, ABC):
         self.pattern = "*.dcm"
         self.min_count = 3  # min slice count to be considered a volume
 
+        self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
 
-    def load(self):
+        if self._saved_path.exists():
+            self._reload()
+
+        print('')
+
+
+    def _reload(self):
+        """helper to reload previously saved MRdataset"""
+
+        try:
+            print('reloading previously parsed MRdataset ...')
+            with open(self._saved_path, 'rb') as in_file:
+                self = pickle.load(in_file)
+        except Exception as exc:
+            print(f'unable to reload from {self._saved_path}')
+            raise exc
+        else:
+            print(self)
+
+
+    def load(self, reload=False):
         """default method to load the dataset"""
+
+        if self._saved_path.exists() and not reload:
+            self._reload()
+            return
 
         sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
 
@@ -172,6 +198,23 @@ class DicomDataset(BaseDataset, ABC):
             print(f'{seq_name}')
 
         print()
+
+
+    def save(self, out_path=None):
+        """offloads the data structure to disk for quicker reload"""
+
+        if out_path is None:
+            out_path = self.root / "mrdataset" / "mrdataset.pkl"
+            out_path.parent.mkdir(exist_ok=True)
+        else:
+            if not out_path.parent.exists():
+                try:
+                    out_path.parent.mkdir(exist_ok=True)
+                except Exception as e:
+                    raise e('out dir for the out path can not be created!')
+
+        with open(out_path, 'wb') as out_file:
+            pickle.dump(self, out_file)
 
 
     def _process_slice_collection(self, folder):

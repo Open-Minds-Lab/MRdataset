@@ -109,6 +109,33 @@ class BaseDataset(ABC):
         self._tree_map = dict()
         self._flat_map = dict()
 
+        self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
+        self._reloaded = False
+
+        self._key_vars = set(['_flat_map',  # noqa
+                              '_tree_map',
+                              'format',
+                              'name',
+                              'root',
+                              'subjects'])
+
+
+    def _reload_saved(self):
+        """helper to reload previously saved MRdataset"""
+
+        try:
+            print('reloading previously parsed MRdataset ...')
+            with open(self._saved_path, 'rb') as in_file:
+                prev = pickle.load(in_file)
+            for attr in self._key_vars:
+                self.__setattr__(attr, getattr(prev, attr))
+        except Exception as exc:
+            print(f'unable to reload from {self._saved_path}')
+            raise exc
+        else:
+            self._reloaded = True
+            print(self)
+
 
     @abstractmethod
     def load(self):
@@ -138,6 +165,24 @@ class BaseDataset(ABC):
             self._tree_add_node(subject_id, session_id, run_id, seq_name, seq)
 
 
+    def save(self, out_path=None):
+        """offloads the data structure to disk for quicker reload"""
+
+        if out_path is None:
+            out_path = self._saved_path
+            out_path.parent.mkdir(exist_ok=True)
+        else:
+            if not out_path.parent.exists():
+                try:
+                    out_path.parent.mkdir(exist_ok=True)
+                except Exception as exc:
+                    print('out dir for the given path can not be created!')
+                    raise exc
+
+        with open(out_path, 'wb') as out_file:
+            pickle.dump(self, out_file)
+
+
 class DicomDataset(BaseDataset, ABC):
     """Class to represent a DICOM dataset"""
 
@@ -154,10 +199,11 @@ class DicomDataset(BaseDataset, ABC):
         self.pattern = "*.dcm"
         self.min_count = 3  # min slice count to be considered a volume
 
-        self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
+        # variables specific to this class
+        self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
 
         if self._saved_path.exists():
-            self._reload()
+            self._reload_saved()
 
         print('')
 
@@ -194,24 +240,6 @@ class DicomDataset(BaseDataset, ABC):
             print(f'{seq_name}')
 
         print()
-
-
-    def save(self, out_path=None):
-        """offloads the data structure to disk for quicker reload"""
-
-        if out_path is None:
-            out_path = self.root / "mrdataset" / "mrdataset.pkl"
-            out_path.parent.mkdir(exist_ok=True)
-        else:
-            if not out_path.parent.exists():
-                try:
-                    out_path.parent.mkdir(exist_ok=True)
-                except Exception as exc:
-                    print('out dir for the given path can not be created!')
-                    raise exc
-
-        with open(out_path, 'wb') as out_file:
-            pickle.dump(self, out_file)
 
 
     def _process_slice_collection(self, folder):
@@ -258,10 +286,3 @@ class DicomDataset(BaseDataset, ABC):
                 first_slice.multi_echo = True
 
         return seq_name, first_slice, subject_id, session_id, run_name  # noqa
-
-
-    def __str__(self):
-        """readable summary"""
-
-        return "{} subjects with {} sessions in total" \
-               "".format(len(self._tree_map), len(self._flat_map))

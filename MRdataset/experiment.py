@@ -111,6 +111,7 @@ class BaseDataset(ABC):
 
         self._tree_map = dict()
         self._flat_map = dict()
+        self._seqs_map = dict()
 
         self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
         self._reloaded = False
@@ -179,6 +180,12 @@ class BaseDataset(ABC):
         if (subject_id, session_id, run_id, seq_id) not in self._flat_map:
             self._flat_map[(subject_id, session_id, run_id, seq_id)] = seq
             self._tree_add_node(subject_id, session_id, run_id, seq_id, seq)
+
+            # map a sequence id to a specific runs with data for it
+            if seq_id not in self._seqs_map:
+                self._seqs_map[seq_id] = set()
+            self._seqs_map[seq_id].add((subject_id, session_id, run_id))
+
             # maintaining a list of subject IDs and sequences
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)

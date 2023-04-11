@@ -208,25 +208,11 @@ class DicomDataset(BaseDataset, ABC):
         print('')
 
 
-    def _reload(self):
-        """helper to reload previously saved MRdataset"""
-
-        try:
-            print('reloading previously parsed MRdataset ...')
-            with open(self._saved_path, 'rb') as in_file:
-                self = pickle.load(in_file)
-        except Exception as exc:
-            print(f'unable to reload from {self._saved_path}')
-            raise exc
-        else:
-            print(self)
-
-
-    def load(self, reload=False):
+    def load(self, refresh=False):
         """default method to load the dataset"""
 
-        if self._saved_path.exists() and reload:
-            self._reload()
+        if self._saved_path.exists() and not refresh:
+            self._reload_saved()
             return
 
         sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)

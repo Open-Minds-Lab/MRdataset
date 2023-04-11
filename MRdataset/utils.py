@@ -329,7 +329,6 @@ def folders_with_min_files(root: Union[Path, str],
 
     terminals = find_terminal_folders(root, pattern=pattern)
 
-    out_list = list()
     for folder in terminals:
         if len([file_ for file_ in folder.rglob(pattern)]) >= min_count:
             yield folder

@@ -7,11 +7,8 @@ from protocol import ImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
-from MRdataset.utils import files_in_folders, folders_with_min_files
-from MRdataset.dicom_utils import (is_valid_inclusion, get_metadata,
-                                   parse_imaging_params)
-from MRdataset.dicom_utils import get_sequence
-from MRdataset.config import TAGS
+from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion)
+from MRdataset.utils import folders_with_min_files
 
 
 # A dataset is a collection of subjects
@@ -64,7 +61,7 @@ class Session(UserDict):
     def __init__(self,
                  session_id='SessionID',
                  subject_id='SubjectID',
-                 runs : list[Run] = None):
+                 runs: list[Run] = None):
         """constructor"""
 
         super().__init__()
@@ -79,7 +76,7 @@ class Subject(UserDict):
 
     def __init__(self,
                  subject_id='SubjectID',
-                 sessions : list[Session] = None):
+                 sessions: list[Session] = None):
         """constructor"""
 
         super().__init__()
@@ -95,7 +92,7 @@ class BaseDataset(ABC):
                  root,
                  name: str = 'Dataset',
                  format: str = 'DICOM',
-                 subjects : list[Subject] = None):
+                 subjects: list[Subject] = None):
         """constructor"""
 
         fp = Path(root).resolve()
@@ -182,14 +179,13 @@ class DicomDataset(BaseDataset, ABC):
     def load(self, reload=False):
         """default method to load the dataset"""
 
-        if self._saved_path.exists() and not reload:
+        if self._saved_path.exists() and reload:
             self._reload()
             return
 
         sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
 
         for folder in sub_folders:
-
             seq_name, seq_info, subject_id, session_id, run_id = \
                 self._process_slice_collection(folder)
 
@@ -210,8 +206,9 @@ class DicomDataset(BaseDataset, ABC):
             if not out_path.parent.exists():
                 try:
                     out_path.parent.mkdir(exist_ok=True)
-                except Exception as e:
-                    raise e('out dir for the out path can not be created!')
+                except Exception as exc:
+                    print('out dir for the given path can not be created!')
+                    raise exc
 
         with open(out_path, 'wb') as out_file:
             pickle.dump(self, out_file)
@@ -223,7 +220,7 @@ class DicomDataset(BaseDataset, ABC):
         # within a folder, a volume can be multi-echo, so we must read them all
         #   and find a way to capture
 
-        dcm_files = list(sorted(folder.glob(self.pattern)))
+        dcm_files = sorted(folder.glob(self.pattern))
 
         # run some basic validation of these dcm slice collection
         #   SeriesInstanceUID must match

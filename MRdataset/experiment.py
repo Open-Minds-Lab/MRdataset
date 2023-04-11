@@ -104,7 +104,10 @@ class BaseDataset(ABC):
 
         self.name = name
         self.format = format
+
         self.subjects = subjects
+        self._subj_ids = set()
+        self._seq_ids = set()
 
         self._tree_map = dict()
         self._flat_map = dict()
@@ -114,6 +117,8 @@ class BaseDataset(ABC):
 
         self._key_vars = set(['_flat_map',  # noqa
                               '_tree_map',
+                              '_subj_ids',
+                              '_seq_ids',
                               'format',
                               'name',
                               'root',
@@ -174,6 +179,9 @@ class BaseDataset(ABC):
         if (subject_id, session_id, run_id) not in self._flat_map:
             self._flat_map[(subject_id, session_id, run_id, seq_name)] = seq
             self._tree_add_node(subject_id, session_id, run_id, seq_name, seq)
+            # maintaining a list of subject IDs and sequences
+            self._subj_ids.add(subject_id)
+            self._seq_ids.add(seq_id)
 
 
     def save(self, out_path=None):

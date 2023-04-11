@@ -261,3 +261,10 @@ class DicomDataset(BaseDataset, ABC):
                 first_slice.multi_echo = True
 
         return seq_name, first_slice, subject_id, session_id, run_name  # noqa
+
+
+    def __str__(self):
+        """readable summary"""
+
+        return "{} subjects with {} sessions in total" \
+               "".format(len(self._tree_map), len(self._flat_map))

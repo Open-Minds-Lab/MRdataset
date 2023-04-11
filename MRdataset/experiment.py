@@ -157,6 +157,17 @@ class BaseDataset(ABC):
         self._tree_map[subject_id][session_id][run_id][seq_name] = seq_info
 
 
+    def __str__(self):
+        """readable summary"""
+
+        return "{} subjects with {} sessions in total" \
+               "".format(len(self._tree_map), len(self._flat_map))
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
     def add(self, subject_id, session_id, run_id, seq_name, seq):
         """adds a given subject, session or run to the dataset"""
 

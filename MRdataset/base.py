@@ -31,8 +31,8 @@ class Node:
         """
         self.name = None
         self._sub_nodes = {}
-        self._compliant_list = set()
-        self._non_compliant_list = set()
+        self._compliant_list = list()
+        self._non_compliant_list = list()
         self.compliant = True
 
     def reset_lists(self):
@@ -40,8 +40,8 @@ class Node:
         Clears the compliance of the node
         """
         self.compliant = True
-        self._compliant_list = set()
-        self._non_compliant_list = set()
+        self._compliant_list = list()
+        self._non_compliant_list = list()
 
     @property
     def sub_nodes(self):
@@ -124,7 +124,7 @@ class Node:
             raise TypeError(f'must be str, not {type(other)}')
         if other in self._compliant_list:
             return
-        self._compliant_list.add(other)
+        self._compliant_list.append(other)
 
     def _add_non_compliant_name(self, other: str) -> None:
         """
@@ -144,7 +144,7 @@ class Node:
             raise TypeError(f'must be str, not {type(other)}')
         if other in self._non_compliant_list:
             return
-        self._non_compliant_list.add(other)
+        self._non_compliant_list.append(other)
 
     def print_tree(self, marker_str: str = '+- ',
                    level_markers: Sized = None) -> None:

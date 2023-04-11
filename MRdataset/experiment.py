@@ -173,12 +173,12 @@ class BaseDataset(ABC):
         return self.__str__()
 
 
-    def add(self, subject_id, session_id, run_id, seq_name, seq):
+    def add(self, subject_id, session_id, run_id, seq_id, seq):
         """adds a given subject, session or run to the dataset"""
 
-        if (subject_id, session_id, run_id) not in self._flat_map:
-            self._flat_map[(subject_id, session_id, run_id, seq_name)] = seq
-            self._tree_add_node(subject_id, session_id, run_id, seq_name, seq)
+        if (subject_id, session_id, run_id, seq_id) not in self._flat_map:
+            self._flat_map[(subject_id, session_id, run_id, seq_id)] = seq
+            self._tree_add_node(subject_id, session_id, run_id, seq_id, seq)
             # maintaining a list of subject IDs and sequences
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)

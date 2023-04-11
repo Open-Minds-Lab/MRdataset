@@ -244,9 +244,9 @@ class DicomDataset(BaseDataset, ABC):
             seq_name, subject_id, session_id, run_name = get_metadata(dicom)
 
             if idx == 0:
-                first_slice = ImagingSequence(dicom=dicom, name=f'First.{seq_name}')
+                first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}')
             else:
-                cur_slice = ImagingSequence(dicom=dicom, name=f'Current.{seq_name}')
+                cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}')
 
                 if not cur_slice == first_slice:  # noqa
                     non_compl.append(cur_slice)

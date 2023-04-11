@@ -244,7 +244,8 @@ class DicomDataset(BaseDataset, ABC):
 
             print(f'{seq_name}')
 
-        print()
+        # saving a copy for quicker reload
+        self.save()
 
 
     def _process_slice_collection(self, folder):

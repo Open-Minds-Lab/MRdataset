@@ -15,6 +15,7 @@ from MRdataset.utils import folders_with_min_files
 # A subject is a collection of sessions
 # A session is a collection of runs
 # A run is one instance of a sequence;
+# A sequence can have multiple runs in a session
 # A sequence is a collection of parameters
 #
 # related useful references
@@ -149,7 +150,11 @@ class BaseDataset(ABC):
 
 
     def _tree_add_node(self, subject_id, session_id, run_id, seq_name, seq_info):
-        """helper to add nodes deep in the tree"""
+        """helper to add nodes deep in the tree
+
+        hierarchy: Subject > Session > Sequence > Run
+
+        """
 
         if subject_id not in self._tree_map:
             self._tree_map[subject_id] = dict()
@@ -157,10 +162,10 @@ class BaseDataset(ABC):
         if session_id not in self._tree_map[subject_id]:
             self._tree_map[subject_id][session_id] = dict()
 
-        if run_id not in self._tree_map[subject_id][session_id]:
-            self._tree_map[subject_id][session_id][run_id] = dict()
+        if seq_name not in self._tree_map[subject_id][session_id]:
+            self._tree_map[subject_id][session_id][seq_name] = dict()
 
-        self._tree_map[subject_id][session_id][run_id][seq_name] = seq_info
+        self._tree_map[subject_id][session_id][seq_name][run_id] = seq_info
 
 
     def __str__(self):

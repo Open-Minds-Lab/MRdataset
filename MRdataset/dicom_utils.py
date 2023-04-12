@@ -210,9 +210,9 @@ def get_sequence(dicom: pydicom.FileDataset) -> str:
     str
     """
 
-    value = dicom.get('SequenceName', None)
+    value = dicom.get('SeriesDescription', None)
     if value is None:
-        value = dicom.get('SeriesDescription', None)
+        value = dicom.get('SequenceName', None)
     if value is None:
         value = dicom.get('ProtocolName', None)
 

@@ -196,6 +196,18 @@ class BaseDataset(ABC):
             self._seq_ids.add(seq_id)
 
 
+    def get(self, subject_id, session_id, run_id, seq_id):
+        """returns a given subject/session/seq/run from the dataset"""
+
+        return self._tree_map[subject_id][session_id][seq_id][run_id]
+
+
+    def __getitem__(self, subject_id):
+        """intuitive getter"""
+
+        return self._tree_map[subject_id]
+
+
     def save(self, out_path=None):
         """offloads the data structure to disk for quicker reload"""
 

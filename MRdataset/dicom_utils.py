@@ -53,7 +53,8 @@ def get_metadata(dicom):
     subject_id = str(dicom.get('PatientID', None))
 
     # series number is a proxy for session?
-    session_id = str(dicom.get('SeriesNumber', None))
+    # session_id = str(dicom.get('SeriesNumber', None))
+    session_id = str(dicom.get('StudyInstanceUID', None))
 
     run_name = dicom.get('SeriesInstanceUID', None)
 

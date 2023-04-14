@@ -222,8 +222,11 @@ class BaseDataset(ABC):
                     print('out dir for the given path can not be created!')
                     raise exc
 
-        with open(out_path, 'wb') as out_file:
-            pickle.dump(self, out_file)
+        if len(self._subj_ids) >= 1:
+            with open(out_path, 'wb') as out_file:
+                pickle.dump(self, out_file)
+        else:
+            print('No subjects exist in the dataset. Not saving it!')
 
 
     def traverse_horizontal(self, seq_id):

@@ -360,11 +360,11 @@ def find_terminal_folders(root):
 
     terminal = list()
     for sd1 in sub_dirs:
-        no_more_subdirs, sdirs2 = is_folder_with_no_subfolders(sd1)
-        if no_more_subdirs:
-                terminal.append(sd1)
+        no_more_subdirs2, level2_subdirs = is_folder_with_no_subfolders(sd1)
+        if no_more_subdirs2:
+            terminal.append(sd1)
         else:
-            for sd2 in sdirs2:
+            for sd2 in level2_subdirs:
                 terminal.extend(find_terminal_folders(sd2))
 
     return terminal

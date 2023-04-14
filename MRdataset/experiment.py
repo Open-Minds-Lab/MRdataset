@@ -282,6 +282,60 @@ class BaseDataset(ABC):
         if count < 1:
             print('There were no sessions/runs with both these sequences!')
 
+
+    def traverse_vertical_multi(self, *seq_ids):
+        """
+         method to traverse the dataset horizontally
+            i.e., within subject, across sequences
+
+
+        Returns
+        -------
+        tuple_ids_data : tuple
+            tuple of subj, sess, tuple_runs, tuple_seqs
+        """
+
+        count = 0
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                # if all seq IDs exist in session
+                #   checking for subset relationship:
+                if set(seq_ids) <= self._tree_map[subj][sess].keys():
+
+                    seqs = [self._tree_map[subj][sess][sq] for sq in seq_ids]
+
+                    # two sequences may not have a common run ID
+                    #   they might have multiple runs, with different number of runs
+                    #   so getting all of their linked combinations
+                    runs = self._first_run_from_sequences(seqs)
+
+                    out_seqs = [self._tree_map[subj][sess][ss][rr]
+                                for rr, ss in zip(runs, seq_ids)]
+
+                    count = count + 1
+                    yield subj, sess, runs, out_seqs
+
+        if count < 1:
+            print(f'There were no sessions with all {len(seq_ids)} input sequences!')
+
+
+    @staticmethod
+    def _first_run_from_sequences(seq_list):
+        """returns the first run from each of the input sequences"""
+
+        # picking the first run from each sequence
+        run_list = list()
+        for seq in seq_list:
+            if len(seq.keys()) >= 1:
+                # print(f'{seq} has more than 1 run! choosing the first')
+                first_run = list(seq.keys())[0]
+                run_list.append(first_run)
+            else:
+                print(f'skipping {seq} with no runs!')
+
+        return run_list
+
+
     @staticmethod
     def _link_runs_across_sequences(seq_one, seq_two):
         """returns a combinatorial combination of runs from two sequences"""

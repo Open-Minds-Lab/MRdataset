@@ -250,7 +250,7 @@ class BaseDataset(ABC):
                                self._tree_map[subj][sess][seq_id][run])
 
 
-    def traverse_vertical(self, seq_one, seq_two):
+    def traverse_vertical2(self, seq_one, seq_two):
         """
          method to traverse the dataset horizontally
             i.e., within subject, across sequences

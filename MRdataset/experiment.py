@@ -337,6 +337,24 @@ class BaseDataset(ABC):
 
 
     @staticmethod
+    def _run_combinations_across_sequences(seq_list):
+        """returns a combinatorial pairs of runs from sequence list"""
+
+        run_lists = [list(seq.key()) for seq in seq_list if len(seq.keys()) >= 1]
+
+        for ii in range(len(run_lists)):
+            # remaining lists
+            for jj in range(ii+1, len(run_lists)):
+                # for each element from first list
+                for kk in range(len(run_lists[ii])):
+                    # all elements from the other lists
+                    for qq in range(len(run_lists[jj])):
+                        yield run_lists[ii][kk], run_lists[jj][qq]
+
+        return run_lists
+
+
+    @staticmethod
     def _link_runs_across_sequences(seq_one, seq_two):
         """returns a combinatorial combination of runs from two sequences"""
 

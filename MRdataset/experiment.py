@@ -2,6 +2,7 @@ import pickle
 from abc import ABC, abstractmethod
 from collections import UserDict
 from pathlib import Path
+from warnings import warn
 
 from protocol import ImagingSequence
 from pydicom import dcmread
@@ -297,6 +298,7 @@ class DicomDataset(BaseDataset, ABC):
 
     def __init__(self,
                  root,
+                 pattern="*.dcm",
                  name='DicomDataset',
                  include_phantoms=False):
         """constructor"""
@@ -304,7 +306,7 @@ class DicomDataset(BaseDataset, ABC):
         super().__init__(root=root, name=name, format='DICOM')
 
         self.include_phantoms = include_phantoms
-        self.pattern = "*.dcm"
+        self.pattern = pattern
         self.min_count = 3  # min slice count to be considered a volume
 
         # variables specific to this class
@@ -344,6 +346,10 @@ class DicomDataset(BaseDataset, ABC):
         #   and find a way to capture
 
         dcm_files = sorted(folder.glob(self.pattern))
+
+        if len(dcm_files) < 1:
+            warn(f'no files matching the pattern {self.pattern} found in {folder}',
+                 UserWarning)
 
         # run some basic validation of these dcm slice collection
         #   SeriesInstanceUID must match

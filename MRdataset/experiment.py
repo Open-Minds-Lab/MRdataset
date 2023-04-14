@@ -233,10 +233,10 @@ class BaseDataset(ABC):
 
         for subj in self._subj_ids:
             for sess in self._tree_map[subj]:
-                for run in self._tree_map[subj][sess]:
-                    if seq_id in self._tree_map[subj][sess][run]:
+                if seq_id in self._tree_map[subj][sess]:
+                    for run in self._tree_map[subj][sess][seq_id]:
                         yield (subj, sess, run,
-                               self._tree_map[subj][sess][run][seq_id])
+                               self._tree_map[subj][sess][seq_id][run])
 
 
     def traverse_vertical(self, seq_one, seq_two):
@@ -254,9 +254,6 @@ class BaseDataset(ABC):
         count = 0
         for subj in self._subj_ids:
             for sess in self._tree_map[subj]:
-                for run in self._tree_map[subj][sess]:
-                    # checking for subset relationship
-                    if {seq_one, seq_two} <= self._tree_map[subj][sess][run].keys():
                         count = count + 1
                         yield (subj, sess, run,
                                self._tree_map[subj][sess][run][seq_one],

@@ -113,7 +113,9 @@ class BaseDataset(ABC):
 
         self._tree_map = dict()
         self._flat_map = dict()
+
         self._seqs_map = dict()
+        self._sess_map = dict()
 
         self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
         self._reloaded = False
@@ -192,7 +194,12 @@ class BaseDataset(ABC):
                 self._seqs_map[seq_id] = set()
             self._seqs_map[seq_id].add((subject_id, session_id, run_id))
 
-            # maintaining a list of subject IDs and sequences
+            # maintaining a different cross-mappings for insight/debugging
+            if session_id not in self._sess_map:
+                self._sess_map[session_id] = set()
+            self._sess_map[session_id].add(seq_id)
+
+            # maintaining ID lists for easy reference
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)
 

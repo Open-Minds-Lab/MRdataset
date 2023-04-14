@@ -328,12 +328,14 @@ class DicomDataset(BaseDataset, ABC):
         sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
 
         for folder in sub_folders:
-            seq_name, seq_info, subject_id, session_id, run_id = \
-                self._process_slice_collection(folder)
-
-            self.add(subject_id, session_id, run_id, seq_name, seq_info)
-
-            print(f'{seq_name}')
+            try:
+                seq_name, seq_info, subject_id, session_id, run_id = \
+                    self._process_slice_collection(folder)
+            except:
+                print(f'Unable to process {folder}. Skipping it.')
+            else:
+                self.add(subject_id, session_id, run_id, seq_name, seq_info)
+                print(f'adding {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
         self.save()

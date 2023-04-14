@@ -254,13 +254,38 @@ class BaseDataset(ABC):
         count = 0
         for subj in self._subj_ids:
             for sess in self._tree_map[subj]:
+                # checking for subset relationship
+                if {seq_one, seq_two} <= self._tree_map[subj][sess].keys():
+                    # two sequences may not have a common run ID
+                    #   they might have multiple runs, with different number of runs
+                    #   so getting all of their linked combinations
+                    linked_runs = self._link_runs_across_sequences(
+                        self._tree_map[subj][sess][seq_one],
+                        self._tree_map[subj][sess][seq_two])
+                    for run_one, run_two in linked_runs:
                         count = count + 1
-                        yield (subj, sess, run,
-                               self._tree_map[subj][sess][run][seq_one],
-                               self._tree_map[subj][sess][run][seq_two])
+                        yield (subj, sess, run_one, run_two,
+                               self._tree_map[subj][sess][seq_one][run_one],
+                               self._tree_map[subj][sess][seq_two][run_two])
 
         if count < 1:
             print('There were no sessions/runs with both these sequences!')
+
+    @staticmethod
+    def _link_runs_across_sequences(seq_one, seq_two):
+        """returns a combinatorial combination of runs from two sequences"""
+
+        # no need to compute set() on dict key() as they are already unique
+        if len(seq_one.keys()) < 1:
+            print(f'{seq_one} has no runs!')
+
+        if len(seq_two.keys()) < 1:
+            print(f'{seq_two} has no runs!')
+
+        # combinatorial
+        for run_one in seq_one.keys():
+            for run_two in seq_two.keys():
+                yield run_one, run_two
 
 
 class DicomDataset(BaseDataset, ABC):

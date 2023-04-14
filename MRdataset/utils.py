@@ -327,7 +327,7 @@ def folders_with_min_files(root: Union[Path, str],
     if not root.exists():
         raise ValueError('Root folder does not exist')
 
-    terminals = find_terminal_folders(root, pattern=pattern)
+    terminals = find_terminal_folders(root)
 
     for folder in terminals:
         if len([file_ for file_ in folder.rglob(pattern)]) >= min_count:
@@ -351,7 +351,7 @@ def is_folder_with_no_subfolders(fpath):
     return len(sub_dirs) < 1, sub_dirs
 
 
-def find_terminal_folders(root, pattern='*.dcm', min_count=3):
+def find_terminal_folders(root):
 
     no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
 
@@ -362,7 +362,6 @@ def find_terminal_folders(root, pattern='*.dcm', min_count=3):
     for sd1 in sub_dirs:
         no_more_subdirs, sdirs2 = is_folder_with_no_subfolders(sd1)
         if no_more_subdirs:
-            if len([file_ for file_ in sd1.glob(pattern)]) >= min_count:
                 terminal.append(sd1)
         else:
             for sd2 in sdirs2:

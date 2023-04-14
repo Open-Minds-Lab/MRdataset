@@ -133,6 +133,9 @@ class BaseDataset(ABC):
     def _reload_saved(self):
         """helper to reload previously saved MRdataset"""
 
+        if len(self._subj_ids) > 0 and self._reloaded:
+            print('Dataset seems to be loaded already. Skipping reload!')
+
         try:
             print('reloading previously parsed MRdataset ...')
             with open(self._saved_path, 'rb') as in_file:

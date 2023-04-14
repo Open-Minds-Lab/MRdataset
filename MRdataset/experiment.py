@@ -23,7 +23,8 @@ from MRdataset.utils import folders_with_min_files
 #   https://bids-specification.readthedocs.io/en/stable/appendices/entities.html
 #
 # dicom2nifti logic for naming files:
-# https://github.com/icometrix/dicom2nifti/blob/ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
+# https://github.com/icometrix/dicom2nifti/blob
+# /ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
 #
 
 class Run(UserDict):
@@ -306,7 +307,6 @@ class BaseDataset(ABC):
                 # if all seq IDs exist in session
                 #   checking for subset relationship:
                 if set(seq_ids) <= self._tree_map[subj][sess].keys():
-
                     seqs = [self._tree_map[subj][sess][sq] for sq in seq_ids]
 
                     # two sequences may not have a common run ID
@@ -349,7 +349,7 @@ class BaseDataset(ABC):
 
         for ii in range(len(run_lists)):
             # remaining lists
-            for jj in range(ii+1, len(run_lists)):
+            for jj in range(ii + 1, len(run_lists)):
                 # for each element from first list
                 for kk in range(len(run_lists[ii])):
                     # all elements from the other lists
@@ -441,12 +441,12 @@ class DicomDataset(BaseDataset, ABC):
         #   SeriesInstanceUID must match
         #   parameter values must match, except echo time
 
-        non_compl = list()
+        non_compliant = list()
         for idx, dcm_path in enumerate(dcm_files):
 
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)
-            except InvalidDicomError as ide:
+            except InvalidDicomError:
                 print(f'Invalid DICOM file at {dcm_path}')
                 continue
 
@@ -461,13 +461,13 @@ class DicomDataset(BaseDataset, ABC):
                 cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}')
 
                 if not cur_slice == first_slice:  # noqa
-                    non_compl.append(cur_slice)
+                    non_compliant.append(cur_slice)
 
         first_slice.multi_echo = False
-        if len(non_compl) > 1:
+        if len(non_compliant) > 1:
             echo_times = set()
             echo_times.add(first_slice['EchoTime'].value)
-            for ncs in non_compl:
+            for ncs in non_compliant:
                 echo_times.add(ncs['EchoTime'].value)
             if len(echo_times) > 1:
                 first_slice.multi_echo = True

@@ -122,6 +122,8 @@ class BaseDataset(ABC):
 
         self._key_vars = set(['_flat_map',  # noqa
                               '_tree_map',
+                              '_seqs_map',
+                              '_sess_map',
                               '_subj_ids',
                               '_seq_ids',
                               'format',
@@ -417,7 +419,7 @@ class DicomDataset(BaseDataset, ABC):
                 print(f'Unable to process {folder}. Skipping it.')
             else:
                 self.add(subject_id, session_id, run_id, seq_name, seq_info)
-                print(f'adding {subject_id} session {session_id:80} -- {seq_name}')
+                print(f'added {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
         self.save()

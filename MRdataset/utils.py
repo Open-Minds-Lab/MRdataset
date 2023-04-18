@@ -72,7 +72,8 @@ def safe_get(dictionary: dict, keys: str, default=None):
 
 def param_difference(dict1: dict,
                      dict2: dict,
-                     ignore: Iterable = None) -> List[Iterable]:
+                     ignore: Iterable = None,
+                     tolerance: float = 0.1) -> List[Iterable]:
     """
     A helper function to calculate differences between 2 dictionaries,
     dict1 and dict2. Returns an iterator with differences between 2
@@ -99,9 +100,10 @@ def param_difference(dict1: dict,
     """
     if isinstance(dict1, dict) and isinstance(dict2, dict):
         if ignore is None:
-            return list(dict_diff(dict1, dict2))
+            return list(dict_diff(dict1, dict2, tolerance=tolerance))
         elif isinstance(ignore, Iterable):
-            return list(dict_diff(dict1, dict2, ignore=set(ignore)))
+            return list(dict_diff(dict1, dict2, tolerance=tolerance,
+                                  ignore=set(ignore)))
         raise TypeError(
             "Expected type 'iterable', got {} instead. "
             "Pass a list of parameters.".format(type(ignore)))

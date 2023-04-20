@@ -9,7 +9,7 @@ from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
     combine_varying_params
 from MRdataset.log import logger
 from MRdataset.utils import param_difference, files_in_path
-
+from MRdataset.config import DatasetEmptyException
 
 # Module-level logger
 # logger = logging.getLogger('root')
@@ -152,6 +152,6 @@ class DicomDataset(BaseDataset):
             except Exception as exc:
                 raise exc
         if no_files_found:
-            raise EOFError("Read 0 files")
+            raise DatasetEmptyException()
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))

@@ -8,10 +8,10 @@ from typing import Union, Optional
 
 import dicom2nifti
 import pydicom
-
 from MRdataset import config
 from MRdataset import utils
 from MRdataset.log import logger
+from MRdataset.utils import slugify
 
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
@@ -183,7 +183,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
         property1 = dicom.get('ProtocolName', None)
     if property1 is None:
         return 'MR_image'
-    ret_value = str(property1.replace(' ', '_'))
+    ret_value = slugify(property1)
     if ret_value:
         return ret_value
     return 'MR_image'

@@ -369,11 +369,11 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
         raise AttributeError('CSA Header exists, but xProtocol is missing')
 
     slice_code = get_csa_props('sKSpace.ucMultiSliceMode', text)
-    slice_mode = config.SLICE_MODE.get(slice_code, None)
+    slice_mode = config.SLICE_MODE.get(slice_code, slice_code)
     ipat_code = get_csa_props('sPat.ucPATMode', text)
-    ipat = config.PAT.get(ipat_code, None)
+    ipat = config.PAT.get(ipat_code, ipat_code)
     shim_code = get_csa_props('sAdjData.uiAdjShimMode', text)
-    shim = config.SHIM.get(shim_code, None)
+    shim = config.SHIM.get(shim_code, shim_code)
 
     return {
         'slice_mode': slice_mode,

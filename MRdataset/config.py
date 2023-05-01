@@ -99,7 +99,7 @@ SVDict = {
 }
 
 PAT = {
-    "1": 'None',
+    "1": 'Not Selected',
     "2": 'Grappa',
     "3": 'Sense'
 }

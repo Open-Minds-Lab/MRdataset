@@ -4,7 +4,7 @@ from bids import BIDSLayout
 from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
 from MRdataset.config import VALID_DATATYPES
 from MRdataset.log import logger
-from MRdataset.utils import select_parameters
+from MRdataset.bids_utils import select_parameters
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -34,7 +34,7 @@ class BIDSDataset(BaseDataset):
             whether the dataset is complete
         include_nifti_header :
             whether to check nifti headers for compliance,
-            only used when --style==bids
+            only used when --ds_format==bids
         Examples
         --------
         >>> from MRdataset.naive_bids import BIDSDataset

@@ -37,6 +37,7 @@ VALID_BIDS_EXTENSIONS = ['.json', '.nii', '.nii.gz']
 
 PARAMETER_NAMES = {
     # 'Manufacturer': [0x08, 0x70],
+    'EchoNumbers': [0x18, 0x86],
     'BodyPartExamined': [0x18, 0x15],
     'EchoTime': [0x18, 0x81],
     'RepetitionTime': [0x18, 0x80],
@@ -98,7 +99,7 @@ SVDict = {
 }
 
 PAT = {
-    "1": 'None',
+    "1": 'Not Selected',
     "2": 'Grappa',
     "3": 'Sense'
 }
@@ -147,6 +148,12 @@ class MRdatasetWarning(Exception):
 # class NonCompliantSubject(ComplianceException):
 #     """"""
 #     pass
+
+class DatasetEmptyException(MRException):
+    def __init__(self):
+        super().__init__('Expected Sidecar DICOM/JSON files in '
+                         '--data_source. Got 0 DICOM/JSON files.')
+
 
 class ChangingParamsInSeries(MRException):
     """Custom error that is raised when parameter values are different for

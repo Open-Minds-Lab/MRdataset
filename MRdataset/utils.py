@@ -1,18 +1,17 @@
 import functools
-import json
+import re
 import tempfile
 import time
 import typing
+import unicodedata
 import uuid
 from collections.abc import Hashable, Iterable
 from pathlib import Path
 from typing import Union, List, Optional
 
-import nibabel as nib
 import numpy as np
-from MRdataset.config import PARAMETER_NAMES, MRDS_EXT
+from MRdataset.config import MRDS_EXT
 from MRdataset.log import logger
-from bids.layout.models import BIDSFile
 from dictdiffer import diff as dict_diff
 
 
@@ -75,7 +74,8 @@ def safe_get(dictionary: dict, keys: str, default=None):
 
 def param_difference(dict1: dict,
                      dict2: dict,
-                     ignore: Iterable = None) -> List[Iterable]:
+                     ignore: Iterable = None,
+                     tolerance: float = 0.1) -> List[Iterable]:
     """
     A helper function to calculate differences between 2 dictionaries,
     dict1 and dict2. Returns an iterator with differences between 2
@@ -95,6 +95,7 @@ def param_difference(dict1: dict,
     dict1 : source dictionary
     dict2 : destination dictionary
     ignore : dictionary keys which should be ignored
+    tolerance : tolerance for float values
 
     Returns
     -------
@@ -102,9 +103,10 @@ def param_difference(dict1: dict,
     """
     if isinstance(dict1, dict) and isinstance(dict2, dict):
         if ignore is None:
-            return list(dict_diff(dict1, dict2))
+            return list(dict_diff(dict1, dict2, tolerance=tolerance))
         elif isinstance(ignore, Iterable):
-            return list(dict_diff(dict1, dict2, ignore=set(ignore)))
+            return list(dict_diff(dict1, dict2, tolerance=tolerance,
+                                  ignore=set(ignore)))
         raise TypeError(
             "Expected type 'iterable', got {} instead. "
             "Pass a list of parameters.".format(type(ignore)))
@@ -163,77 +165,6 @@ def timestamp() -> str:
     """
     time_string = time.strftime("%m_%d_%Y_%H_%M")
     return time_string
-
-
-def select_parameters(file) -> dict:
-    """
-    Reads parameters for BIDS datasets. The filepath can either point to a
-     JSON file or a NIfTI file. In case of a NIfTI file the parameters are
-     extracted from the header.
-
-    Parameters
-    ----------
-    file : pathlib.Path or str
-        Path pointing to either a JSON or NIfTI file
-    Returns
-    -------
-
-    """
-    # TODO: filepath should already have the extension, why do you need to
-    #  pass separately? Modify the code.
-
-    selected_params = dict()
-
-    if isinstance(file, BIDSFile):
-        file_path = file.path
-    elif isinstance(file, Path):
-        file_path = file
-    else:
-        raise NotImplementedError
-
-    ext = get_ext(file)
-    if file_path.name.startswith('.bidsignore'):
-        return selected_params
-
-    if ext == '.json':
-        with open(file_path, "r") as read_file:
-            parameters = json.load(read_file)
-
-        for key in parameters:
-            for entry in PARAMETER_NAMES:
-                if entry.lower() in key.lower():
-                    selected_params[key] = make_hashable(parameters[key])
-    elif ext in ['.nii', '.nii.gz']:
-        nii_image = nib.load(file_path)
-        selected_params['obliquity'] = np.any(
-            nib.affines.obliquity(nii_image.affine) > 1e-4)
-        selected_params['voxel_sizes'] = make_hashable(nii_image.header.get_zooms())
-        selected_params['matrix_dims'] = make_hashable(nii_image.shape)
-        for key, value in nii_image.header.items():
-            if key not in ['sizeof_hdr', 'data_type', 'db_name',
-                           'extents', 'session_error']:
-                value = make_hashable(value)
-                selected_params[key] = value
-    return selected_params
-
-
-def get_ext(file: Union[BIDSFile, Path]) -> str:
-    """
-    Extract the extension from a BIDSFile object.
-    Parameters
-    ----------
-    file : A BIDSFile object
-
-    Returns
-    -------
-    file extension as a string
-    """
-    if isinstance(file, BIDSFile):
-        return file.tags['extension'].value
-    elif isinstance(file, Path):
-        return "".join(file.suffixes)
-    else:
-        raise NotImplementedError('File Format not supported')
 
 
 def files_in_path(fp_list: Union[Iterable, str, Path],
@@ -331,6 +262,24 @@ def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
     else:
         raise NotImplementedError('Expected str or Path or Iterable, '
                                   f'Got {type(files)}')
+
+
+def slugify(value, allow_unicode=False):
+    """
+    Taken from https://github.com/django/django/blob/master/django/utils/text.py
+    Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
+    dashes to single dashes. Remove characters that aren't alphanumerics,
+    underscores, or hyphens. Convert to lowercase. Also strip leading and
+    trailing whitespace, dashes, and underscores.
+    """
+    value = str(value)
+    if allow_unicode:
+        value = unicodedata.normalize('NFKC', value)
+    else:
+        value = unicodedata.normalize(
+            'NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value.lower())
+    return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 
 def check_mrds_extension(filepath: Union[str, Path]):

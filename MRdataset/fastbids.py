@@ -1,10 +1,11 @@
 """ FastBIDSDataset class to manage BIDS datasets without BIDSLayout object"""
 from pathlib import Path
 
-from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.config import VALID_BIDS_EXTENSIONS, VALID_DATATYPES
+from MRdataset.base import BaseDataset, Modality, Subject, Session
+from MRdataset.bids_utils import parse, is_valid_bidsfile, combine_entity_labels
+from MRdataset.config import DatasetEmptyException
 from MRdataset.log import logger
-from MRdataset.utils import select_parameters, files_in_path, get_ext
+from MRdataset.utils import files_in_path
 
 
 # TODO: check what if each variable is None. Apply try catch
@@ -35,7 +36,7 @@ class FastBIDSDataset(BaseDataset):
             directory to store cache
         include_nifti_header :
             whether to check nifti headers for compliance,
-            only used when --style==bids
+            only used when --ds_format==bids
         Examples
         --------
         >>> from MRdataset.fastbids import FastBIDSDataset
@@ -56,84 +57,34 @@ class FastBIDSDataset(BaseDataset):
         """
         # TODO: Need to handle BIDS datasets without JSON files
         for file in files_in_path(self.data_source):
-            ext = get_ext(file)
-            if ext in VALID_BIDS_EXTENSIONS:
+            if is_valid_bidsfile(file):
                 self.read_single(file)
         if not self.modalities:
-            raise ValueError('Expected Sidecar JSON files in '
-                             '--data_source. Got 0 JSON files.')
+            raise DatasetEmptyException
 
-    def read_single(self, file):
-        datatype = file.parent.name
-        if datatype not in VALID_DATATYPES:
-            return
-        modality_obj = self.get_modality_by_name(datatype)
-        if modality_obj is None:
-            modality_obj = Modality(datatype)
-        n_sess = file.parents[1].name
-        n_sub = file.parents[2].name
+    def read_single(self, filepath):
+        datatype = filepath.parent.name
+        n_sess = filepath.parents[1].name
+        n_sub = filepath.parents[2].name
         if 'sub' in n_sess:
             logger.info('Sessions dont exist')
             n_sess = 'ses-01'
-            n_sub = file.parents[1].name
+            n_sub = filepath.parents[1].name
+        modality_name = combine_entity_labels(filepath.name, datatype)
+        modality_obj = self.get_modality_by_name(modality_name)
+        if modality_obj is None:
+            modality_obj = Modality(modality_name)
         subject_obj = modality_obj.get_subject_by_name(n_sub)
         if subject_obj is None:
             subject_obj = Subject(n_sub)
         session_node = subject_obj.get_session_by_name(n_sess)
         if session_node is None:
             session_node = Session(n_sess)
-            session_node = self.parse(session_node,
-                                      file)
-            if session_node.runs:
-                subject_obj.add_session(session_node)
-            if subject_obj.sessions:
-                modality_obj.add_subject(subject_obj)
+        session_node = parse(session_node,
+                             filepath)
+        if session_node.runs:
+            subject_obj.add_session(session_node)
+        if subject_obj.sessions:
+            modality_obj.add_subject(subject_obj)
         if modality_obj.subjects:
             self.add_modality(modality_obj)
-
-    def parse(self, session_node: Session, filepath: Path) -> Session:
-        """
-            Extracts parameters for a file. Adds the parameters as a
-            new run node to given session node, returns modified session node.
-
-            Parameters
-            ----------
-            filepath : Path
-                path to the file
-            session_node : MRdataset.base.Session
-                session node to which the run node has to be added
-
-            Returns
-            -------
-            session_node : MRdataset.base.Session
-                modified session_node which also contains the new run
-            """
-
-        filename = filepath.stem
-        params_from_file = {}
-        filepath = filepath.parent / (filepath.stem + '.json')
-        if filepath.is_file():
-            params_from_file.update(select_parameters(filepath))
-
-        if self.include_nifti_header:
-            filepath = filepath.parent / (filepath.stem + '.nii')
-            if filepath.is_file():
-                params_from_file.update(select_parameters(filepath))
-
-            filepath = filepath.parent / (filepath.stem + '.nii.gz')
-            if filepath.is_file():
-                params_from_file.update(select_parameters(filepath))
-
-        if params_from_file:
-            run_node = session_node.get_run_by_name(filename)
-            if run_node is None:
-                run_node = Run(filename)
-            for k, v in params_from_file.items():
-                run_node.params[k] = v
-            echo_time = params_from_file.get('EchoTime', 1.0)
-            if not isinstance(echo_time, (int, float)):
-                echo_time = 1.0
-            run_node.echo_time = echo_time
-            session_node.add_run(run_node)
-        return session_node
-

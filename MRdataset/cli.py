@@ -18,7 +18,7 @@ def main():
     required.add_argument('-d', '--data-source', type=str, required=True,
                           help='directory containing downloaded dataset with '
                                'dicom files, supports nested hierarchies')
-    optional.add_argument('-s', '--style', type=str, default='dicom',
+    optional.add_argument('-f', '--format', type=str, default='dicom',
                           help='choose type of dataset, expected'
                                'one of [dicom|bids|pybids]')
     optional.add_argument('-n', '--name', type=str,
@@ -35,21 +35,21 @@ def main():
                                'aahead_scout')
     optional.add_argument('--include-nifti-header', action='store_true',
                           help='whether to check nifti headers for compliance,'
-                               'only used when --style==bids')
+                               'only used when --format==bids')
     args = parser.parse_args()
     if not Path(args.data_source).is_dir():
         raise OSError('Expected valid directory for --data_source argument, '
                       f'Got {args.data_source}')
     if args.include_nifti_header:
-        if args.style != 'bids':
-            raise SyntaxError('--include-nifti-header for style=bids')
+        if args.format != 'bids':
+            raise SyntaxError('--include-nifti-header for format=bids')
     if args.verbose:
         logger.setLevel('INFO')
     else:
         logger.setLevel('WARNING')
 
     dataset = import_dataset(data_source=args.data_source,
-                             style=args.style,
+                             ds_format=args.format,
                              name=args.name,
                              include_phantom=args.include_phantom,
                              verbose=args.verbose,

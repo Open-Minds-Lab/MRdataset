@@ -9,7 +9,7 @@ from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
     combine_varying_params
 from MRdataset.log import logger
 from MRdataset.utils import param_difference, files_in_path
-
+from MRdataset.config import DatasetEmptyException
 
 # Module-level logger
 # logger = logging.getLogger('root')
@@ -102,11 +102,31 @@ class DicomDataset(BaseDataset):
 
                     run_name = is_same_set(dicom)
                     run_node = session_node.get_run_by_name(run_name)
+                    # Cast as int as sometime it may return a MultiValue type
+                    # TODO: check Rembrandt dataset
+                    try:
+                        echo_numbers = int(dicom.get('EchoNumbers', None))
+                    except TypeError as e:
+                        echo_numbers = 1
+                        logger.warning(f'Got {e}')
+
                     if run_node is None:
                         run_node = Run(run_name)
-                        run_node.echo_time = dicom.get('EchoTime', 1.0)
-                    # TODO: dcm img params doesnt make sense
-
+                        # Create bins for each echo time. If echo numbers
+                        # is 1, then it is a single echo time, so we put all
+                        # runs to default bin with echo time 1.0. This will not
+                        # affect the echo times on the report. And, if echo
+                        # numbers is greater than 1, then we create bins for
+                        # each differing echo time. Even though the variable
+                        # name is inconsistent, it is not a bug. Trying to make
+                        # as minimal changes as possible.
+                        # TODO: use array type instead of single value for echo
+                        #  time
+                        if echo_numbers > 1:
+                            run_node.echo_time = dicom.get('EchoTime', 1.0)
+                        else:
+                            run_node.echo_time = 1.0
+                    # TODO: dcm_img_params doesnt make sense
                     dcm_img_params = parse_imaging_params(filepath)
                     param_diff = param_difference(dcm_img_params,
                                                   run_node.params)
@@ -132,6 +152,6 @@ class DicomDataset(BaseDataset):
             except Exception as exc:
                 raise exc
         if no_files_found:
-            raise EOFError("Read 0 files")
+            raise DatasetEmptyException()
         if len(study_ids_found) > 1:
             logger.warning(config.MultipleProjectsInDataset(study_ids_found))

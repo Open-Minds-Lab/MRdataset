@@ -8,10 +8,10 @@ from typing import Union, Optional
 
 import dicom2nifti
 import pydicom
-
 from MRdataset import config
 from MRdataset import utils
 from MRdataset.log import logger
+from MRdataset.utils import slugify
 
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore')
@@ -58,14 +58,22 @@ def is_same_set(dicom: pydicom.FileDataset) -> str:
     Series identifier to which this DICOM should be added to
     """
     series_uid = dicom.get('SeriesInstanceUID', None)
-    # echo_num = dicom.get('EchoNumbers', None)
-    echo_time = dicom.get('EchoTime', None)
-    # if echo_num:
-    #     run_name = series_uid + '_e' + str(dicom.EchoNumbers)
-    if echo_time:
-        run_name = series_uid + '_e' + str(dicom.EchoTime)
+    # Convert pydicom.valuerep.MultiValue to int
+    try:
+        echo_num = int(dicom.get('EchoNumbers', None))
+    except TypeError as e:
+        echo_num = 1
+        logger.warning(f'Got {e}')
+    # Need to convert pydicom.valuerep.DSfloat to float
+    # echo_time = float(dicom.get('EchoTime', None))
+    if echo_num > 1:
+        run_name = series_uid + '_en_' + str(echo_num)
     else:
         run_name = series_uid
+    #     run_name = series_uid
+    # else:
+    # else:
+    # run_name = series_uid
     return run_name
 
 
@@ -175,7 +183,7 @@ def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:
         property1 = dicom.get('ProtocolName', None)
     if property1 is None:
         return 'MR_image'
-    ret_value = str(property1.replace(' ', '_'))
+    ret_value = slugify(property1)
     if ret_value:
         return ret_value
     return 'MR_image'
@@ -261,7 +269,7 @@ def parse_imaging_params(dicom_path: Union[str, Path]) -> dict:
         # a dictionary will be used later to count the majority value
         if not isinstance(value, str):
             if isinstance(value, Iterable):
-                value = '_'.join(value)
+                value = '_'.join([str(i) for i in sorted(value)])
             elif not utils.is_hashable(value):
                 value = str(value)
         params[k] = value
@@ -361,11 +369,11 @@ def csa_parser(dicom: pydicom.FileDataset) -> dict:
         raise AttributeError('CSA Header exists, but xProtocol is missing')
 
     slice_code = get_csa_props('sKSpace.ucMultiSliceMode', text)
-    slice_mode = config.SLICE_MODE.get(slice_code, None)
+    slice_mode = config.SLICE_MODE.get(slice_code, slice_code)
     ipat_code = get_csa_props('sPat.ucPATMode', text)
-    ipat = config.PAT.get(ipat_code, None)
+    ipat = config.PAT.get(ipat_code, ipat_code)
     shim_code = get_csa_props('sAdjData.uiAdjShimMode', text)
-    shim = config.SHIM.get(shim_code, None)
+    shim = config.SHIM.get(shim_code, shim_code)
 
     return {
         'slice_mode': slice_mode,

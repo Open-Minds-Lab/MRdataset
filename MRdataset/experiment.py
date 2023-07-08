@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import UserDict
 from pathlib import Path
 from warnings import warn
+from typing import List
 
 from protocol import ImagingSequence
 from pydicom import dcmread
@@ -62,7 +63,7 @@ class Session(UserDict):
     def __init__(self,
                  session_id='SessionID',
                  subject_id='SubjectID',
-                 runs: list[Run] = None):
+                 runs: List[Run] = None):
         """constructor"""
 
         super().__init__()
@@ -76,7 +77,7 @@ class Subject(UserDict):
 
     def __init__(self,
                  subject_id='SubjectID',
-                 sessions: list[Session] = None):
+                 sessions: List[Session] = None):
         """constructor"""
 
         super().__init__()
@@ -91,7 +92,7 @@ class BaseDataset(ABC):
                  root,
                  name: str = 'Dataset',
                  format: str = 'DICOM',
-                 subjects: list[Subject] = None):
+                 subjects: List[Subject] = None):
         """constructor"""
 
         fp = Path(root).resolve()

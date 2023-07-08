@@ -204,7 +204,7 @@ def files_in_path(fp_list: Union[Iterable, str, Path],
 
 def folders_with_min_files(root: Union[Path, str],
                            pattern: Optional[str] = "*.dcm",
-                           min_count=3) -> list[Path]:
+                           min_count=3) -> List[Path]:
     """
     Returns all the folders with at least min_count of files matching the pattern
     One at time via generator.

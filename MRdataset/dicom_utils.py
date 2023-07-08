@@ -43,6 +43,25 @@ def is_dicom_file(filename: str):
         return True
 
 
+def get_metadata(dicom):
+    """Returns basic metadata such as subject, session and run IDs"""
+
+    if not isinstance(dicom, pydicom.FileDataset):
+        raise TypeError('Input must be a pre-read pydicom object.')
+
+    #   name: SeriesNumber_Suffix
+    #   priority order: SeriesDescription, SequenceName, ProtocolName
+    seq_name = get_sequence(dicom)
+
+    subject_id = str(dicom.get('PatientID', None))
+
+    # series number is a proxy for session?
+    # session_id = str(dicom.get('SeriesNumber', None))
+    session_id = str(dicom.get('StudyInstanceUID', None))
+
+    run_name = dicom.get('SeriesInstanceUID', None)
+
+
 def is_same_set(dicom: pydicom.FileDataset) -> str:
     """
     Provides a unique id for Series, to which the input dicom file
@@ -158,6 +177,37 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     if age == '001D':
         return True
     return False
+
+
+def get_sequence(dicom: pydicom.FileDataset) -> str:
+    """
+    Infer modality through dicom tags. In most cases series_description
+    should explain the modality of the volume, otherwise either use sequence
+    name or protocol name from DICOM metadata
+
+    Parameters
+    ----------
+    dicom : pydicom.FileDataset
+        dicom object read from pydicom.read_file
+
+    Returns
+    -------
+    str
+    """
+
+    value = dicom.get('SeriesDescription', None)
+    if value is None:
+        value = dicom.get('SequenceName', None)
+    if value is None:
+        value = dicom.get('ProtocolName', None)
+
+    if value is None:
+        raise ValueError('Could not query either '
+                         'SequenceName or SeriesDescription or ProtocolName')
+
+    value = str(value.replace(" ", "_"))
+
+    return value
 
 
 def get_dicom_modality_tag(dicom: pydicom.FileDataset) -> str:

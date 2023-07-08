@@ -37,7 +37,6 @@ class Run(UserDict):
 
     """
 
-
     def __init__(self,
                  session_id: str = 'SessionID',
                  subject_id: str = 'SubjectID',
@@ -60,7 +59,6 @@ class Session(UserDict):
     - like a Visit in longitudinal studies
     """
 
-
     def __init__(self,
                  session_id='SessionID',
                  subject_id='SubjectID',
@@ -76,7 +74,6 @@ class Session(UserDict):
 class Subject(UserDict):
     """base class for all subjects"""
 
-
     def __init__(self,
                  subject_id='SubjectID',
                  sessions: list[Session] = None):
@@ -89,7 +86,6 @@ class Subject(UserDict):
 
 class BaseDataset(ABC):
     """base class for all MR datasets"""
-
 
     def __init__(self,
                  root,
@@ -132,7 +128,6 @@ class BaseDataset(ABC):
                               'root',
                               'subjects'])
 
-
     def _reload_saved(self):
         """helper to reload previously saved MRdataset"""
 
@@ -152,13 +147,12 @@ class BaseDataset(ABC):
             self._reloaded = True
             print(self)
 
-
     @abstractmethod
     def load(self):
         """default method to load the dataset"""
 
-
-    def _tree_add_node(self, subject_id, session_id, run_id, seq_name, seq_info):
+    def _tree_add_node(self, subject_id, session_id, run_id, seq_name,
+                       seq_info):
         """helper to add nodes deep in the tree
 
         hierarchy: Subject > Session > Sequence > Run
@@ -176,17 +170,14 @@ class BaseDataset(ABC):
 
         self._tree_map[subject_id][session_id][seq_name][run_id] = seq_info
 
-
     def __str__(self):
         """readable summary"""
 
         return "{} subjects with {} sessions in total" \
                "".format(len(self._tree_map), len(self._flat_map))
 
-
     def __repr__(self):
         return self.__str__()
-
 
     def add(self, subject_id, session_id, run_id, seq_id, seq):
         """adds a given subject, session or run to the dataset"""
@@ -209,18 +200,15 @@ class BaseDataset(ABC):
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)
 
-
     def get(self, subject_id, session_id, run_id, seq_id):
         """returns a given subject/session/seq/run from the dataset"""
 
         return self._tree_map[subject_id][session_id][seq_id][run_id]
 
-
     def __getitem__(self, subject_id):
         """intuitive getter"""
 
         return self._tree_map[subject_id]
-
 
     def save(self, out_path=None):
         """offloads the data structure to disk for quicker reload"""
@@ -242,7 +230,6 @@ class BaseDataset(ABC):
         else:
             print('No subjects exist in the dataset. Not saving it!')
 
-
     def traverse_horizontal(self, seq_id):
         """method to traverse the dataset horizontally
             i.e., same sequence, across subjects
@@ -254,7 +241,6 @@ class BaseDataset(ABC):
                     for run in self._tree_map[subj][sess][seq_id]:
                         yield (subj, sess, run,
                                self._tree_map[subj][sess][seq_id][run])
-
 
     def traverse_vertical2(self, seq_one, seq_two):
         """
@@ -288,7 +274,6 @@ class BaseDataset(ABC):
         if count < 1:
             print('There were no sessions/runs with both these sequences!')
 
-
     def traverse_vertical_multi(self, *seq_ids):
         """
          method to traverse the dataset horizontally
@@ -321,8 +306,8 @@ class BaseDataset(ABC):
                     yield subj, sess, runs, out_seqs
 
         if count < 1:
-            print(f'There were no sessions with all {len(seq_ids)} input sequences!')
-
+            print(
+                f'There were no sessions with all {len(seq_ids)} input sequences!')
 
     @staticmethod
     def _first_run_from_sequences(seq_list):
@@ -340,12 +325,12 @@ class BaseDataset(ABC):
 
         return run_list
 
-
     @staticmethod
     def _run_combinations_across_sequences(seq_list):
         """returns a combinatorial pairs of runs from sequence list"""
 
-        run_lists = [list(seq.key()) for seq in seq_list if len(seq.keys()) >= 1]
+        run_lists = [list(seq.key()) for seq in seq_list if
+                     len(seq.keys()) >= 1]
 
         for ii in range(len(run_lists)):
             # remaining lists
@@ -357,7 +342,6 @@ class BaseDataset(ABC):
                         yield run_lists[ii][kk], run_lists[jj][qq]
 
         return run_lists
-
 
     @staticmethod
     def _link_runs_across_sequences(seq_one, seq_two):
@@ -378,7 +362,6 @@ class BaseDataset(ABC):
 
 class DicomDataset(BaseDataset, ABC):
     """Class to represent a DICOM dataset"""
-
 
     def __init__(self,
                  root,
@@ -401,7 +384,6 @@ class DicomDataset(BaseDataset, ABC):
 
         print('')
 
-
     def load(self, refresh=False):
         """default method to load the dataset"""
 
@@ -409,7 +391,8 @@ class DicomDataset(BaseDataset, ABC):
             self._reload_saved()
             return
 
-        sub_folders = folders_with_min_files(self.root, self.pattern, self.min_count)
+        sub_folders = folders_with_min_files(self.root, self.pattern,
+                                             self.min_count)
 
         for folder in sub_folders:
             try:
@@ -419,11 +402,11 @@ class DicomDataset(BaseDataset, ABC):
                 print(f'Unable to process {folder}. Skipping it.')
             else:
                 self.add(subject_id, session_id, run_id, seq_name, seq_info)
-                print(f'added {subject_id} session {session_id:80} -- {seq_name}')
+                print(
+                    f'added {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
         self.save()
-
 
     def _process_slice_collection(self, folder):
         """reads the dicom slices and runs some basic validation on them!"""
@@ -434,8 +417,9 @@ class DicomDataset(BaseDataset, ABC):
         dcm_files = sorted(folder.glob(self.pattern))
 
         if len(dcm_files) < 1:
-            warn(f'no files matching the pattern {self.pattern} found in {folder}',
-                 UserWarning)
+            warn(
+                f'no files matching the pattern {self.pattern} found in {folder}',
+                UserWarning)
 
         # run some basic validation of these dcm slice collection
         #   SeriesInstanceUID must match

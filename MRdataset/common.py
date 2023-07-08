@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union, List
 
 
-from MRdataset import dicom, naive_bids, fastbids
+from MRdataset import dicom, naive_bids, fastbids, experiment
 from MRdataset.base import BaseDataset
 from MRdataset.config import VALID_DATASET_STYLES
 from MRdataset.log import logger
@@ -87,7 +87,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         name=name,
         **_kwargs
     )
-    dataset.walk()
+    dataset.load()
     if name:
         dataset.name = name
     # Print dataset summary
@@ -114,7 +114,7 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
     """
     # Import the module "{ds_format}_dataset.py"
     if dataset_ds_format == 'dicom':
-        dataset_class = dicom.DicomDataset
+        dataset_class = experiment.DicomDataset
     elif dataset_ds_format == 'pybids':
         dataset_class = naive_bids.BIDSDataset
     elif dataset_ds_format == 'bids':

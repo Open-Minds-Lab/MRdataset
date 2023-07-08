@@ -8,7 +8,7 @@ dcm_root = base_dir / ds_name
 
 # dcm_root = Path('/Users/Reddy/Downloads/dicom/wpc7888/2023.01.19-14.16.55/50250')
 
-ds = DicomDataset(root=dcm_root, pattern='*', name=ds_name)
+ds = DicomDataset(data_source=dcm_root, pattern='*', name=ds_name)
 ds.load(refresh=False)
 
 # {'ABCD-T1,_GE,_original_(baseline_year_1_arm_1)',

@@ -61,6 +61,8 @@ def get_metadata(dicom):
 
     run_name = dicom.get('SeriesInstanceUID', None)
 
+    return seq_name, subject_id, session_id, run_name
+
 
 def is_same_set(dicom: pydicom.FileDataset) -> str:
     """

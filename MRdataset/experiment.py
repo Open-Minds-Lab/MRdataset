@@ -89,21 +89,23 @@ class BaseDataset(ABC):
     """base class for all MR datasets"""
 
     def __init__(self,
-                 root,
+                 data_source,
+                 is_complete: bool = True,
                  name: str = 'Dataset',
-                 format: str = 'DICOM',
+                 ds_format: str = 'dicom',
                  subjects: List[Subject] = None):
         """constructor"""
 
-        fp = Path(root).resolve()
+        fp = Path(data_source).resolve()
         if fp.exists():
-            self.root = fp
+            self.data_source = fp
         else:
             raise IOError('Root folder for {} does not exist at {}'
                           ''.format(name, fp))
 
         self.name = name
-        self.format = format
+        self.format = ds_format
+        self.is_complete = is_complete
 
         self.subjects = subjects
         self._subj_ids = set()
@@ -115,7 +117,7 @@ class BaseDataset(ABC):
         self._seqs_map = dict()
         self._sess_map = dict()
 
-        self._saved_path = self.root / "mrdataset" / "mrdataset.pkl"
+        self._saved_path = self.data_source / "mrdataset" / "mrdataset.pkl"
         self._reloaded = False
 
         self._key_vars = set(['_flat_map',  # noqa
@@ -365,17 +367,18 @@ class DicomDataset(BaseDataset, ABC):
     """Class to represent a DICOM dataset"""
 
     def __init__(self,
-                 root,
-                 pattern="*.dcm",
+                 data_source,
+                 pattern="*",
                  name='DicomDataset',
-                 include_phantoms=False):
+                 include_phantom=False,
+                 **kwargs):
         """constructor"""
 
-        super().__init__(root=root, name=name, format='DICOM')
+        super().__init__(data_source=data_source, name=name, ds_format='DICOM')
 
-        self.include_phantoms = include_phantoms
+        self.include_phantom = include_phantom
         self.pattern = pattern
-        self.min_count = 3  # min slice count to be considered a volume
+        self.min_count = 1  # min slice count to be considered a volume
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
@@ -392,7 +395,7 @@ class DicomDataset(BaseDataset, ABC):
             self._reload_saved()
             return
 
-        sub_folders = folders_with_min_files(self.root, self.pattern,
+        sub_folders = folders_with_min_files(self.data_source, self.pattern,
                                              self.min_count)
 
         for folder in sub_folders:
@@ -435,7 +438,7 @@ class DicomDataset(BaseDataset, ABC):
                 print(f'Invalid DICOM file at {dcm_path}')
                 continue
 
-            if not is_valid_inclusion(dcm_path, dicom, self.include_phantoms):
+            if not is_valid_inclusion(dcm_path, dicom, self.include_phantom):
                 continue
 
             seq_name, subject_id, session_id, run_name = get_metadata(dicom)

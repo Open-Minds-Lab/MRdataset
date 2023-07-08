@@ -9,7 +9,9 @@ from protocol import ImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
-from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion)
+from MRdataset.log import logger
+from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion,
+                                   is_dicom_file)
 from MRdataset.utils import folders_with_min_files
 
 
@@ -383,17 +385,17 @@ class DicomDataset(BaseDataset, ABC):
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
 
-        if self._saved_path.exists():
-            self._reload_saved()
+        # if self._saved_path.exists():
+        #     self._reload_saved()
 
-        print('')
+        # print('')
 
     def load(self, refresh=False):
         """default method to load the dataset"""
 
-        if self._saved_path.exists() and not refresh:
-            self._reload_saved()
-            return
+        # if self._saved_path.exists() and not refresh:
+        #     self._reload_saved()
+        #     return
 
         sub_folders = folders_with_min_files(self.data_source, self.pattern,
                                              self.min_count)
@@ -410,7 +412,7 @@ class DicomDataset(BaseDataset, ABC):
                     f'added {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
-        self.save()
+        # self.save()
 
     def _process_slice_collection(self, folder):
         """reads the dicom slices and runs some basic validation on them!"""
@@ -431,6 +433,8 @@ class DicomDataset(BaseDataset, ABC):
 
         non_compliant = list()
         for idx, dcm_path in enumerate(dcm_files):
+            if not is_dicom_file(dcm_path):
+                continue
 
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)

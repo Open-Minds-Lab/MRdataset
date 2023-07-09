@@ -455,6 +455,7 @@ class DicomDataset(BaseDataset, ABC):
                 if not cur_slice == first_slice:  # noqa
                     non_compliant.append(cur_slice)
 
+        # TODO: Consider using EchoNumbers to determine multi-echo
         first_slice.multi_echo = False
         if len(non_compliant) > 1:
             echo_times = set()

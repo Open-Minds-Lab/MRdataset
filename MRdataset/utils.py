@@ -2,6 +2,7 @@ import functools
 import re
 import tempfile
 import time
+import json
 import typing
 import unicodedata
 import uuid
@@ -413,3 +414,17 @@ def is_writable(dir_path):
         return False
     return True
 
+
+def read_json(filepath:Path):
+    if isinstance(filepath, str):
+        filepath = Path(filepath)
+
+    if not filepath.is_file():
+        raise FileNotFoundError(f'File not found: {filepath}')
+
+    with open(filepath, 'r') as fp:
+        try:
+            dict_ =  json.load(fp)
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'Error while reading {filepath}: {e}')
+    return dict_

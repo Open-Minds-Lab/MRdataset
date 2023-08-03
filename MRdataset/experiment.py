@@ -98,12 +98,7 @@ class BaseDataset(ABC):
                  subjects: List[Subject] = None):
         """constructor"""
 
-        fp = Path(data_source).resolve()
-        if fp.exists():
-            self.data_source = fp
-        else:
-            raise IOError('Root folder for {} does not exist at {}'
-                          ''.format(name, fp))
+        self.data_source = data_source
 
         self.name = name
         self.format = ds_format
@@ -377,7 +372,7 @@ class DicomDataset(BaseDataset, ABC):
         """constructor"""
 
         super().__init__(data_source=data_source, name=name, ds_format='DICOM')
-
+        self.data_source = valid_dirs(data_source)
         self.include_phantom = include_phantom
         self.pattern = pattern
         self.min_count = 1  # min slice count to be considered a volume

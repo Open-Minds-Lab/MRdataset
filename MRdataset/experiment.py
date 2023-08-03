@@ -372,6 +372,7 @@ class DicomDataset(BaseDataset, ABC):
                  pattern="*",
                  name='DicomDataset',
                  include_phantom=False,
+                 config_path=None,
                  **kwargs):
         """constructor"""
 
@@ -380,7 +381,9 @@ class DicomDataset(BaseDataset, ABC):
         self.include_phantom = include_phantom
         self.pattern = pattern
         self.min_count = 1  # min slice count to be considered a volume
-
+        self.config_path = config_path
+        self.config_dict = read_json(self.config_path)
+        self.imaging_params = self.config_dict['include_parameters']
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
 
@@ -448,9 +451,11 @@ class DicomDataset(BaseDataset, ABC):
             seq_name, subject_id, session_id, run_name = get_metadata(dicom)
 
             if idx == 0:
-                first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}')
+                first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
+                                              imaging_params=self.imaging_params)
             else:
-                cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}')
+                cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
+                                            imaging_params=self.imaging_params)
 
                 if not cur_slice == first_slice:  # noqa
                     non_compliant.append(cur_slice)
@@ -466,3 +471,4 @@ class DicomDataset(BaseDataset, ABC):
                 first_slice.multi_echo = True
 
         return seq_name, first_slice, subject_id, session_id, run_name  # noqa
+

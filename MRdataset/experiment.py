@@ -12,7 +12,7 @@ from pydicom.errors import InvalidDicomError
 from MRdataset.log import logger
 from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion,
                                    is_dicom_file)
-from MRdataset.utils import folders_with_min_files
+from MRdataset.utils import folders_with_min_files, read_json, valid_dirs
 
 
 # A dataset is a collection of subjects
@@ -114,7 +114,8 @@ class BaseDataset(ABC):
         self._seqs_map = dict()
         self._sess_map = dict()
 
-        self._saved_path = self.data_source / "mrdataset" / "mrdataset.pkl"
+        self._saved_path = ''
+            # self.data_source[0] / "mrdataset" / "mrdataset.pkl"
         self._reloaded = False
 
         self._key_vars = set(['_flat_map',  # noqa
@@ -127,6 +128,9 @@ class BaseDataset(ABC):
                               'name',
                               'root',
                               'subjects'])
+
+    def sequences(self):
+        return self._seq_ids
 
     def _reload_saved(self):
         """helper to reload previously saved MRdataset"""
@@ -392,19 +396,20 @@ class DicomDataset(BaseDataset, ABC):
         #     self._reload_saved()
         #     return
 
-        sub_folders = folders_with_min_files(self.data_source, self.pattern,
-                                             self.min_count)
+        for directory in self.data_source:
+            sub_folders = folders_with_min_files(directory, self.pattern,
+                                                 self.min_count)
 
-        for folder in sub_folders:
-            try:
-                seq_name, seq_info, subject_id, session_id, run_id = \
-                    self._process_slice_collection(folder)
-            except:
-                print(f'Unable to process {folder}. Skipping it.')
-            else:
-                self.add(subject_id, session_id, run_id, seq_name, seq_info)
-                print(
-                    f'added {subject_id} session {session_id:80} -- {seq_name}')
+            for folder in sub_folders:
+                try:
+                    seq_name, seq_info, subject_id, session_id, run_id = \
+                        self._process_slice_collection(folder)
+                except:
+                    print(f'Unable to process {folder}. Skipping it.')
+                else:
+                    self.add(subject_id, session_id, run_id, seq_name, seq_info)
+                    # print(
+                    #     f'added {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
         # self.save()

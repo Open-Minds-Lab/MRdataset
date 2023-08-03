@@ -15,10 +15,9 @@ from MRdataset.utils import random_name, check_mrds_extension
 def import_dataset(data_source: Union[str, List, Path] = None,
                    ds_format: str = 'dicom',
                    name: str = None,
-                   include_phantom: bool = False,
                    verbose: bool = False,
-                   include_nifti_header: bool = False,
                    is_complete: bool = True,
+                   config_path = None,
                    **_kwargs) -> 'BaseDataset':
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
@@ -80,11 +79,10 @@ def import_dataset(data_source: Union[str, List, Path] = None,
     # Instantiate dataset class
     dataset = dataset_class(
         data_source=data_source,
-        include_phantom=include_phantom,
         verbose=verbose,
-        include_nifti_header=include_nifti_header,
         is_complete=is_complete,
         name=name,
+        config_path=config_path,
         **_kwargs
     )
     dataset.load()

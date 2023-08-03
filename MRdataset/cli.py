@@ -30,19 +30,10 @@ def main():
                           help='flag dataset as a partial dataset')
     optional.add_argument('-v', '--verbose', action='store_true',
                           help='allow verbose output on console')
-    optional.add_argument('--include-phantom', action='store_true',
-                          help='whether to include phantom, localizer, '
-                               'aahead_scout')
-    optional.add_argument('--include-nifti-header', action='store_true',
-                          help='whether to check nifti headers for compliance,'
-                               'only used when --format==bids')
     args = parser.parse_args()
     if not Path(args.data_source).is_dir():
         raise OSError('Expected valid directory for --data_source argument, '
                       f'Got {args.data_source}')
-    if args.include_nifti_header:
-        if args.format != 'bids':
-            raise SyntaxError('--include-nifti-header for format=bids')
     if args.verbose:
         logger.setLevel('INFO')
     else:
@@ -51,9 +42,7 @@ def main():
     dataset = import_dataset(data_source=args.data_source,
                              ds_format=args.format,
                              name=args.name,
-                             include_phantom=args.include_phantom,
                              verbose=args.verbose,
-                             include_nifti_header=args.include_nifti_header,
                              is_complete=not args.is_partial)
     return dataset
 

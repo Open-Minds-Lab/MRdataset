@@ -129,8 +129,15 @@ class BaseDataset(ABC):
                               'root',
                               'subjects'])
 
-    def sequences(self):
-        return self._seq_ids
+    def get_sequence_ids(self):
+        # Cast to list so that it can be indexed, set is not subscriptable
+        return list(self._seq_ids)
+
+    def get_subject_ids(self, seq_id):
+        tuples = self._seqs_map[seq_id]
+        subj_ids = set([t[0] for t in tuples])
+        # Cast to list so that it can be indexed, set is not subscriptable
+        return list(subj_ids)
 
     def _reload_saved(self):
         """helper to reload previously saved MRdataset"""

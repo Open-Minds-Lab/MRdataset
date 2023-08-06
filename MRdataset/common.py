@@ -5,7 +5,7 @@ from typing import Union, List
 
 
 from MRdataset import dicom, naive_bids, fastbids, experiment
-from MRdataset.base import BaseDataset
+from MRdataset.experiment import BaseDataset
 from MRdataset.config import VALID_DATASET_STYLES
 from MRdataset.log import logger
 from MRdataset.utils import random_name, check_mrds_extension

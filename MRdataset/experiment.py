@@ -6,13 +6,15 @@ from warnings import warn
 from typing import List
 
 from protocol import ImagingSequence
+from protocol.imaging import EchoTime
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
 from MRdataset.log import logger
 from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion,
                                    is_dicom_file)
-from MRdataset.utils import folders_with_min_files, read_json, valid_dirs
+from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs,
+                             most_frequent)
 
 
 # A dataset is a collection of subjects
@@ -391,6 +393,7 @@ class DicomDataset(BaseDataset, ABC):
         self.config_path = config_path
         self.config_dict = read_json(self.config_path)
         self.imaging_params = self.config_dict['include_parameters']
+        self.use_echo_numbers = True
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
 
@@ -398,6 +401,22 @@ class DicomDataset(BaseDataset, ABC):
         #     self._reload_saved()
 
         # print('')
+
+    def _get_echo_times(self, non_compliant):
+        if self.use_echo_numbers:
+            etimes = dict()
+            for ncs in non_compliant:
+                enumber = ncs['EchoNumber'].value
+                if enumber not in etimes:
+                    etimes[enumber] = []
+                etimes[enumber].append(ncs['EchoTime'].value)
+            echo_times = [most_frequent(v) for k, v in etimes.items()]
+        else:
+            echo_times = set()
+            echo_times.add(first_slice['EchoTime'].value)
+            for ncs in non_compliant:
+                echo_times.add(ncs['EchoTime'].value)
+        return echo_times
 
     def load(self, refresh=False):
         """default method to load the dataset"""
@@ -411,15 +430,13 @@ class DicomDataset(BaseDataset, ABC):
                                                  self.min_count)
 
             for folder in sub_folders:
-                try:
-                    seq_name, seq_info, subject_id, session_id, run_id = \
-                        self._process_slice_collection(folder)
-                except:
-                    print(f'Unable to process {folder}. Skipping it.')
+                metadata = None
+                metadata = self._process_slice_collection(folder)
+                if metadata is None:
+                    logger.info(f'Unable to process {folder}. Skipping it.')
                 else:
+                    seq_name, seq_info, subject_id, session_id, run_id = metadata
                     self.add(subject_id, session_id, run_id, seq_name, seq_info)
-                    # print(
-                    #     f'added {subject_id} session {session_id:80} -- {seq_name}')
 
         # saving a copy for quicker reload
         # self.save()
@@ -433,7 +450,7 @@ class DicomDataset(BaseDataset, ABC):
         dcm_files = sorted(folder.glob(self.pattern))
 
         if len(dcm_files) < 1:
-            warn(
+            logger.warn(
                 f'no files matching the pattern {self.pattern} found in {folder}',
                 UserWarning)
 
@@ -442,6 +459,7 @@ class DicomDataset(BaseDataset, ABC):
         #   parameter values must match, except echo time
 
         non_compliant = list()
+        first_slice = None
         for idx, dcm_path in enumerate(dcm_files):
             if not is_dicom_file(dcm_path):
                 continue
@@ -449,7 +467,7 @@ class DicomDataset(BaseDataset, ABC):
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)
             except InvalidDicomError:
-                print(f'Invalid DICOM file at {dcm_path}')
+                logger.info(f'Invalid DICOM file at {dcm_path}')
                 continue
 
             if not is_valid_inclusion(dcm_path, dicom, self.include_phantom):
@@ -459,23 +477,19 @@ class DicomDataset(BaseDataset, ABC):
 
             if idx == 0:
                 first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
-                                              imaging_params=self.imaging_params)
+                                              imaging_params=self.imaging_params,
+                                              path=folder)
             else:
                 cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
-                                            imaging_params=self.imaging_params)
+                                            imaging_params=self.imaging_params,
+                                            path=folder)
 
-                if not cur_slice == first_slice:  # noqa
+                if all(cur_slice != slice for slice in non_compliant):  # noqa
                     non_compliant.append(cur_slice)
 
-        # TODO: Consider using EchoNumbers to determine multi-echo
-        first_slice.multi_echo = False
-        if len(non_compliant) > 1:
-            echo_times = set()
-            echo_times.add(first_slice['EchoTime'].value)
-            for ncs in non_compliant:
-                echo_times.add(ncs['EchoTime'].value)
-            if len(echo_times) > 1:
-                first_slice.multi_echo = True
-
-        return seq_name, first_slice, subject_id, session_id, run_name  # noqa
-
+        if first_slice is not None:
+            first_slice.multi_echo = False
+            echo_times = self._get_echo_times(non_compliant)
+            first_slice.set_echo_times(echo_times)
+            return seq_name, first_slice, subject_id, session_id, run_name  # noqa
+        return None

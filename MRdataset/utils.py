@@ -428,3 +428,7 @@ def read_json(filepath:Path):
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Error while reading {filepath}: {e}')
     return dict_
+
+
+def most_frequent(list_):
+    return max(set(list_), key=list_.count)

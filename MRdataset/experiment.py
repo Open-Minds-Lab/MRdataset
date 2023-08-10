@@ -1,4 +1,5 @@
 import pickle
+from tqdm import tqdm
 from abc import ABC, abstractmethod
 from collections import UserDict
 from pathlib import Path
@@ -136,6 +137,8 @@ class BaseDataset(ABC):
         return list(self._seq_ids)
 
     def get_subject_ids(self, seq_id):
+        if seq_id not in self._seqs_map.keys():
+            return []
         tuples = self._seqs_map[seq_id]
         subj_ids = set([t[0] for t in tuples])
         # Cast to list so that it can be indexed, set is not subscriptable
@@ -396,27 +399,11 @@ class DicomDataset(BaseDataset, ABC):
         self.use_echo_numbers = True
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
-
+        self._variable_params = ['EchoTime', 'EchoNumber']
         # if self._saved_path.exists():
         #     self._reload_saved()
 
         # print('')
-
-    def _get_echo_times(self, non_compliant):
-        if self.use_echo_numbers:
-            etimes = dict()
-            for ncs in non_compliant:
-                enumber = ncs['EchoNumber'].value
-                if enumber not in etimes:
-                    etimes[enumber] = []
-                etimes[enumber].append(ncs['EchoTime'].value)
-            echo_times = [most_frequent(v) for k, v in etimes.items()]
-        else:
-            echo_times = set()
-            echo_times.add(first_slice['EchoTime'].value)
-            for ncs in non_compliant:
-                echo_times.add(ncs['EchoTime'].value)
-        return echo_times
 
     def load(self, refresh=False):
         """default method to load the dataset"""
@@ -428,8 +415,8 @@ class DicomDataset(BaseDataset, ABC):
         for directory in self.data_source:
             sub_folders = folders_with_min_files(directory, self.pattern,
                                                  self.min_count)
-
-            for folder in sub_folders:
+            sub_folders = list(sub_folders)
+            for folder in tqdm(sub_folders):
                 metadata = None
                 metadata = self._process_slice_collection(folder)
                 if metadata is None:

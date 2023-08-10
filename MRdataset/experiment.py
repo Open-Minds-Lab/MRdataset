@@ -466,6 +466,8 @@ class DicomDataset(BaseDataset, ABC):
                 first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
                                               imaging_params=self.imaging_params,
                                               path=folder)
+                non_compliant.append(first_slice)
+
             else:
                 cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
                                             imaging_params=self.imaging_params,
@@ -473,10 +475,26 @@ class DicomDataset(BaseDataset, ABC):
 
                 if all(cur_slice != slice for slice in non_compliant):  # noqa
                     non_compliant.append(cur_slice)
+        # TODO: The slices are checked in above code, if they are equal to another
+        #  slice in the same folder. This is not robust enough. In my opinion,
+        #  _process_slice_collection should only one think. After collecting
+        #  slice parameters a second pass should check for non-compliance within
+        #  all slices that share the same run_id. This is important, refer to
+        #  issue raised by Andrew on email dt. May 19 2023, There was an extra
+        #  slice (erroneously)
 
-        if first_slice is not None:
-            first_slice.multi_echo = False
-            echo_times = self._get_echo_times(non_compliant)
-            first_slice.set_echo_times(echo_times)
+        if len(non_compliant) > 0:
+            if self.use_echo_numbers:
+                echo_dict = dict()
+                for sl in non_compliant:
+                    enum = sl['EchoNumber'].value
+                    if enum not in echo_dict:
+                        echo_dict[enum] = sl['EchoTime'].value
+                first_slice.set_echo_times(echo_dict.values(), echo_dict.keys())
+            else:
+                echo_times = set()
+                for ncs in non_compliant:
+                    echo_times.add(ncs['EchoTime'].value)
+                first_slice.set_echo_times(echo_times, None)
             return seq_name, first_slice, subject_id, session_id, run_name  # noqa
         return None

@@ -1,157 +1,152 @@
-from pathlib import Path
+from tqdm import tqdm
+from abc import ABC
 
-import pydicom
+from protocol import ImagingSequence
+from pydicom import dcmread
+from pydicom.errors import InvalidDicomError
 
-from MRdataset import config
-from MRdataset.base import BaseDataset, Run, Modality, Subject, Session
-from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion, \
-    get_dicom_modality_tag, is_same_set, parse_imaging_params, \
-    combine_varying_params
-from MRdataset.log import logger
-from MRdataset.utils import param_difference, files_in_path
-from MRdataset.config import DatasetEmptyException
-
-# Module-level logger
-# logger = logging.getLogger('root')
+from MRdataset.base import BaseDataset
+from MRdataset import logger
+from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion,
+                                   is_dicom_file)
+from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
 
 
-# TODO: check what if each variable is None. Apply try catch
-class DicomDataset(BaseDataset):
-    """
-    Container to manage properties and issues of a dataset downloaded from
-    XNAT. Expects the data_source to be collection of dicom files, which may
-    belong to different subjects, modalities, sessions or runs.
+# A dataset is a collection of subjects
+# A subject is a collection of sessions
+# A session is a collection of runs
+# A run is one instance of a sequence;
+# A sequence can have multiple runs in a session
+# A sequence is a collection of parameters
+#
+# related useful references
+#   https://bids-specification.readthedocs.io/en/stable/appendices/entities.html
+#
+# dicom2nifti logic for naming files:
+# https://github.com/icometrix/dicom2nifti/blob
+# /ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
+#
 
-    Attributes
-    ----------
-    name : str
-        Identifier/name for the node
-    data_source : Path or str or Iterable
-        directories containing dicom files, supports nested hierarchies
-    include_phantom
-        Whether to include non-subject scans like localizer, acr/phantom,
-        head_scout
-    """
+
+class DicomDataset(BaseDataset, ABC):
+    """Class to represent a DICOM dataset"""
 
     def __init__(self,
-                 data_source=None,
+                 data_source,
+                 pattern="*",
+                 name='DicomDataset',
                  include_phantom=False,
-                 is_complete=True,
-                 name=None,
-                 **_kwargs):
+                 config_path=None,
+                 **kwargs):
+        """constructor"""
 
-        """
-        Parameters
-        ----------
-        name : str
-            an identifier/name for the dataset
-        data_source : Path or str or Iterable
-            directory containing dicom files, supports nested hierarchies
-        include_phantom : bool
-            whether to include localizer/aahead_scout/phantom/acr
-        is_complete : bool
-            whether the dataset is complete or partial (default: True)
-
-
-        Examples
-        --------
-        >>> from MRdataset import dicom
-        >>> dataset = dicom.DicomDataset()
-        """
-        super().__init__(data_source)
-        self.is_complete = is_complete
+        super().__init__(data_source=data_source, name=name, ds_format='DICOM')
+        self.data_source = valid_dirs(data_source)
         self.include_phantom = include_phantom
-        self.name = name
+        self.pattern = pattern
+        self.min_count = 1  # min slice count to be considered a volume
+        self.config_path = config_path
+        self.config_dict = read_json(self.config_path)
+        self.imaging_params = self.config_dict['include_parameters']
+        self.use_echo_numbers = True
+        # variables specific to this class
+        self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
+        self._variable_params = ['EchoTime', 'EchoNumber']
+        # if self._saved_path.exists():
+        #     self._reload_saved()
 
-    def walk(self):
-        """
-        Retrieves filenames in the directory tree, verifies if it is dicom
-        file, extracts relevant parameters and stores it in project. Creates
-        a desirable hierarchy for a neuroimaging experiment
-        """
-        no_files_found = True
-        study_ids_found = set()
+        # print('')
 
-        for filepath in files_in_path(self.data_source):
-            no_files_found = False
+    def load(self, refresh=False):
+        """default method to load the dataset"""
+
+        # if self._saved_path.exists() and not refresh:
+        #     self._reload_saved()
+        #     return
+
+        for directory in self.data_source:
+            sub_folders = folders_with_min_files(directory, self.pattern,
+                                                 self.min_count)
+            sub_folders = list(sub_folders)
+            for folder in tqdm(sub_folders):
+                metadata = None
+                metadata = self._process_slice_collection(folder)
+                if metadata is None:
+                    logger.info(f'Unable to process {folder}. Skipping it.')
+                else:
+                    seq_name, seq_info, subject_id, session_id, run_id = metadata
+                    self.add(subject_id, session_id, run_id, seq_name, seq_info)
+
+        # saving a copy for quicker reload
+        # self.save()
+
+    def _process_slice_collection(self, folder):
+        """reads the dicom slices and runs some basic validation on them!"""
+
+        # within a folder, a volume can be multi-echo, so we must read them all
+        #   and find a way to capture
+
+        dcm_files = sorted(folder.glob(self.pattern))
+
+        if len(dcm_files) < 1:
+            logger.warn(
+                f'no files matching the pattern {self.pattern} found in {folder}',
+                UserWarning)
+
+        # run some basic validation of these dcm slice collection
+        #   SeriesInstanceUID must match
+        #   parameter values must match, except echo time
+
+        non_compliant = list()
+        first_slice = None
+        for idx, dcm_path in enumerate(dcm_files):
+            if not is_dicom_file(dcm_path):
+                continue
+
             try:
-                if not is_dicom_file(filepath):
-                    logger.debug(
-                        "Not a DICOM file : {}".format(filepath))
-                    continue
-                # TODO: Read dicom file : 2
-                dicom = pydicom.read_file(filepath, stop_before_pixels=True)
-                if is_valid_inclusion(filepath,
-                                      dicom,
-                                      self.include_phantom):
+                dicom = dcmread(dcm_path, stop_before_pixels=True)
+            except InvalidDicomError:
+                logger.info(f'Invalid DICOM file at {dcm_path}')
+                continue
 
-                    modality_name = get_dicom_modality_tag(dicom)
-                    modality_obj = self.get_modality_by_name(modality_name)
-                    if modality_obj is None:
-                        modality_obj = Modality(modality_name)
+            if not is_valid_inclusion(dcm_path, dicom, self.include_phantom):
+                continue
 
-                    patient_id = str(dicom.get('PatientID', None))
-                    subject_obj = modality_obj.get_subject_by_name(patient_id)
-                    if subject_obj is None:
-                        subject_obj = Subject(patient_id)
+            seq_name, subject_id, session_id, run_name = get_metadata(dicom)
 
-                    series_num = str(dicom.get('SeriesNumber', None))
-                    session_node = subject_obj.get_session_by_name(series_num)
-                    if session_node is None:
-                        session_node = Session(series_num)
+            if idx == 0:
+                first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
+                                              imaging_params=self.imaging_params,
+                                              path=folder)
+                non_compliant.append(first_slice)
 
-                    run_name = is_same_set(dicom)
-                    run_node = session_node.get_run_by_name(run_name)
-                    # Cast as int as sometime it may return a MultiValue type
-                    # TODO: check Rembrandt dataset
-                    try:
-                        echo_numbers = int(dicom.get('EchoNumbers', None))
-                    except TypeError as e:
-                        echo_numbers = 1
-                        logger.warning(f'Got {e}')
+            else:
+                cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
+                                            imaging_params=self.imaging_params,
+                                            path=folder)
 
-                    if run_node is None:
-                        run_node = Run(run_name)
-                        # Create bins for each echo time. If echo numbers
-                        # is 1, then it is a single echo time, so we put all
-                        # runs to default bin with echo time 1.0. This will not
-                        # affect the echo times on the report. And, if echo
-                        # numbers is greater than 1, then we create bins for
-                        # each differing echo time. Even though the variable
-                        # name is inconsistent, it is not a bug. Trying to make
-                        # as minimal changes as possible.
-                        # TODO: use array type instead of single value for echo
-                        #  time
-                        if echo_numbers > 1:
-                            run_node.echo_time = dicom.get('EchoTime', 1.0)
-                        else:
-                            run_node.echo_time = 1.0
-                    # TODO: dcm_img_params doesnt make sense
-                    dcm_img_params = parse_imaging_params(filepath)
-                    param_diff = param_difference(dcm_img_params,
-                                                  run_node.params)
-                    if len(run_node.params) == 0:
-                        run_node.params = dcm_img_params.copy()
-                    elif param_diff:
-                        run_node.params = combine_varying_params(
-                                            param_diff,
-                                            run_node.params,
-                                            filepath)
-                    session_node.add_run(run_node)
-                    subject_obj.add_session(session_node)
-                    modality_obj.add_subject(subject_obj)
-                    self.add_modality(modality_obj)
+                if all(cur_slice != slice for slice in non_compliant):  # noqa
+                    non_compliant.append(cur_slice)
+        # TODO: The slices are checked in above code, if they are equal to another
+        #  slice in the same folder. This is not robust enough. In my opinion,
+        #  _process_slice_collection should only one think. After collecting
+        #  slice parameters a second pass should check for non-compliance within
+        #  all slices that share the same run_id. This is important, refer to
+        #  issue raised by Andrew on email dt. May 19 2023, There was an extra
+        #  slice (erroneously)
 
-                    # Collect all unique study ids found in DICOM
-                    study_ids_found.add(str(dicom.StudyID))
-
-            except config.MRException as mrd_exc:
-                logger.exception(mrd_exc)
-            except PermissionError as e:
-                logger.error(e)
-            except Exception as exc:
-                raise exc
-        if no_files_found:
-            raise DatasetEmptyException()
-        if len(study_ids_found) > 1:
-            logger.warning(config.MultipleProjectsInDataset(study_ids_found))
+        if len(non_compliant) > 0:
+            if self.use_echo_numbers:
+                echo_dict = dict()
+                for sl in non_compliant:
+                    enum = sl['EchoNumber'].value
+                    if enum not in echo_dict:
+                        echo_dict[enum] = sl['EchoTime'].value
+                first_slice.set_echo_times(echo_dict.values(), echo_dict.keys())
+            else:
+                echo_times = set()
+                for ncs in non_compliant:
+                    echo_times.add(ncs['EchoTime'].value)
+                first_slice.set_echo_times(echo_times, None)
+            return seq_name, first_slice, subject_id, session_id, run_name  # noqa
+        return None

@@ -3,11 +3,11 @@ import pickle
 from pathlib import Path
 from typing import Union, List
 
-
-from MRdataset import dicom, naive_bids, fastbids, experiment
-from MRdataset.experiment import BaseDataset
+from MRdataset import logger
+from MRdataset.base import BaseDataset
+from MRdataset.bids import BidsDataset
 from MRdataset.config import VALID_DATASET_STYLES
-from MRdataset.log import logger
+from MRdataset.dicom import DicomDataset
 from MRdataset.utils import random_name, check_mrds_extension
 
 
@@ -17,7 +17,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
                    name: str = None,
                    verbose: bool = False,
                    is_complete: bool = True,
-                   config_path = None,
+                   config_path=None,
                    **_kwargs) -> 'BaseDataset':
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
@@ -34,19 +34,15 @@ def import_dataset(data_source: Union[str, List, Path] = None,
     name : str
         Identifier for the dataset, like ADNI. The name used to save cached
         results
-    include_phantom: bool
-        Whether to include non-subject scans like localizer, acr/phantom,
-        aahead_scout
     verbose: bool
         The flag allows you to change the verbosity of execution
-    include_nifti_header: bool
-        whether to check nifti headers for compliance,
-        only used when --ds_format==bids
     is_complete: bool
         whether the dataset is complete or not
+    config_path: str
+        path to config file
     Returns
     -------
-    dataset : MRdataset.base.BaseDataset
+    dataset : MRdataset.__base.BaseDataset
         dataset container class
 
     Examples
@@ -112,15 +108,13 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
     """
     # Import the module "{ds_format}_dataset.py"
     if dataset_ds_format == 'dicom':
-        dataset_class = experiment.DicomDataset
-    elif dataset_ds_format == 'pybids':
-        dataset_class = naive_bids.BIDSDataset
+        dataset_class = DicomDataset
     elif dataset_ds_format == 'bids':
-        dataset_class = fastbids.FastBIDSDataset
+        dataset_class = BidsDataset
     else:
         raise NotImplementedError(
-            f'Dataset ds_format {dataset_ds_format} is not implemented. Valid choices'
-            f"are {', '.join(VALID_DATASET_STYLES)}")
+            f'Dataset ds_format {dataset_ds_format} is not implemented. '
+            f"Valid choices are {', '.join(VALID_DATASET_STYLES)}")
     return dataset_class
 
 
@@ -134,7 +128,7 @@ def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
         path to the dataset file
     Returns
     -------
-    dataset : MRdataset.base.BaseDataset
+    dataset : MRdataset.__base.BaseDataset
         dataset loaded from the file
     """
     check_mrds_extension(filepath)
@@ -164,7 +158,7 @@ def save_mr_dataset(filepath: Union[str, Path],
     ----------
     filepath: Union[str, Path]
         path to the dataset file
-    mrds_obj: MRdataset.base.BaseDataset
+    mrds_obj: MRdataset.__base.BaseDataset
         dataset to be saved
 
     Returns

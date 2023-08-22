@@ -9,7 +9,7 @@ from bids.layout import BIDSFile
 
 from MRdataset.config import PARAMETER_NAMES, VALID_BIDS_EXTENSIONS, VALID_DATATYPES
 from MRdataset.utils import make_hashable
-from MRdataset.base import Run, Session
+from MRdataset.__base import Run, Session
 
 
 def is_valid_bidsfile(filepath) -> bool:
@@ -44,7 +44,7 @@ def parse(session_node: Session,
         ----------
         filepath : Path
             path to the file
-        session_node : MRdataset.base.Session
+        session_node : MRdataset.__base.Session
             session node to which the run node has to be added
         include_nifti_header :
             whether to check nifti headers for compliance,
@@ -52,7 +52,7 @@ def parse(session_node: Session,
 
         Returns
         -------
-        session_node : MRdataset.base.Session
+        session_node : MRdataset.__base.Session
             modified session_node which also contains the new run
         """
 

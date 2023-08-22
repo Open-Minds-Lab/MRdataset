@@ -12,7 +12,7 @@ from typing import Union, List, Optional
 
 import numpy as np
 from MRdataset.config import MRDS_EXT
-from MRdataset.log import logger
+from MRdataset import logger
 from dictdiffer import diff as dict_diff
 
 
@@ -37,7 +37,7 @@ def files_under_folder(fpath: Union[str, Path],
         raise FileNotFoundError(f"Folder doesn't exist : {fpath}")
     folder_path = Path(fpath).resolve()
     if ext:
-        pattern = '*'+ext
+        pattern = '*' + ext
     else:
         pattern = '*'
     for file in folder_path.rglob(pattern):
@@ -257,7 +257,6 @@ def is_folder_with_no_subfolders(fpath):
 
 
 def find_terminal_folders(root):
-
     no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
 
     if no_more_subdirs:
@@ -415,7 +414,7 @@ def is_writable(dir_path):
     return True
 
 
-def read_json(filepath:Path):
+def read_json(filepath: Path):
     if isinstance(filepath, str):
         filepath = Path(filepath)
 
@@ -424,7 +423,7 @@ def read_json(filepath:Path):
 
     with open(filepath, 'r') as fp:
         try:
-            dict_ =  json.load(fp)
+            dict_ = json.load(fp)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Error while reading {filepath}: {e}')
     return dict_

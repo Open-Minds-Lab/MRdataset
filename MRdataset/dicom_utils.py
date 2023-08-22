@@ -10,7 +10,7 @@ import dicom2nifti
 import pydicom
 from MRdataset import config
 from MRdataset import utils
-from MRdataset.log import logger
+from MRdataset import logger
 from MRdataset.utils import slugify
 
 with warnings.catch_warnings():

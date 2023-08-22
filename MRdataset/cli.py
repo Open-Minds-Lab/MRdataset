@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from MRdataset import import_dataset
-from MRdataset.log import logger
+from MRdataset import logger
 
 
 def main():

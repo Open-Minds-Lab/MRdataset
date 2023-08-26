@@ -7,7 +7,7 @@ from pydicom.errors import InvalidDicomError
 
 from MRdataset.base import BaseDataset
 from MRdataset import logger
-from MRdataset.dicom_utils import (get_metadata, is_valid_inclusion,
+from MRdataset.dicom_utils import (extract_session_info, is_valid_inclusion,
                                    is_dicom_file)
 from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
 
@@ -45,13 +45,23 @@ class DicomDataset(BaseDataset, ABC):
         self.include_phantom = include_phantom
         self.pattern = pattern
         self.min_count = 1  # min slice count to be considered a volume
+
         self.config_path = config_path
-        self.config_dict = read_json(self.config_path)
-        self.imaging_params = self.config_dict['include_parameters']
+        self.config_dict = None
         self.use_echo_numbers = True
+
+        try:
+            self.config_dict = read_json(self.config_path)
+        except (FileNotFoundError or ValueError) as e:
+            logger.error(f'Unable to read config file {self.config_path}')
+            raise e
+
+        self.imaging_params = self.config_dict['include_parameters']
+
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
-        self._variable_params = ['EchoTime', 'EchoNumber']
+        self._required_params = ['EchoTime', 'EchoNumber']
+
         # if self._saved_path.exists():
         #     self._reload_saved()
 
@@ -112,28 +122,33 @@ class DicomDataset(BaseDataset, ABC):
             if not is_valid_inclusion(dcm_path, dicom, self.include_phantom):
                 continue
 
-            seq_name, subject_id, session_id, run_name = get_metadata(dicom)
+            seq_name, subject_id, session_id, run_id = extract_session_info(
+                dicom)  # noqa
 
             if idx == 0:
-                first_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
-                                              imaging_params=self.imaging_params,
-                                              path=folder)
+                first_slice = ImagingSequence(
+                    dicom=dicom, name=f'{seq_name}',
+                    imaging_params=self.imaging_params,
+                    required_params=self._required_params,
+                    path=folder
+                )
                 non_compliant.append(first_slice)
+                first_slice.set_session_info(subject_id, session_id, run_id)
 
             else:
-                cur_slice = ImagingSequence(dicom=dicom, name=f'{seq_name}',
-                                            imaging_params=self.imaging_params,
-                                            path=folder)
+                cur_slice = ImagingSequence(
+                    dicom=dicom, name=f'{seq_name}',
+                    imaging_params=self.imaging_params,
+                    required_params=self._required_params,
+                    path=folder)
+                cur_slice.set_session_info(subject_id, session_id, run_id)
+
+                if cur_slice.get_session_info() != first_slice.get_session_info():
+                    logger.warn(f'Inconsistent session info for {dcm_path}')
+                    continue
 
                 if all(cur_slice != slice for slice in non_compliant):  # noqa
                     non_compliant.append(cur_slice)
-        # TODO: The slices are checked in above code, if they are equal to another
-        #  slice in the same folder. This is not robust enough. In my opinion,
-        #  _process_slice_collection should only one think. After collecting
-        #  slice parameters a second pass should check for non-compliance within
-        #  all slices that share the same run_id. This is important, refer to
-        #  issue raised by Andrew on email dt. May 19 2023, There was an extra
-        #  slice (erroneously)
 
         if len(non_compliant) > 0:
             if self.use_echo_numbers:
@@ -148,5 +163,5 @@ class DicomDataset(BaseDataset, ABC):
                 for ncs in non_compliant:
                     echo_times.add(ncs['EchoTime'].value)
                 first_slice.set_echo_times(echo_times, None)
-            return seq_name, first_slice, subject_id, session_id, run_name  # noqa
+            return seq_name, first_slice, subject_id, session_id, run_id  # noqa
         return None

@@ -43,7 +43,7 @@ def is_dicom_file(filename: str):
         return True
 
 
-def get_metadata(dicom):
+def extract_session_info(dicom):
     """Returns basic metadata such as subject, session and run IDs"""
 
     if not isinstance(dicom, pydicom.FileDataset):
@@ -51,7 +51,7 @@ def get_metadata(dicom):
 
     #   name: SeriesNumber_Suffix
     #   priority order: SeriesDescription, SequenceName, ProtocolName
-    seq_name = get_sequence(dicom)
+    seq_name = get_sequence_name(dicom)
 
     subject_id = str(dicom.get('PatientID', None))
 
@@ -181,7 +181,7 @@ def is_phantom(dicom: pydicom.FileDataset) -> bool:
     return False
 
 
-def get_sequence(dicom: pydicom.FileDataset) -> str:
+def get_sequence_name(dicom: pydicom.FileDataset) -> str:
     """
     Infer modality through dicom tags. In most cases series_description
     should explain the modality of the volume, otherwise either use sequence

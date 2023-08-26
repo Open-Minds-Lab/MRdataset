@@ -18,7 +18,8 @@ requirements = [
     'pydicom',
     'dictdiffer',
     'pandas>=1.5.2',
-    'pybids'
+    'pybids',
+    'protocol',
 ]
 
 test_requirements = ['pytest>=3', ]

@@ -4,3 +4,4 @@ dicom2nifti>=2.4.2
 dictdiffer
 pandas
 pybids
+protocol

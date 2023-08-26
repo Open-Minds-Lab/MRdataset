@@ -417,6 +417,9 @@ def is_writable(dir_path):
 def read_json(filepath: Path):
     if isinstance(filepath, str):
         filepath = Path(filepath)
+    elif not isinstance(filepath, Path):
+        raise FileNotFoundError(f'Expected str or pathlib.Path, '
+                                  f'Got {type(filepath)}')
 
     if not filepath.is_file():
         raise FileNotFoundError(f'File not found: {filepath}')

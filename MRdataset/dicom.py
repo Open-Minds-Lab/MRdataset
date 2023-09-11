@@ -35,20 +35,17 @@ class DicomDataset(BaseDataset, ABC):
                  data_source,
                  pattern="*",
                  name='DicomDataset',
-                 include_phantom=False,
                  config_path=None,
                  **kwargs):
         """constructor"""
 
         super().__init__(data_source=data_source, name=name, ds_format='DICOM')
         self.data_source = valid_dirs(data_source)
-        self.include_phantom = include_phantom
         self.pattern = pattern
         self.min_count = 1  # min slice count to be considered a volume
 
         self.config_path = config_path
         self.config_dict = None
-        self.use_echo_numbers = True
 
         try:
             self.config_dict = read_json(self.config_path)
@@ -56,7 +53,10 @@ class DicomDataset(BaseDataset, ABC):
             logger.error(f'Unable to read config file {self.config_path}')
             raise e
 
+        self.use_echo_numbers = self.config_dict.get('use_echo_numbers',
+                                                     False)
         self.imaging_params = self.config_dict['include_parameters']
+        self.include_phantom = self.config_dict.get('include_phantom', None)
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
@@ -107,7 +107,7 @@ class DicomDataset(BaseDataset, ABC):
         #   SeriesInstanceUID must match
         #   parameter values must match, except echo time
 
-        non_compliant = list()
+        varying_params = list()
         first_slice = None
         for idx, dcm_path in enumerate(dcm_files):
             if not is_dicom_file(dcm_path):
@@ -119,7 +119,7 @@ class DicomDataset(BaseDataset, ABC):
                 logger.info(f'Invalid DICOM file at {dcm_path}')
                 continue
 
-            if not is_valid_inclusion(dcm_path, dicom, self.include_phantom):
+            if not is_valid_inclusion(dicom, self.include_phantom):
                 continue
 
             seq_name, subject_id, session_id, run_id = extract_session_info(
@@ -132,7 +132,7 @@ class DicomDataset(BaseDataset, ABC):
                     required_params=self._required_params,
                     path=folder
                 )
-                non_compliant.append(first_slice)
+                varying_params.append(first_slice)
                 first_slice.set_session_info(subject_id, session_id, run_id)
 
             else:
@@ -147,21 +147,21 @@ class DicomDataset(BaseDataset, ABC):
                     logger.warn(f'Inconsistent session info for {dcm_path}')
                     continue
 
-                if all(cur_slice != slice for slice in non_compliant):  # noqa
-                    non_compliant.append(cur_slice)
+                if all(cur_slice != slice for slice in varying_params):  # noqa
+                    varying_params.append(cur_slice)
 
-        if len(non_compliant) > 0:
+        if len(varying_params) > 0:
             if self.use_echo_numbers:
                 echo_dict = dict()
-                for sl in non_compliant:
+                for sl in varying_params:
                     enum = sl['EchoNumber'].value
                     if enum not in echo_dict:
                         echo_dict[enum] = sl['EchoTime'].value
                 first_slice.set_echo_times(echo_dict.values(), echo_dict.keys())
             else:
                 echo_times = set()
-                for ncs in non_compliant:
-                    echo_times.add(ncs['EchoTime'].value)
+                for sl in varying_params:
+                    echo_times.add(sl['EchoTime'].value)
                 first_slice.set_echo_times(echo_times, None)
             return seq_name, first_slice, subject_id, session_id, run_id  # noqa
         return None

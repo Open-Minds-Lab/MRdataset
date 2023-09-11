@@ -6,62 +6,61 @@ from typing import List
 from protocol import ImagingSequence
 
 
-class Run(UserDict):
-    """Container for an imaging run.
-
-    Design:
-    - A run is an instance of a sequence
-    - A session can have multiple runs acquired with the same sequence/parameters
-    - for only a SINGLE subject
-
-    """
-
-    def __init__(self,
-                 session_id: str = 'SessionID',
-                 subject_id: str = 'SubjectID',
-                 sequence: ImagingSequence = None):
-        """constructor"""
-
-        super().__init__()
-        self.session_id = session_id
-        self.subject_id = subject_id
-        self.sequence = sequence
-
-
-class Session(UserDict):
-    """Container for an imaging session.
-
-    Design:
-    - A session is a collection of runs,
-        and each run is different acquisition with the same sequence/parameters
-    - for only a SINGLE subject
-    - like a Visit in longitudinal studies
-    """
-
-    def __init__(self,
-                 session_id='SessionID',
-                 subject_id='SubjectID',
-                 runs: List[Run] = None):
-        """constructor"""
-
-        super().__init__()
-        self.session_id = session_id
-        self.subject_id = subject_id
-        self.runs = runs
-
-
-class Subject(UserDict):
-    """base class for all subjects"""
-
-    def __init__(self,
-                 subject_id='SubjectID',
-                 sessions: List[Session] = None):
-        """constructor"""
-
-        super().__init__()
-        self.subject_id = subject_id
-        self.sessions = sessions
-
+# class Run(UserDict):
+#     """Container for an imaging run.
+#
+#     Design:
+#     - A run is an instance of a sequence
+#     - A session can have multiple runs acquired with the same sequence/parameters
+#     - for only a SINGLE subject
+#
+#     """
+#
+#     def __init__(self,
+#                  session_id: str = 'SessionID',
+#                  subject_id: str = 'SubjectID',
+#                  sequence: ImagingSequence = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.session_id = session_id
+#         self.subject_id = subject_id
+#         self.sequence = sequence
+#
+#
+# class Session(UserDict):
+#     """Container for an imaging session.
+#
+#     Design:
+#     - A session is a collection of runs,
+#         and each run is different acquisition with the same sequence/parameters
+#     - for only a SINGLE subject
+#     - like a Visit in longitudinal studies
+#     """
+#
+#     def __init__(self,
+#                  session_id='SessionID',
+#                  subject_id='SubjectID',
+#                  runs: List[Run] = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.session_id = session_id
+#         self.subject_id = subject_id
+#         self.runs = runs
+#
+#
+# class Subject(UserDict):
+#     """base class for all subjects"""
+#
+#     def __init__(self,
+#                  subject_id='SubjectID',
+#                  sessions: List[Session] = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.subject_id = subject_id
+#         self.sessions = sessions
 
 class BaseDataset(ABC):
     """base class for all MR datasets"""
@@ -70,8 +69,7 @@ class BaseDataset(ABC):
                  data_source,
                  is_complete: bool = True,
                  name: str = 'Dataset',
-                 ds_format: str = 'dicom',
-                 subjects: List[Subject] = None):
+                 ds_format: str = 'dicom'):
         """constructor"""
 
         self.data_source = data_source
@@ -80,7 +78,6 @@ class BaseDataset(ABC):
         self.format = ds_format
         self.is_complete = is_complete
 
-        self.subjects = subjects
         self._subj_ids = set()
         self._seq_ids = set()
 
@@ -110,6 +107,8 @@ class BaseDataset(ABC):
         return list(self._seq_ids)
 
     def get_subject_ids(self, seq_id):
+        if not isinstance(seq_id, str):
+            raise TypeError('seq_id must be a string')
         if seq_id not in self._seqs_map.keys():
             return []
         tuples = self._seqs_map[seq_id]
@@ -117,24 +116,24 @@ class BaseDataset(ABC):
         # Cast to list so that it can be indexed, set is not subscriptable
         return list(subj_ids)
 
-    def _reload_saved(self):
-        """helper to reload previously saved MRdataset"""
-
-        if len(self._subj_ids) > 0 and self._reloaded:
-            print('Dataset seems to be loaded already. Skipping reload!')
-
-        try:
-            print('reloading previously parsed MRdataset ...')
-            with open(self._saved_path, 'rb') as in_file:
-                prev = pickle.load(in_file)
-            for attr in self._key_vars:
-                self.__setattr__(attr, getattr(prev, attr))
-        except Exception as exc:
-            print(f'unable to reload from {self._saved_path}')
-            raise exc
-        else:
-            self._reloaded = True
-            print(self)
+    # def _reload_saved(self):
+    #     """helper to reload previously saved MRdataset"""
+    #
+    #     if len(self._subj_ids) > 0 and self._reloaded:
+    #         print('Dataset seems to be loaded already. Skipping reload!')
+    #
+    #     try:
+    #         print('reloading previously parsed MRdataset ...')
+    #         with open(self._saved_path, 'rb') as in_file:
+    #             prev = pickle.load(in_file)
+    #         for attr in self._key_vars:
+    #             self.__setattr__(attr, getattr(prev, attr))
+    #     except Exception as exc:
+    #         print(f'unable to reload from {self._saved_path}')
+    #         raise exc
+    #     else:
+    #         self._reloaded = True
+    #         print(self)
 
     @abstractmethod
     def load(self):
@@ -199,25 +198,25 @@ class BaseDataset(ABC):
 
         return self._tree_map[subject_id]
 
-    def save(self, out_path=None):
-        """offloads the data structure to disk for quicker reload"""
-
-        if out_path is None:
-            out_path = self._saved_path
-            out_path.parent.mkdir(exist_ok=True)
-        else:
-            if not out_path.parent.exists():
-                try:
-                    out_path.parent.mkdir(exist_ok=True)
-                except Exception as exc:
-                    print('out dir for the given path can not be created!')
-                    raise exc
-
-        if len(self._subj_ids) >= 1:
-            with open(out_path, 'wb') as out_file:
-                pickle.dump(self, out_file)
-        else:
-            print('No subjects exist in the dataset. Not saving it!')
+    # def save(self, out_path=None):
+    #     """offloads the data structure to disk for quicker reload"""
+    #
+    #     if out_path is None:
+    #         out_path = self._saved_path
+    #         out_path.parent.mkdir(exist_ok=True)
+    #     else:
+    #         if not out_path.parent.exists():
+    #             try:
+    #                 out_path.parent.mkdir(exist_ok=True)
+    #             except Exception as exc:
+    #                 print('out dir for the given path can not be created!')
+    #                 raise exc
+    #
+    #     if len(self._subj_ids) >= 1:
+    #         with open(out_path, 'wb') as out_file:
+    #             pickle.dump(self, out_file)
+    #     else:
+    #         print('No subjects exist in the dataset. Not saving it!')
 
     def traverse_horizontal(self, seq_id):
         """method to traverse the dataset horizontally

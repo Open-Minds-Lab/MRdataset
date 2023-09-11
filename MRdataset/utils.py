@@ -274,7 +274,7 @@ def find_terminal_folders(root):
     return terminal
 
 
-def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
+def valid_dirs(folders: Union[List, str]) -> List[Path]:
     """
     If given a single path, the function will just check if it's valid.
     If given a list of paths, the function validates if all the paths exist or
@@ -294,7 +294,7 @@ def valid_dirs(folders: Union[List, str]) -> Union[List[Path], Path]:
     if isinstance(folders, str) or isinstance(folders, Path):
         if not Path(folders).is_dir():
             raise OSError('Invalid directory {0}'.format(folders))
-        return Path(folders).resolve()
+        return [Path(folders).resolve()]
     elif isinstance(folders, Iterable):
         for folder in folders:
             if not Path(folder).is_dir():
@@ -374,33 +374,6 @@ def check_mrds_extension(filepath: Union[str, Path]):
         raise NotImplementedError(f"Expected str or pathlib.Path,"
                                   f" Got {type(filepath)}")
     assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
-
-
-def is_same_dataset(dataset1, dataset2):
-    modalities_list1 = sorted(dataset1.modalities)
-    modalities_list2 = sorted(dataset2.modalities)
-    for modality1, modality2 in zip(modalities_list1, modalities_list2):
-        assert modality1.name == modality2.name
-        assert modality1.compliant == modality2.compliant
-        assert modality1._reference == modality2._reference
-        assert modality1.non_compliant_data.equals(modality2.non_compliant_data)
-        subjects_list1 = sorted(modality1.subjects)
-        subjects_list2 = sorted(modality2.subjects)
-        for subject1, subject2 in zip(subjects_list1, subjects_list2):
-            assert subject1.name == subject2.name
-            assert subject1.__dict__ == subject2.__dict__
-            sessions_list1 = sorted(subject1.sessions)
-            sessions_list2 = sorted(subject2.sessions)
-            for session1, session2 in zip(sessions_list1, sessions_list2):
-                assert session1.name == session2.name
-                assert session1.__dict__ == session2.__dict__
-                runs_list1 = sorted(session1.runs)
-                runs_list2 = sorted(session2.runs)
-                for run1, run2 in zip(runs_list1, runs_list2):
-                    assert run1.__dict__ == run2.__dict__
-                    assert run1.name == run2.name
-                    assert run1.params == run2.params
-    return True
 
 
 def is_writable(dir_path):

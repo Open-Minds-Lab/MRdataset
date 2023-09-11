@@ -35,12 +35,15 @@ def is_dicom_file(filename: str):
     bool : if the file is a DICOM file
     """
     # TODO: Read dicom file : 1
-    with open(filename, 'rb') as file_stream:
-        file_stream.seek(128)
-        data = file_stream.read(4)
-
-    if data == b'DICM':
-        return True
+    try:
+        with open(filename, 'rb') as file_stream:
+            file_stream.seek(128)
+            data = file_stream.read(4)
+            if data == b'DICM':
+                return True
+    except FileNotFoundError:
+        logger.error(f'File not found : {filename}')
+    return False
 
 
 def extract_session_info(dicom):
@@ -98,16 +101,13 @@ def is_same_set(dicom: pydicom.FileDataset) -> str:
     return run_name
 
 
-def is_valid_inclusion(filepath: str,
-                       dicom: pydicom.FileDataset,
+def is_valid_inclusion(dicom: pydicom.FileDataset,
                        include_phantom=False) -> bool:
     """
     Function will do some basic checks to see if it is a valid imaging dicom
 
     Parameters
     ----------
-    filepath : str or Path
-        filename for raising the warning
     dicom : pydicom.FileDataset
         dicom object returned by pydicom.dcmread or pydicom.read_file
     include_phantom : bool
@@ -117,15 +117,9 @@ def is_valid_inclusion(filepath: str,
     -------
     bool
     """
-    filepath = Path(filepath).resolve()
-
     if not dicom2nifti.convert_dir._is_valid_imaging_dicom(dicom):
-        logger.info('Invalid file: %s', filepath.parent)
+        logger.info('Invalid file')
         return False
-
-    # if not header_exists(dicom):
-    #     logger.error("Header Absent: %s" % filename)
-    #     return False
 
     # TODO: revisit whether to include localizer or not,
     #  it may have relationship with other modalities
@@ -138,18 +132,18 @@ def is_valid_inclusion(filepath: str,
             series_desc = series_desc.lower()
             if not include_phantom:
                 if 'local' in series_desc:
-                    logger.info('Localizer: Skipping %s', filepath.parent)
+                    # logger.info('Localizer: Skipping %s', filepath.parent)
                     return False
 
                 if 'aahead' in series_desc:
-                    logger.info('AAhead_Scout: Skipping %s', filepath.parent)
+                    # logger.info('AAhead_Scout: Skipping %s', filepath.parent)
                     return False
 
                 if is_phantom(dicom):
-                    logger.info('ACR/Phantom: %s', filepath.parent)
+                    # logger.info('ACR/Phantom: %s', filepath.parent)
                     return False
     except AttributeError as e:
-        logger.warning('%s :Series Description not found in %s' % (e, filepath))
+        logger.warning('Series Description not found')
 
     return True
 

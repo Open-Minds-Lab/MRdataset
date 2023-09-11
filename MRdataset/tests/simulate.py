@@ -10,13 +10,24 @@ import pydicom
 from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
     compl_data_bids
 from bids import BIDSLayout
+import zipfile
+
+
+def sample_dicom_dataset(tmp_path='/tmp'):
+    DATA_ARCHIVE = '../../examples/example_dicom_data.zip'
+    DATA_ROOT = Path(tmp_path)
+    output_dir = DATA_ROOT / 'example_dicom_data'
+    if not output_dir.exists():
+        with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
+            zip_ref.extractall(DATA_ROOT)
+    return DATA_ROOT/'example_dicom_data'
 
 
 def make_compliant_test_dataset(num_subjects,
                                 repetition_time,
                                 echo_train_length,
                                 flip_angle) -> Path:
-    src_dir, dest_dir = setup_directories(anon_data_dir)
+    src_dir, dest_dir = setup_directories(sample_dicom_dataset())
     dcm_list = list(src_dir.glob('**/*.dcm'))
 
     subject_names = set()

@@ -638,7 +638,7 @@ class Modality(Node):
                              'set_reference first!')
         return len(self._reference) > 1
 
-    def non_compliant_params(self, echo_time: float = None) -> dict:
+    def non_compliant_params(self, echo_time: float = None, subject_name=None) -> dict:
         """
         Reasons for non-compliance in this modality across all the subjects.
 
@@ -660,8 +660,13 @@ class Modality(Node):
         values : List[str]
             List of parameters that are non-compliant in this modality
         """
+        query_str = ""
+
         if echo_time:
-            query_str = '(echo_time==@echo_time)'
+            query_str += '(echo_time==@echo_time)'
+        if subject_name:
+            query_str += '(subjects.str.contains(@subject_name))'
+        if query_str:
             db = self.non_compliant_data.query(query_str)
             return db['parameter'].unique()
         else:

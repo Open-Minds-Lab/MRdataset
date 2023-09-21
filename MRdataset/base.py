@@ -146,7 +146,6 @@ class BaseDataset(ABC):
         hierarchy: Subject > Session > Sequence > Run
 
         """
-
         if subject_id not in self._tree_map:
             self._tree_map[subject_id] = dict()
 
@@ -156,7 +155,8 @@ class BaseDataset(ABC):
         if seq_name not in self._tree_map[subject_id][session_id]:
             self._tree_map[subject_id][session_id][seq_name] = dict()
 
-        self._tree_map[subject_id][session_id][seq_name][run_id] = seq_info
+        if run_id not in self._tree_map[subject_id][session_id][seq_name]:
+            self._tree_map[subject_id][session_id][seq_name][run_id] = seq_info
 
     def __str__(self):
         """readable summary"""
@@ -166,6 +166,17 @@ class BaseDataset(ABC):
 
     def __repr__(self):
         return self.__str__()
+
+    def merge(self, other):
+        if not isinstance(other, BaseDataset):
+            raise TypeError(f'Both must be a BaseDataset')
+
+        if self.format != other.format:
+            raise ValueError(f'Both must be of the same format')
+
+        for seq_id in other.get_sequence_ids():
+            for subj_id, sess_id, run_id, seq in other.traverse_horizontal(seq_id):
+                self.add(subj_id, sess_id, run_id, seq_id, seq)
 
     def add(self, subject_id, session_id, run_id, seq_id, seq):
         """adds a given subject, session or run to the dataset"""

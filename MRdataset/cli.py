@@ -18,6 +18,8 @@ def main():
     required.add_argument('-d', '--data-source', type=str, required=True,
                           help='directory containing downloaded dataset with '
                                'dicom files, supports nested hierarchies')
+    required.add_argument('--config', type=str,
+                          help='path to config file')
     optional.add_argument('-f', '--format', type=str, default='dicom',
                           help='choose type of dataset, expected'
                                'one of [dicom|bids|pybids]')
@@ -43,7 +45,8 @@ def main():
                              ds_format=args.format,
                              name=args.name,
                              verbose=args.verbose,
-                             is_complete=not args.is_partial)
+                             is_complete=not args.is_partial,
+                             config_path=args.config)
     return dataset
 
 

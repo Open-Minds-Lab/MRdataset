@@ -17,7 +17,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
                    name: str = None,
                    verbose: bool = False,
                    is_complete: bool = True,
-                   config_path=None,
+                   config_path: Union[str, Path] = None,
                    **_kwargs) -> 'BaseDataset':
     """
     Create dataset as per arguments. This function acts as a Wrapper class for
@@ -38,7 +38,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         The flag allows you to change the verbosity of execution
     is_complete: bool
         whether the dataset is complete or not
-    config_path: str
+    config_path: Union[str, Path]
         path to config file
     Returns
     -------

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple, List, Iterable
 
 from tqdm import tqdm
 from abc import ABC
@@ -96,10 +96,6 @@ class DicomDataset(BaseDataset, ABC):
             # find all the sub-folders with at least min_count files
             sub_folders = folders_with_min_files(directory, self.pattern,
                                                  self.min_count)
-            if not sub_folders:
-                logger.warn(f'No folders with at least {self.min_count} '
-                            f'files found in {directory}. Skipping it.')
-                continue
             if self.verbose:
                 # Puts a nice progress bar, but slows down the process
                 sub_folders = tqdm(list(sub_folders))
@@ -166,7 +162,8 @@ class DicomDataset(BaseDataset, ABC):
                     path=folder
                 )
                 # We collect the first slice as a reference to compare
-                #   other slices with
+                #   other slices with, although it is not divergent in
+                #   its true sense
                 divergent_slices.append(first_slice)
 
             else:
@@ -184,9 +181,12 @@ class DicomDataset(BaseDataset, ABC):
 
                 # check if the parameters are same with the slices
                 #   collected so far
+                flag = 0
                 for sl in divergent_slices:
-                    if cur_slice != sl:
-                        divergent_slices.append(cur_slice)
+                    if cur_slice == sl:
+                        flag = 1
+                if flag == 0:
+                    divergent_slices.append(cur_slice)
 
         if len(divergent_slices) > 1:
             # if there are divergent slices, we need to process them
@@ -197,7 +197,7 @@ class DicomDataset(BaseDataset, ABC):
             first_slice.set_echo_times(echo_times, echo_nums)
         return first_slice
 
-    def _process_echo_times(self, divergent_slices: list) -> tuple(list, Optional[list]):
+    def _process_echo_times(self, divergent_slices: list) -> Tuple[Iterable, Optional[Iterable]]:
         """
         Finds the set of echo times and echo numbers from the list of
         slices. However, the echo number is not always available
@@ -220,12 +220,12 @@ class DicomDataset(BaseDataset, ABC):
         if self.use_echo_numbers:
             echo_dict = dict()
             for sl in divergent_slices:
-                enum = sl['EchoNumber'].value
+                enum = sl['EchoNumber'].get_value()
                 if enum not in echo_dict:
-                    echo_dict[enum] = sl['EchoTime'].value
+                    echo_dict[enum] = sl['EchoTime'].get_value()
             return echo_dict.values(), echo_dict.keys()
         else:
             echo_times = set()
             for sl in divergent_slices:
-                echo_times.add(sl['EchoTime'].value)
+                echo_times.add(sl['EchoTime'].get_value())
             return echo_times, None

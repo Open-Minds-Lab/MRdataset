@@ -1,3 +1,5 @@
+from typing import Optional
+
 from tqdm import tqdm
 from abc import ABC
 
@@ -36,6 +38,7 @@ class DicomDataset(BaseDataset, ABC):
                  pattern="*",
                  name='DicomDataset',
                  config_path=None,
+                 verbose=False,
                  **kwargs):
         """constructor"""
 
@@ -43,24 +46,36 @@ class DicomDataset(BaseDataset, ABC):
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         self.min_count = 1  # min slice count to be considered a volume
-
+        self.verbose = verbose
         self.config_path = config_path
         self.config_dict = None
 
+        # read the config file
         try:
             self.config_dict = read_json(self.config_path)
         except (FileNotFoundError or ValueError) as e:
             logger.error(f'Unable to read config file {self.config_path}')
             raise e
 
-        self.use_echo_numbers = self.config_dict.get('use_echo_numbers',
+        # Whether to use echo numbers to identify multi-echo sequences
+        self.use_echo_numbers = self.config_dict.get('use_echonumbers',
                                                      False)
+        # These parameters will be checked for compliance
         self.imaging_params = self.config_dict['include_parameters']
-        self.include_phantom = self.config_dict.get('include_phantom', None)
+
+        # These are used to skip certain sequences
+        self.includes = self.config_dict.get('include_sequence', {})
+        self.include_phantom = self.includes.get('phantom', None)
+        self.include_moco = self.config_dict.get('moco', None)
+        self.include_sbref = self.config_dict.get('sbref', None)
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
-        self._required_params = ['EchoTime', 'EchoNumber']
+
+        # these are the required parameters for internal purposes. But these
+        #  will not be checked for compliance
+        self._required_params = ['EchoTime', 'EchoNumber', 'Manufacturer',
+                                 'ContentDate', 'ContentTime']
 
         # if self._saved_path.exists():
         #     self._reload_saved()
@@ -68,24 +83,35 @@ class DicomDataset(BaseDataset, ABC):
         # print('')
 
     def load(self, refresh=False):
-        """default method to load the dataset"""
+        """
+        default method to load the dataset. This method is called by import_dataset function. Any
+        dataset_type must implement this method.
+        """
 
         # if self._saved_path.exists() and not refresh:
         #     self._reload_saved()
         #     return
 
         for directory in self.data_source:
+            # find all the sub-folders with at least min_count files
             sub_folders = folders_with_min_files(directory, self.pattern,
                                                  self.min_count)
-            sub_folders = list(sub_folders)
-            for folder in tqdm(sub_folders):
-                metadata = None
-                metadata = self._process_slice_collection(folder)
-                if metadata is None:
+            if not sub_folders:
+                logger.warn(f'No folders with at least {self.min_count} '
+                            f'files found in {directory}. Skipping it.')
+                continue
+            if self.verbose:
+                # Puts a nice progress bar, but slows down the process
+                sub_folders = tqdm(list(sub_folders))
+
+            for folder in sub_folders:
+                # process each folder
+                seq = self._process_slice_collection(folder)
+                if seq is None:
                     logger.info(f'Unable to process {folder}. Skipping it.')
                 else:
-                    seq_name, seq_info, subject_id, session_id, run_id = metadata
-                    self.add(subject_id, session_id, run_id, seq_name, seq_info)
+                    self.add(seq.subject_id, seq.session_id,
+                             seq.run_id, seq.name, seq)
 
         # saving a copy for quicker reload
         # self.save()
@@ -94,22 +120,31 @@ class DicomDataset(BaseDataset, ABC):
         """reads the dicom slices and runs some basic validation on them!"""
 
         # within a folder, a volume can be multi-echo, so we must read them all
-        #   and find a way to capture
-
+        #   and find a way to capture the echo time information
         dcm_files = sorted(folder.glob(self.pattern))
 
-        if len(dcm_files) < 1:
+        # if no files found, return None
+        if len(dcm_files) < self.min_count:
             logger.warn(
                 f'no files matching the pattern {self.pattern} found in {folder}',
                 UserWarning)
+            return None
 
         # run some basic validation of these dcm slice collection
-        #   SeriesInstanceUID must match
-        #   parameter values must match, except echo time
+        #   session_info must match
+        #   parameter values must also match in general
 
-        varying_params = list()
+        # However, for certain sequences, the parameter may vary
+        #   (e.g. EchoTime for multi-echo). Therefore, we need to
+        #   find a way to capture the varying parameters. We collect
+        #   all the slices and then process them to find the varying
+        #   parameters.
+
+        # collect all the slices with diverging parameters
+        divergent_slices = list()
         first_slice = None
         for idx, dcm_path in enumerate(dcm_files):
+            # check if it is a valid dicom file
             if not is_dicom_file(dcm_path):
                 continue
 
@@ -119,49 +154,78 @@ class DicomDataset(BaseDataset, ABC):
                 logger.info(f'Invalid DICOM file at {dcm_path}')
                 continue
 
+            # skip localizer, phantom, scouts, sbref, etc
             if not is_valid_inclusion(dicom, self.include_phantom):
                 continue
 
-            seq_name, subject_id, session_id, run_id = extract_session_info(
-                dicom)  # noqa
-
             if idx == 0:
                 first_slice = ImagingSequence(
-                    dicom=dicom, name=f'{seq_name}',
+                    dicom=dicom,
                     imaging_params=self.imaging_params,
                     required_params=self._required_params,
                     path=folder
                 )
-                varying_params.append(first_slice)
-                first_slice.set_session_info(subject_id, session_id, run_id)
+                # We collect the first slice as a reference to compare
+                #   other slices with
+                divergent_slices.append(first_slice)
 
             else:
                 cur_slice = ImagingSequence(
-                    dicom=dicom, name=f'{seq_name}',
+                    dicom=dicom,
                     imaging_params=self.imaging_params,
                     required_params=self._required_params,
                     path=folder)
-                cur_slice.set_session_info(subject_id, session_id, run_id)
 
+                # check if the session info is same
+                # Session info includes subject_id, session_id, run_id
                 if cur_slice.get_session_info() != first_slice.get_session_info():
                     logger.warn(f'Inconsistent session info for {dcm_path}')
                     continue
 
-                if all(cur_slice != slice for slice in varying_params):  # noqa
-                    varying_params.append(cur_slice)
+                # check if the parameters are same with the slices
+                #   collected so far
+                for sl in divergent_slices:
+                    if cur_slice != sl:
+                        divergent_slices.append(cur_slice)
 
-        if len(varying_params) > 0:
-            if self.use_echo_numbers:
-                echo_dict = dict()
-                for sl in varying_params:
-                    enum = sl['EchoNumber'].value
-                    if enum not in echo_dict:
-                        echo_dict[enum] = sl['EchoTime'].value
-                first_slice.set_echo_times(echo_dict.values(), echo_dict.keys())
-            else:
-                echo_times = set()
-                for sl in varying_params:
-                    echo_times.add(sl['EchoTime'].value)
-                first_slice.set_echo_times(echo_times, None)
-            return seq_name, first_slice, subject_id, session_id, run_id  # noqa
-        return None
+        if len(divergent_slices) > 1:
+            # if there are divergent slices, we need to process them
+            #   to find the varying parameters. For now we just look for echo-time
+            #   and echo-number, but we can extend this to other parameters such as
+            #   flip-angle, etc.
+            echo_times, echo_nums = self._process_echo_times(divergent_slices)
+            first_slice.set_echo_times(echo_times, echo_nums)
+        return first_slice
+
+    def _process_echo_times(self, divergent_slices: list) -> tuple(list, Optional[list]):
+        """
+        Finds the set of echo times and echo numbers from the list of
+        slices. However, the echo number is not always available
+        in the dicom header. In that case, we may have to look for a unique
+        set of echo times. Although this is not preferred, but we can use this.
+
+        Parameters
+        ----------
+        divergent_slices : list
+            ImagingSequence objects with divergent parameters
+
+        Returns
+        -------
+        echo_times : list
+            collected list of echo times
+        echo_nums : Optional[List]
+            collected list of echo numbers
+
+        """
+        if self.use_echo_numbers:
+            echo_dict = dict()
+            for sl in divergent_slices:
+                enum = sl['EchoNumber'].value
+                if enum not in echo_dict:
+                    echo_dict[enum] = sl['EchoTime'].value
+            return echo_dict.values(), echo_dict.keys()
+        else:
+            echo_times = set()
+            for sl in divergent_slices:
+                echo_times.add(sl['EchoTime'].value)
+            return echo_times, None

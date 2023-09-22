@@ -102,7 +102,10 @@ def is_same_set(dicom: pydicom.FileDataset) -> str:
 
 
 def is_valid_inclusion(dicom: pydicom.FileDataset,
-                       include_phantom=False) -> bool:
+                       include_phantom=False,
+                       include_moco=False,
+                       include_sbref=False,
+                       include_derived=False) -> bool:
     """
     Function will do some basic checks to see if it is a valid imaging dicom
 
@@ -134,16 +137,28 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
                 if 'local' in series_desc:
                     # logger.info('Localizer: Skipping %s', filepath.parent)
                     return False
-
                 if 'aahead' in series_desc:
                     # logger.info('AAhead_Scout: Skipping %s', filepath.parent)
                     return False
-
                 if is_phantom(dicom):
                     # logger.info('ACR/Phantom: %s', filepath.parent)
                     return False
+            if not include_sbref:
+                if 'sbref' in series_desc:
+                    return False
     except AttributeError as e:
         logger.warning('Series Description not found')
+
+    try:
+        image_type = dicom.get('ImageType', None)
+        if image_type is not None:
+            for i in image_type:
+                if not include_moco and 'moco' in i.lower():
+                    return False
+                if not include_derived and 'derived' in i.lower():
+                    return False
+    except AttributeError as e:
+        logger.warning('ImageType not found')
 
     return True
 

@@ -1,17 +1,15 @@
+from abc import ABC
 from typing import Optional, Tuple, List, Iterable
 
-from tqdm import tqdm
-from abc import ABC
-
+from MRdataset import logger
+from MRdataset.base import BaseDataset
+from MRdataset.dicom_utils import (is_valid_inclusion,
+                                   is_dicom_file)
+from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
 from protocol import ImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
-
-from MRdataset.base import BaseDataset
-from MRdataset import logger
-from MRdataset.dicom_utils import (extract_session_info, is_valid_inclusion,
-                                   is_dicom_file)
-from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
+from tqdm import tqdm
 
 
 # A dataset is a collection of subjects
@@ -66,8 +64,9 @@ class DicomDataset(BaseDataset, ABC):
         # These are used to skip certain sequences
         self.includes = self.config_dict.get('include_sequence', {})
         self.include_phantom = self.includes.get('phantom', None)
-        self.include_moco = self.config_dict.get('moco', None)
-        self.include_sbref = self.config_dict.get('sbref', None)
+        self.include_moco = self.includes.get('moco', None)
+        self.include_sbref = self.includes.get('sbref', None)
+        self.include_derived = self.includes.get('derived', None)
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
@@ -151,7 +150,8 @@ class DicomDataset(BaseDataset, ABC):
                 continue
 
             # skip localizer, phantom, scouts, sbref, etc
-            if not is_valid_inclusion(dicom, self.include_phantom):
+            if not is_valid_inclusion(dicom, self.include_phantom, self.include_moco,
+                                      self.include_sbref, self.include_derived):
                 continue
 
             if idx == 0:

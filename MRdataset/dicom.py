@@ -106,8 +106,8 @@ class DicomDataset(BaseDataset, ABC):
                 if seq is None:
                     logger.info(f'Unable to process {folder}. Skipping it.')
                 else:
-                    self.add(seq.subject_id, seq.session_id,
-                             seq.run_id, seq.name, seq)
+                    self.add(subject_id=seq.subject_id, session_id=seq.session_id,
+                             run_id=seq.run_id, seq_id=seq.name, seq=seq)
 
         # saving a copy for quicker reload
         # self.save()

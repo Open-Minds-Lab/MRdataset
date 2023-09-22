@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from collections import UserDict
 from typing import List
 
-from protocol import ImagingSequence
+from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -139,7 +139,7 @@ class BaseDataset(ABC):
     def load(self):
         """default method to load the dataset"""
 
-    def _tree_add_node(self, subject_id, session_id, run_id, seq_name,
+    def _tree_add_node(self, subject_id, session_id, seq_id, run_id,
                        seq_info):
         """helper to add nodes deep in the tree
 
@@ -152,11 +152,11 @@ class BaseDataset(ABC):
         if session_id not in self._tree_map[subject_id]:
             self._tree_map[subject_id][session_id] = dict()
 
-        if seq_name not in self._tree_map[subject_id][session_id]:
-            self._tree_map[subject_id][session_id][seq_name] = dict()
+        if seq_id not in self._tree_map[subject_id][session_id]:
+            self._tree_map[subject_id][session_id][seq_id] = dict()
 
-        if run_id not in self._tree_map[subject_id][session_id][seq_name]:
-            self._tree_map[subject_id][session_id][seq_name][run_id] = seq_info
+        if run_id not in self._tree_map[subject_id][session_id][seq_id]:
+            self._tree_map[subject_id][session_id][seq_id][run_id] = seq_info
 
     def __str__(self):
         """readable summary"""
@@ -176,14 +176,24 @@ class BaseDataset(ABC):
 
         for seq_id in other.get_sequence_ids():
             for subj_id, sess_id, run_id, seq in other.traverse_horizontal(seq_id):
-                self.add(subj_id, sess_id, run_id, seq_id, seq)
+                self.add(subject_id=subj_id, session_id=sess_id,
+                         seq_id=seq_id, run_id=run_id, seq=seq)
 
-    def add(self, subject_id, session_id, run_id, seq_id, seq):
+    def add(self, subject_id, session_id, seq_id, run_id, seq):
         """adds a given subject, session or run to the dataset"""
+        if not isinstance(seq, BaseSequence):
+            raise TypeError(f'Expected BaseSequence but got {type(seq)}')
+        if not isinstance(subject_id, str):
+            raise TypeError(f'Expected str but got {type(subject_id)}')
+        if not isinstance(session_id, str):
+            raise TypeError(f'Expected str but got {type(session_id)}')
+        if not isinstance(seq_id, str):
+            raise TypeError(f'Expected str but got {type(seq_id)}')
 
-        if (subject_id, session_id, run_id, seq_id) not in self._flat_map:
-            self._flat_map[(subject_id, session_id, run_id, seq_id)] = seq
-            self._tree_add_node(subject_id, session_id, run_id, seq_id, seq)
+        if (subject_id, session_id, seq_id, run_id) not in self._flat_map:
+            self._flat_map[(subject_id, session_id, seq_id, run_id)] = seq
+            self._tree_add_node(subject_id=subject_id, session_id=session_id,
+                                seq_id=seq_id, run_id=run_id, seq_info=seq)
 
             # map a sequence id to a specific runs with data for it
             if seq_id not in self._seqs_map:
@@ -199,7 +209,7 @@ class BaseDataset(ABC):
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)
 
-    def get(self, subject_id, session_id, run_id, seq_id):
+    def get(self, subject_id, session_id, seq_id, run_id):
         """returns a given subject/session/seq/run from the dataset"""
 
         return self._tree_map[subject_id][session_id][seq_id][run_id]

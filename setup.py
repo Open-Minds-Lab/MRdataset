@@ -16,8 +16,6 @@ requirements = [
     'dicom2nifti>=2.4.2',
     'nibabel',
     'pydicom',
-    'dictdiffer',
-    'pandas>=1.5.2',
     'pybids',
     'protocol',
 ]
@@ -33,9 +31,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
     description="MRdataset",

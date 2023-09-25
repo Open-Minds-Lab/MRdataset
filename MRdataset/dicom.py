@@ -9,7 +9,6 @@ from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
 from protocol import ImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
-from tqdm import tqdm
 
 
 # A dataset is a collection of subjects
@@ -58,8 +57,6 @@ class DicomDataset(BaseDataset, ABC):
         # Whether to use echo numbers to identify multi-echo sequences
         self.use_echo_numbers = self.config_dict.get('use_echonumbers',
                                                      False)
-        # These parameters will be checked for compliance
-        self.imaging_params = self.config_dict['include_parameters']
 
         # These are used to skip certain sequences
         self.includes = self.config_dict.get('include_sequence', {})
@@ -70,11 +67,6 @@ class DicomDataset(BaseDataset, ABC):
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
-
-        # these are the required parameters for internal purposes. But these
-        #  will not be checked for compliance
-        self._required_params = ['EchoTime', 'EchoNumber', 'Manufacturer',
-                                 'ContentDate', 'ContentTime']
 
         # if self._saved_path.exists():
         #     self._reload_saved()
@@ -95,10 +87,6 @@ class DicomDataset(BaseDataset, ABC):
             # find all the sub-folders with at least min_count files
             sub_folders = folders_with_min_files(directory, self.pattern,
                                                  self.min_count)
-            if self.verbose:
-                # Puts a nice progress bar, but slows down the process
-                sub_folders = tqdm(list(sub_folders))
-
             for folder in sub_folders:
                 # process each folder
                 seq = self._process_slice_collection(folder)
@@ -157,8 +145,6 @@ class DicomDataset(BaseDataset, ABC):
             if idx == 0:
                 first_slice = ImagingSequence(
                     dicom=dicom,
-                    imaging_params=self.imaging_params,
-                    required_params=self._required_params,
                     path=folder
                 )
                 # We collect the first slice as a reference to compare
@@ -169,8 +155,6 @@ class DicomDataset(BaseDataset, ABC):
             else:
                 cur_slice = ImagingSequence(
                     dicom=dicom,
-                    imaging_params=self.imaging_params,
-                    required_params=self._required_params,
                     path=folder)
 
                 # check if the session info is same

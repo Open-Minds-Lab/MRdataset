@@ -168,6 +168,13 @@ class BaseDataset(ABC):
         return self.__str__()
 
     def merge(self, other):
+        """
+        merges two datasets
+        Note that the function will add everything from the other dataset
+        to the current dataset. This doesn't mean that other dataset will
+        be equal to the current dataset after the merge. The current dataset
+        will be a superset of the other dataset.
+        """
         if not isinstance(other, BaseDataset):
             raise TypeError(f'Both must be a BaseDataset')
 

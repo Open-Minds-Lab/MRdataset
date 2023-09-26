@@ -34,9 +34,9 @@ def test_parse_compliant_dataset(num_subjects,
         mrd_num_subjects = set()
         for subject, session, run, seq in mrd.traverse_horizontal(seq_id):
             mrd_num_subjects.add(subject)
-            assert seq['RepetitionTime'].value == repetition_time
-            assert seq['EchoTrainLength'].value == echo_train_length
-            assert seq['FlipAngle'].value == flip_angle
+            assert seq['RepetitionTime']._value == repetition_time
+            assert seq['EchoTrainLength']._value == echo_train_length
+            assert seq['FlipAngle']._value == flip_angle
         assert set(mrd.get_subject_ids(seq_id)) == mrd_num_subjects
     shutil.rmtree(fake_ds_dir)
     return

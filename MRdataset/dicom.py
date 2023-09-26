@@ -126,7 +126,9 @@ class DicomDataset(BaseDataset, ABC):
         # collect all the slices with diverging parameters
         divergent_slices = list()
         first_slice = None
-        for idx, dcm_path in enumerate(dcm_files):
+
+        # iterate over all the slices
+        for dcm_path in dcm_files:
             # check if it is a valid dicom file
             if not is_dicom_file(dcm_path):
                 continue
@@ -142,7 +144,13 @@ class DicomDataset(BaseDataset, ABC):
                                       self.include_sbref, self.include_derived):
                 continue
 
-            if idx == 0:
+            # until the first slice is found, we cannot compare
+            #   other slices with it. So, we collect the first slice
+            #   and then compare other slices with it.
+
+            # Note that we cannot use enumerate and idx ==0 here, because we
+            #   may have to skip some slices
+            if len(divergent_slices) == 0:
                 first_slice = ImagingSequence(
                     dicom=dicom,
                     path=folder

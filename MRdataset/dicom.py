@@ -42,6 +42,7 @@ class DicomDataset(BaseDataset, ABC):
         super().__init__(data_source=data_source, name=name, ds_format='DICOM')
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
+        # TODO: Add option to change min_count passing it as an argument
         self.min_count = 1  # min slice count to be considered a volume
         self.verbose = verbose
         self.config_path = config_path
@@ -174,8 +175,8 @@ class DicomDataset(BaseDataset, ABC):
                 # check if the parameters are same with the slices
                 #   collected so far
                 flag = 0
-                for sl in divergent_slices:
-                    if cur_slice == sl:
+                for slice in divergent_slices:
+                    if cur_slice == slice:
                         flag = 1
                 if flag == 0:
                     divergent_slices.append(cur_slice)
@@ -211,13 +212,13 @@ class DicomDataset(BaseDataset, ABC):
         """
         if self.use_echo_numbers:
             echo_dict = dict()
-            for sl in divergent_slices:
-                enum = sl['EchoNumber'].get_value()
+            for slice in divergent_slices:
+                enum = slice['EchoNumber'].get_value()
                 if enum not in echo_dict:
-                    echo_dict[enum] = sl['EchoTime'].get_value()
+                    echo_dict[enum] = slice['EchoTime'].get_value()
             return echo_dict.values(), echo_dict.keys()
         else:
             echo_times = set()
-            for sl in divergent_slices:
-                echo_times.add(sl['EchoTime'].get_value())
+            for slice in divergent_slices:
+                echo_times.add(slice['EchoTime'].get_value())
             return echo_times, None

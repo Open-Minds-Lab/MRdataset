@@ -1,15 +1,15 @@
 from pathlib import Path
 
-from MRdataset.experiment import DicomDataset
+from MRdataset.dicom import DicomDataset
 
-base_dir = Path('/Users/Reddy/Downloads/dicom')
+base_dir = Path('/media/sinhah/extremessd/ABCD/active_series/non-recommended/vertical_subset/dicom')
 ds_name = 'vertical_subset_ABCD'  # 'ABCD'  # 'wpc7888'  #  'test_data'
 dcm_root = base_dir / ds_name
 
 # dcm_root = Path('/Users/Reddy/Downloads/dicom/wpc7888/2023.01.19-14.16.55/50250')
 
-ds = DicomDataset(data_source=dcm_root, pattern='*', name=ds_name)
-ds.load(refresh=False)
+ds = DicomDataset(data_source=base_dir, pattern='*', name=ds_name, config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
+ds.load()
 
 # {'ABCD-T1,_GE,_original_(baseline_year_1_arm_1)',
 #  'ABCD-T1,_PHILIPS,_original_(baseline_year_1_arm_1)',

@@ -18,6 +18,7 @@ requirements = [
     'pydicom',
     'pybids',
     'protocol',
+    'numpy'
 ]
 
 test_requirements = ['pytest>=3', ]

@@ -5,11 +5,12 @@
 import shutil
 
 import hypothesis.strategies as st
+import pytest
+# from MRdataset.dicom_utils import get_csa_props
+from hypothesis import given, settings
+
 from MRdataset import import_dataset
 from MRdataset.tests.simulate import make_compliant_test_dataset
-from MRdataset.dicom_utils import get_csa_props
-from hypothesis import given, settings
-import pytest
 
 
 @settings(max_examples=50, deadline=None)
@@ -47,9 +48,8 @@ def test_config_dict():
     with pytest.raises(FileNotFoundError):
         mrd = import_dataset(fake_ds_dir, config_path='non-existent.json')
 
-
-def get_csa_props_test():
-    "CSA header looks funny in Pitt 7T (20221130)"
-    text = "blah = 0x1\nxy\nsAdjData.uiAdjShimMode                = 0x1\na = b"
-    shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
-    assert shim_code == '0x1'
+# def get_csa_props_test():
+#     "CSA header looks funny in Pitt 7T (20221130)"
+#     text = "blah = 0x1\nxy\nsAdjData.uiAdjShimMode                = 0x1\na = b"
+#     shim_code = get_csa_props("sAdjData.uiAdjShimMode", text)
+#     assert shim_code == '0x1'

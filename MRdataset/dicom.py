@@ -39,7 +39,7 @@ class DicomDataset(BaseDataset, ABC):
                  **kwargs):
         """constructor"""
 
-        super().__init__(data_source=data_source, name=name, ds_format='DICOM')
+        super().__init__(data_source=data_source, name=name, ds_format='dicom')
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         # TODO: Add option to change min_count passing it as an argument

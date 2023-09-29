@@ -129,25 +129,22 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
     # TODO: make the check more concrete. See dicom2nifti for details
 
     # check quality control subject :  Not present dicom headers
-    try:
-        series_desc = dicom.get('SeriesDescription', None)
-        if series_desc is not None:
-            series_desc = series_desc.lower()
-            if not include_phantom:
-                if 'local' in series_desc:
-                    # logger.info('Localizer: Skipping %s', filepath.parent)
-                    return False
-                if 'aahead' in series_desc:
-                    # logger.info('AAhead_Scout: Skipping %s', filepath.parent)
-                    return False
-                if is_phantom(dicom):
-                    # logger.info('ACR/Phantom: %s', filepath.parent)
-                    return False
-            if not include_sbref:
-                if 'sbref' in series_desc:
-                    return False
-    except AttributeError as e:
-        logger.warning('Series Description not found')
+    series_desc = dicom.get('SeriesDescription', None)
+    if series_desc is not None:
+        series_desc = series_desc.lower()
+        if not include_phantom:
+            if 'local' in series_desc:
+                # logger.info('Localizer: Skipping %s', filepath.parent)
+                return False
+            if 'aahead' in series_desc:
+                # logger.info('AAhead_Scout: Skipping %s', filepath.parent)
+                return False
+            if is_phantom(dicom):
+                # logger.info('ACR/Phantom: %s', filepath.parent)
+                return False
+        if not include_sbref:
+            if 'sbref' in series_desc:
+                return False
 
     try:
         image_type = dicom.get('ImageType', None)

@@ -25,6 +25,21 @@ def sample_dicom_object(tmp_path='/tmp'):
     sample_dicom.save_as(str(dicom_file))
 
 
+@pytest.fixture
+def valid_dicom_file(tmp_path):
+    return Path('../../examples/valid.dcm').resolve()
+
+
+@pytest.fixture
+def invalid_dicom_file(tmp_path):
+    return Path('../../examples/invalid.dcm').resolve()
+
+
+@pytest.fixture
+def derived_dicom_file(tmp_path):
+    return Path('../../examples/derived.dcm').resolve()
+
+
 param_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
     st.text(min_size=1, max_size=10),
     st.integers(min_value=1, max_value=10),

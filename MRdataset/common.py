@@ -92,9 +92,8 @@ def import_dataset(data_source: Union[str, List, Path] = None,
 
 def find_dataset_using_ds_format(dataset_ds_format: str):
     """
-    Imports the module "{ds_format}_dataset.py", which will instantiate
-    {Style}Dataset(). For future, please ensure that any {Style}Dataset
-    is a subclass of MRdataset.base.Dataset
+    Find dataset class using ds_format. This function is used by
+    import_dataset() to find the dataset class.
 
     Parameters
     ----------
@@ -158,7 +157,7 @@ def save_mr_dataset(filepath: Union[str, Path],
     ----------
     filepath: Union[str, Path]
         path to the dataset file
-    mrds_obj: MRdataset.__base.BaseDataset
+    mrds_obj: BaseDataset
         dataset to be saved
 
     Returns
@@ -170,7 +169,11 @@ def save_mr_dataset(filepath: Union[str, Path],
     check_mrds_extension(filepath)
 
     parent_folder = Path(filepath).parent
-    parent_folder.mkdir(exist_ok=True, parents=True)
+    try:
+        parent_folder.mkdir(exist_ok=True, parents=True)
+    except OSError as exc:
+        logger.error(f'Unable to create folder {parent_folder} for saving dataset')
+        raise exc
 
     with open(filepath, 'wb') as f:
         # save dict of the object as pickle

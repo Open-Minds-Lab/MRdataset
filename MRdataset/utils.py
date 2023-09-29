@@ -1,9 +1,7 @@
-import functools
+import json
 import re
 import tempfile
 import time
-import json
-import typing
 import unicodedata
 import uuid
 from collections.abc import Hashable, Iterable
@@ -11,107 +9,107 @@ from pathlib import Path
 from typing import Union, List, Optional
 
 import numpy as np
-from MRdataset.config import MRDS_EXT
+
 from MRdataset import logger
-from dictdiffer import diff as dict_diff
+from MRdataset.config import MRDS_EXT
 
 
-def files_under_folder(fpath: Union[str, Path],
-                       ext: str = None) -> typing.Iterable[Path]:
-    """
-    Generates all the files inside the folder recursively. If ext is given
-    returns file which have that extension.
-
-    Parameters
-    ----------
-    fpath: str
-        filepath of the directory
-    ext: str
-        filter files with given extension. For ex. return only .nii files
-
-    Returns
-    -------
-    generates filepaths
-    """
-    if not Path(fpath).is_dir():
-        raise FileNotFoundError(f"Folder doesn't exist : {fpath}")
-    folder_path = Path(fpath).resolve()
-    if ext:
-        pattern = '*' + ext
-    else:
-        pattern = '*'
-    for file in folder_path.rglob(pattern):
-        if file.is_file():
-            # If it is a regular file and not a directory, return filepath
-            yield file
-
-
-def safe_get(dictionary: dict, keys: str, default=None):
-    """
-    Used to get value from nested dictionaries without getting KeyError
-
-    Parameters
-    ----------
-    dictionary : nested dict from which the value should be fetched
-    keys : string of keys delimited by '.'
-    default : if KeyError, return default
-
-    Returns
-    -------
-    Value stored in that key
-
-    Examples:
-    To get value, dictionary[tag1][tag2][tag3],
-    if KeyError: return default
-    >>>     items = safe_get(dictionary, 'tags1.tag2.tag3')
-
-    """
-    return functools.reduce(
-        lambda d, key: d.get(key, default) if isinstance(d, dict) else default,
-        keys.split('.'),
-        dictionary
-    )
+# def files_under_folder(fpath: Union[str, Path],
+#                        ext: str = None) -> typing.Iterable[Path]:
+#     """
+#     Generates all the files inside the folder recursively. If ext is given
+#     returns file which have that extension.
+#
+#     Parameters
+#     ----------
+#     fpath: str
+#         filepath of the directory
+#     ext: str
+#         filter files with given extension. For ex. return only .nii files
+#
+#     Returns
+#     -------
+#     generates filepaths
+#     """
+#     if not Path(fpath).is_dir():
+#         raise FileNotFoundError(f"Folder doesn't exist : {fpath}")
+#     folder_path = Path(fpath).resolve()
+#     if ext:
+#         pattern = '*' + ext
+#     else:
+#         pattern = '*'
+#     for file in folder_path.rglob(pattern):
+#         if file.is_file():
+#             # If it is a regular file and not a directory, return filepath
+#             yield file
 
 
-def param_difference(dict1: dict,
-                     dict2: dict,
-                     ignore: Iterable = None,
-                     tolerance: float = 0.1) -> List[Iterable]:
-    """
-    A helper function to calculate differences between 2 dictionaries,
-    dict1 and dict2. Returns an iterator with differences between 2
-    dictionaries. The diff result consist of multiple items, which represent
-    addition/deletion/change and the item value is a deep copy from the
-    corresponding source and destination objects.
-    See https://dictdiffer.readthedocs.io/en/latest/
+# def safe_get(dictionary: dict, keys: str, default=None):
+#     """
+#     Used to get value from nested dictionaries without getting KeyError
+#
+#     Parameters
+#     ----------
+#     dictionary : nested dict from which the value should be fetched
+#     keys : string of keys delimited by '.'
+#     default : if KeyError, return default
+#
+#     Returns
+#     -------
+#     Value stored in that key
+#
+#     Examples:
+#     To get value, dictionary[tag1][tag2][tag3],
+#     if KeyError: return default
+#     >>>     items = safe_get(dictionary, 'tags1.tag2.tag3')
+#
+#     """
+#     return functools.reduce(
+#         lambda d, key: d.get(key, default) if isinstance(d, dict) else default,
+#         keys.split('.'),
+#         dictionary
+#     )
 
-    TODO: Notes for future reference:
-    1. Allowing a range of values for a single parameter
-    2. Maybe even more different type of checks
-    3. Will be helpful in hierarchical checks (e.g. within modality within
-    session)
 
-    Parameters
-    ----------
-    dict1 : source dictionary
-    dict2 : destination dictionary
-    ignore : dictionary keys which should be ignored
-    tolerance : tolerance for float values
-
-    Returns
-    -------
-    list of items representing addition/deletion/change
-    """
-    if isinstance(dict1, dict) and isinstance(dict2, dict):
-        if ignore is None:
-            return list(dict_diff(dict1, dict2, tolerance=tolerance))
-        elif isinstance(ignore, Iterable):
-            return list(dict_diff(dict1, dict2, tolerance=tolerance,
-                                  ignore=set(ignore)))
-        raise TypeError(
-            "Expected type 'iterable', got {} instead. "
-            "Pass a list of parameters.".format(type(ignore)))
-    raise TypeError("Expected type 'dict', got {} instead".format(type(dict2)))
+# def param_difference(dict1: dict,
+#                      dict2: dict,
+#                      ignore: Iterable = None,
+#                      tolerance: float = 0.1) -> List[Iterable]:
+#     """
+#     A helper function to calculate differences between 2 dictionaries,
+#     dict1 and dict2. Returns an iterator with differences between 2
+#     dictionaries. The diff result consist of multiple items, which represent
+#     addition/deletion/change and the item value is a deep copy from the
+#     corresponding source and destination objects.
+#     See https://dictdiffer.readthedocs.io/en/latest/
+#
+#     TODO: Notes for future reference:
+#     1. Allowing a range of values for a single parameter
+#     2. Maybe even more different type of checks
+#     3. Will be helpful in hierarchical checks (e.g. within modality within
+#     session)
+#
+#     Parameters
+#     ----------
+#     dict1 : source dictionary
+#     dict2 : destination dictionary
+#     ignore : dictionary keys which should be ignored
+#     tolerance : tolerance for float values
+#
+#     Returns
+#     -------
+#     list of items representing addition/deletion/change
+#     """
+#     if isinstance(dict1, dict) and isinstance(dict2, dict):
+#         if ignore is None:
+#             return list(dict_diff(dict1, dict2, tolerance=tolerance))
+#         elif isinstance(ignore, Iterable):
+#             return list(dict_diff(dict1, dict2, tolerance=tolerance,
+#                                   ignore=set(ignore)))
+#         raise TypeError(
+#             "Expected type 'iterable', got {} instead. "
+#             "Pass a list of parameters.".format(type(ignore)))
+#     raise TypeError("Expected type 'dict', got {} instead".format(type(dict2)))
 
 
 def random_name() -> str:
@@ -168,39 +166,39 @@ def timestamp() -> str:
     return time_string
 
 
-def files_in_path(fp_list: Union[Iterable, str, Path],
-                  ext: Optional[str] = None):
-    """
-    If given a single folder, returns the list of all files in the directory.
-    If given a list of folders, returns concatenated list of all the files
-    inside each directory.
-
-    Parameters
-    ----------
-    fp_list : List[Path]
-        List of folder paths
-    ext : str
-        Used to filter files, and select only those which have this extension
-    Returns
-    -------
-    List of paths
-    """
-    if isinstance(fp_list, Iterable):
-        files = []
-        for i in fp_list:
-            if str(i) == '' or str(i) == '.' or i == Path():
-                logger.warning("Found an empty string. Skipping")
-                continue
-            if Path(i).is_dir():
-                files.extend(list(files_under_folder(i, ext)))
-            elif Path(i).is_file():
-                files.append(i)
-        return sorted(list(set(files)))
-    elif isinstance(fp_list, str) or isinstance(fp_list, Path):
-        return sorted(list(files_under_folder(fp_list, ext)))
-    else:
-        raise NotImplementedError("Expected either Iterable or str type. Got"
-                                  f"{type(fp_list)}")
+# def files_in_path(fp_list: Union[Iterable, str, Path],
+#                   ext: Optional[str] = None):
+#     """
+#     If given a single folder, returns the list of all files in the directory.
+#     If given a list of folders, returns concatenated list of all the files
+#     inside each directory.
+#
+#     Parameters
+#     ----------
+#     fp_list : List[Path]
+#         List of folder paths
+#     ext : str
+#         Used to filter files, and select only those which have this extension
+#     Returns
+#     -------
+#     List of paths
+#     """
+#     if isinstance(fp_list, Iterable):
+#         files = []
+#         for i in fp_list:
+#             if str(i) == '' or str(i) == '.' or i == Path():
+#                 logger.warning("Found an empty string. Skipping")
+#                 continue
+#             if Path(i).is_dir():
+#                 files.extend(list(files_under_folder(i, ext)))
+#             elif Path(i).is_file():
+#                 files.append(i)
+#         return sorted(list(set(files)))
+#     elif isinstance(fp_list, str) or isinstance(fp_list, Path):
+#         return sorted(list(files_under_folder(fp_list, ext)))
+#     else:
+#         raise NotImplementedError("Expected either Iterable or str type. Got"
+#                                   f"{type(fp_list)}")
 
 
 def folders_with_min_files(root: Union[Path, str],
@@ -241,11 +239,11 @@ def folders_with_min_files(root: Union[Path, str],
     return
 
 
-def is_iterable_but_not_str(input_obj):
-    """Boolean check for iterables that are not strings and of a minimum length"""
-
-    if not (not isinstance(input_obj, str) and isinstance(input_obj, Iterable)):
-        return False
+# def is_iterable_but_not_str(input_obj):
+#     """Boolean check for iterables that are not strings and of a minimum length"""
+#
+#     if not (not isinstance(input_obj, str) and isinstance(input_obj, Iterable)):
+#         return False
 
 
 def is_folder_with_no_subfolders(fpath):
@@ -305,38 +303,38 @@ def valid_dirs(folders: Union[List, str]) -> List[Path]:
                                   f'Got {type(folders)}')
 
 
-def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
-    """
-    If given a single path, the function will just check if it's valid.
-    If given a list of paths, the function validates if all the paths exist or
-    not. The paths can either be an instance of string or POSIX path.
+# def valid_paths(files: Union[List, str]) -> Union[List[Path], Path]:
+#     """
+#     If given a single path, the function will just check if it's valid.
+#     If given a list of paths, the function validates if all the paths exist or
+#     not. The paths can either be an instance of string or POSIX path.
+#
+#     Parameters
+#     ----------
+#     files : str or List[str]
+#         The path or list of paths that must be validated
+#
+#     Returns
+#     -------
+#     List of POSIX Paths that exist on disk
+#     """
+#     if files is None:
+#         raise ValueError('Expected a valid path or Iterable, Got NoneType')
+#     if isinstance(files, str) or isinstance(files, Path):
+#         if not Path(files).is_file():
+#             raise OSError('Invalid File {0}'.format(files))
+#         return Path(files).resolve()
+#     elif isinstance(files, Iterable):
+#         for file in files:
+#             if not Path(file).is_file():
+#                 raise OSError('Invalid File {0}'.format(file))
+#         return [Path(f).resolve() for f in files]
+#     else:
+#         raise NotImplementedError('Expected str or Path or Iterable, '
+#                                   f'Got {type(files)}')
 
-    Parameters
-    ----------
-    files : str or List[str]
-        The path or list of paths that must be validated
 
-    Returns
-    -------
-    List of POSIX Paths that exist on disk
-    """
-    if files is None:
-        raise ValueError('Expected a valid path or Iterable, Got NoneType')
-    if isinstance(files, str) or isinstance(files, Path):
-        if not Path(files).is_file():
-            raise OSError('Invalid File {0}'.format(files))
-        return Path(files).resolve()
-    elif isinstance(files, Iterable):
-        for file in files:
-            if not Path(file).is_file():
-                raise OSError('Invalid File {0}'.format(file))
-        return [Path(f).resolve() for f in files]
-    else:
-        raise NotImplementedError('Expected str or Path or Iterable, '
-                                  f'Got {type(files)}')
-
-
-def slugify(value, allow_unicode=False):
+def convert2ascii(value, allow_unicode=False):
     """
     Taken from https://github.com/django/django/blob/master/django/utils/text.py
     Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
@@ -350,7 +348,7 @@ def slugify(value, allow_unicode=False):
     else:
         value = unicodedata.normalize(
             'NFKD', value).encode('ascii', 'ignore').decode('ascii')
-    value = re.sub(r'[^\w\s-]', '', value.lower())
+    value = re.sub(r'[^\w\s-]', '', value)
     return re.sub(r'[-\s]+', '-', value).strip('-_')
 
 
@@ -392,7 +390,7 @@ def read_json(filepath: Path):
         filepath = Path(filepath)
     elif not isinstance(filepath, Path):
         raise FileNotFoundError(f'Expected str or pathlib.Path, '
-                                  f'Got {type(filepath)}')
+                                f'Got {type(filepath)}')
 
     if not filepath.is_file():
         raise FileNotFoundError(f'File not found: {filepath}')

@@ -374,3 +374,17 @@ class BaseDataset(ABC):
         for run_one in seq_one.keys():
             for run_two in seq_two.keys():
                 yield run_one, run_two
+
+    def __eq__(self, other):
+        """equality check"""
+
+        if not isinstance(other, BaseDataset):
+            raise TypeError(f'Both must be a BaseDataset')
+
+        if self.format != other.format:
+            raise ValueError(f'Both must be of the same format')
+
+        if self._flat_map == other._flat_map:
+            return True
+        else:
+            return False

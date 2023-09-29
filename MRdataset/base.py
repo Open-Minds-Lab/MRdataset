@@ -1,9 +1,15 @@
 import pickle
 from abc import ABC, abstractmethod
 from collections import UserDict
-from typing import List
+from itertools import product
+from pathlib import Path
+from typing import List, Union
 
 from protocol import BaseSequence
+
+from MRdataset import logger
+from MRdataset.config import VALID_DATASET_STYLES
+from MRdataset.utils import valid_dirs, convert2ascii
 
 
 # class Run(UserDict):
@@ -66,16 +72,19 @@ class BaseDataset(ABC):
     """base class for all MR datasets"""
 
     def __init__(self,
-                 data_source,
+                 data_source: Union[List, Path, str] = None,
                  is_complete: bool = True,
                  name: str = 'Dataset',
                  ds_format: str = 'dicom'):
         """constructor"""
 
-        self.data_source = data_source
+        self.data_source = valid_dirs(data_source)
+        self.name = convert2ascii(name)
 
-        self.name = name
+        if ds_format not in VALID_DATASET_STYLES:
+            raise ValueError(f'Invalid dataset format {ds_format}')
         self.format = ds_format
+
         self.is_complete = is_complete
 
         self._subj_ids = set()
@@ -111,8 +120,11 @@ class BaseDataset(ABC):
             raise TypeError('seq_id must be a string')
         if seq_id not in self._seqs_map.keys():
             return []
+
+        # seqs map is a set of tuples (subj, sess, run)
         tuples = self._seqs_map[seq_id]
         subj_ids = set([t[0] for t in tuples])
+
         # Cast to list so that it can be indexed, set is not subscriptable
         return list(subj_ids)
 
@@ -216,14 +228,16 @@ class BaseDataset(ABC):
             self._subj_ids.add(subject_id)
             self._seq_ids.add(seq_id)
 
-    def get(self, subject_id, session_id, seq_id, run_id):
+    def get(self, subject_id, session_id, seq_id, run_id, default=None):
         """returns a given subject/session/seq/run from the dataset"""
-
-        return self._tree_map[subject_id][session_id][seq_id][run_id]
+        try:
+            return self._tree_map[subject_id][session_id][seq_id][run_id]
+        except KeyError:
+            logger.error(f'Unable to find {subject_id}/{session_id}/{seq_id}/{run_id}')
+            return default
 
     def __getitem__(self, subject_id):
         """intuitive getter"""
-
         return self._tree_map[subject_id]
 
     # def save(self, out_path=None):
@@ -247,8 +261,8 @@ class BaseDataset(ABC):
     #         print('No subjects exist in the dataset. Not saving it!')
 
     def traverse_horizontal(self, seq_id):
-        """method to traverse the dataset horizontally
-            i.e., same sequence, across subjects
+        """
+        Generator method to traverse the dataset horizontally. i.e., within subject, across sessions/runs
         """
 
         for subj in self._subj_ids:
@@ -258,11 +272,10 @@ class BaseDataset(ABC):
                         yield (subj, sess, run,
                                self._tree_map[subj][sess][seq_id][run])
 
-    def traverse_vertical2(self, seq_one, seq_two):
+    def traverse_vertical2(self, seq_id_one, seq_id_two):
         """
-         method to traverse the dataset horizontally
+         method to traverse the dataset vertically
             i.e., within subject, across sequences
-
 
         Returns
         -------
@@ -274,21 +287,21 @@ class BaseDataset(ABC):
         for subj in self._subj_ids:
             for sess in self._tree_map[subj]:
                 # checking for subset relationship
-                if {seq_one, seq_two} <= self._tree_map[subj][sess].keys():
+                if {seq_id_one, seq_id_two} <= self._tree_map[subj][sess].keys():
                     # two sequences may not have a common run ID
                     #   they might have multiple runs, with different number of runs
                     #   so getting all of their linked combinations
                     linked_runs = self._link_runs_across_sequences(
-                        self._tree_map[subj][sess][seq_one],
-                        self._tree_map[subj][sess][seq_two])
+                        self._tree_map[subj][sess][seq_id_one],
+                        self._tree_map[subj][sess][seq_id_two])
                     for run_one, run_two in linked_runs:
                         count = count + 1
                         yield (subj, sess, run_one, run_two,
-                               self._tree_map[subj][sess][seq_one][run_one],
-                               self._tree_map[subj][sess][seq_two][run_two])
+                               self._tree_map[subj][sess][seq_id_one][run_one],
+                               self._tree_map[subj][sess][seq_id_two][run_two])
 
         if count < 1:
-            print('There were no sessions/runs with both these sequences!')
+            logger.warning('There were no sessions/runs in these sequences!')
 
     def traverse_vertical_multi(self, *seq_ids):
         """
@@ -315,14 +328,14 @@ class BaseDataset(ABC):
                     #   so getting all of their linked combinations
                     runs = self._first_run_from_sequences(seqs)
 
-                    out_seqs = [self._tree_map[subj][sess][ss][rr]
-                                for rr, ss in zip(runs, seq_ids)]
+                    out_seqs = [self._tree_map[subj][sess][seq_id][run_id]
+                                for seq_id, run_id in zip(seq_ids, runs)]
 
                     count = count + 1
                     yield subj, sess, runs, out_seqs
 
         if count < 1:
-            print(
+            logger.warning(
                 f'There were no sessions with all {len(seq_ids)} input sequences!')
 
     @staticmethod
@@ -337,7 +350,7 @@ class BaseDataset(ABC):
                 first_run = list(seq.keys())[0]
                 run_list.append(first_run)
             else:
-                print(f'skipping {seq} with no runs!')
+                logger.warning(f'skipping {seq} with no runs!')
 
         return run_list
 
@@ -345,7 +358,7 @@ class BaseDataset(ABC):
     def _run_combinations_across_sequences(seq_list):
         """returns a combinatorial pairs of runs from sequence list"""
 
-        run_lists = [list(seq.key()) for seq in seq_list if
+        run_lists = [list(seq.keys()) for seq in seq_list if
                      len(seq.keys()) >= 1]
 
         for ii in range(len(run_lists)):
@@ -360,20 +373,19 @@ class BaseDataset(ABC):
         return run_lists
 
     @staticmethod
-    def _link_runs_across_sequences(seq_one, seq_two):
+    def _link_runs_across_sequences(seq_dict1, seq_dict2):
         """returns a combinatorial combination of runs from two sequences"""
 
         # no need to compute set() on dict key() as they are already unique
-        if len(seq_one.keys()) < 1:
-            print(f'{seq_one} has no runs!')
+        if len(seq_dict1.keys()) < 1:
+            logger.warning(f'{seq_dict1} has no runs!')
 
-        if len(seq_two.keys()) < 1:
-            print(f'{seq_two} has no runs!')
+        if len(seq_dict2.keys()) < 1:
+            logger.warning(f'{seq_dict2} has no runs!')
 
         # combinatorial
-        for run_one in seq_one.keys():
-            for run_two in seq_two.keys():
-                yield run_one, run_two
+        for run_one, run_two in product(seq_dict1.keys(), seq_dict2.keys()):
+            yield run_one, run_two
 
     def __eq__(self, other):
         """equality check"""

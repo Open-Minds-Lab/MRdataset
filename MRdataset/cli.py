@@ -3,7 +3,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from MRdataset import import_dataset
+from MRdataset import import_dataset, save_mr_dataset
 from MRdataset import logger
 
 
@@ -20,6 +20,10 @@ def main():
                                'dicom files, supports nested hierarchies')
     required.add_argument('--config', type=str,
                           help='path to config file')
+    optional.add_argument('-o', '--output-dir', type=str,
+                          help='specify the directory where the dataset would'
+                               ' be saved. By default, the dataset will not be '
+                               'saved')
     optional.add_argument('-f', '--format', type=str, default='dicom',
                           help='choose type of dataset, expected'
                                'one of [dicom|bids|pybids]')
@@ -47,6 +51,8 @@ def main():
                              verbose=args.verbose,
                              is_complete=not args.is_partial,
                              config_path=args.config)
+    if args.output_dir:
+        save_mr_dataset(f"{args.output_dir}/{args.name}.mrds.pkl", dataset)
     return dataset
 
 

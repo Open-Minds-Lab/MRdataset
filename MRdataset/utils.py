@@ -108,6 +108,10 @@ def folders_with_min_files(root: Union[Path, str],
 
 def is_folder_with_no_subfolders(fpath):
     """"""
+    if isinstance(fpath, str):
+        fpath = Path(fpath)
+    if not fpath.is_dir():
+        raise FileNotFoundError(f'Folder not found: {fpath}')
 
     sub_dirs = [file_ for file_ in fpath.iterdir() if file_.is_dir()]
 
@@ -115,7 +119,10 @@ def is_folder_with_no_subfolders(fpath):
 
 
 def find_terminal_folders(root):
-    no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
+    try:
+        no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
+    except FileNotFoundError:
+        return []
 
     if no_more_subdirs:
         return [root, ]
@@ -159,7 +166,7 @@ def valid_dirs(folders: Union[List, str]) -> List[Path]:
                 raise OSError('Invalid directory {0}'.format(folder))
         return [Path(f).resolve() for f in folders]
     else:
-        raise NotImplementedError('Expected str or Path or Iterable, '
+        raise ValueError('Expected str or Path or Iterable, '
                                   f'Got {type(folders)}')
 
 
@@ -193,22 +200,19 @@ def check_mrds_extension(filepath: Union[str, Path]):
     -------
     None
     """
-    if isinstance(filepath, Path):
-        ext = "".join(filepath.suffixes)
-    elif isinstance(filepath, str):
-        ext = "".join(Path(filepath).suffixes)
-    else:
-        raise NotImplementedError(f"Expected str or pathlib.Path,"
-                                  f" Got {type(filepath)}")
+    try:
+        filepath = Path(filepath)
+    except TypeError:
+        raise TypeError(f'Expected str or pathlib.Path, Got {type(filepath)}')
+    ext = "".join(Path(filepath).suffixes)
     assert ext == MRDS_EXT, f"Expected extension {MRDS_EXT}, Got {ext}"
 
 
 def read_json(filepath: Path):
-    if isinstance(filepath, str):
+    try:
         filepath = Path(filepath)
-    elif not isinstance(filepath, Path):
-        raise FileNotFoundError(f'Expected str or pathlib.Path, '
-                                f'Got {type(filepath)}')
+    except TypeError:
+        raise TypeError(f'Expected str or pathlib.Path, Got {type(filepath)}')
 
     if not filepath.is_file():
         raise FileNotFoundError(f'File not found: {filepath}')

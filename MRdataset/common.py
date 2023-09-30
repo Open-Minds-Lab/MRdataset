@@ -60,7 +60,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
 
     if data_source is None:
         raise ValueError(f'Please provide a valid data source.'
-                         f' Got {data_source}')
+                         f' Got NoneType. ')
     # Check if name is provided by user, otherwise use random name
     if name is None:
         logger.info(
@@ -82,8 +82,6 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         **_kwargs
     )
     dataset.load()
-    if name:
-        dataset.name = name
     # Print dataset summary
     if verbose:
         print(dataset)
@@ -132,9 +130,10 @@ def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
     """
     check_mrds_extension(filepath)
 
-    if Path(filepath).is_file():
+    if isinstance(filepath, str):
         filepath = Path(filepath)
-    else:
+
+    if not filepath.is_file():
         raise FileNotFoundError(f'Invalid filepath {filepath}')
 
     with open(filepath, 'rb') as f:

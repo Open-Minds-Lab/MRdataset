@@ -1,16 +1,12 @@
 import json
 import re
-import tempfile
 import time
 import unicodedata
 import uuid
-from collections.abc import Hashable, Iterable
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Union, List, Optional
 
-import numpy as np
-
-from MRdataset import logger
 from MRdataset.config import MRDS_EXT
 
 
@@ -23,37 +19,6 @@ def random_name() -> str:
     random_number cast to string
     """
     return str(hash(str(uuid.uuid1())) % 1000000)
-
-
-def is_hashable(value) -> bool:
-    """
-    Check if variable type is hashable, required to make dictionary keys
-
-    Parameters
-    ----------
-    value : any datatype
-
-    Returns
-    -------
-    If the data type is hashable
-    """
-    return isinstance(value, Hashable)
-
-
-def make_hashable(value):
-    if value is None:
-        return None
-    if isinstance(value, np.ndarray):
-        values = value.tolist()
-    else:
-        values = value
-    if isinstance(values, Iterable) and not isinstance(values, str):
-        return " ".join([str(x) for x in values])
-    if not isinstance(values, str) and np.isnan(values):
-        return 'NaN'
-    if is_hashable(values):
-        return values
-    return str(values)
 
 
 def timestamp() -> str:
@@ -167,7 +132,7 @@ def valid_dirs(folders: Union[List, str]) -> List[Path]:
         return [Path(f).resolve() for f in folders]
     else:
         raise ValueError('Expected str or Path or Iterable, '
-                                  f'Got {type(folders)}')
+                         f'Got {type(folders)}')
 
 
 def convert2ascii(value, allow_unicode=False):
@@ -223,4 +188,3 @@ def read_json(filepath: Path):
         except ValueError as e:
             raise ValueError(f'Error while reading {filepath}: {e}')
     return dict_
-

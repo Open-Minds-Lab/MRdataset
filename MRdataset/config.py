@@ -34,25 +34,6 @@ VALID_DATASET_STYLES = [
 
 VALID_BIDS_EXTENSIONS = ['.json', '.nii', '.nii.gz']
 
-# PARAMETER_NAMES = {
-#     # 'Manufacturer': [0x08, 0x70],
-#     'EchoNumbers': [0x18, 0x86],
-#     'BodyPartExamined': [0x18, 0x15],
-#     'EchoTime': [0x18, 0x81],
-#     'RepetitionTime': [0x18, 0x80],
-#     'MagneticFieldStrength': [0x18, 0x87],
-#     'FlipAngle': [0x18, 0x1314],
-#     'PhaseEncodingDirection': [0x18, 0x1312],
-#     'EchoTrainLength': [0x18, 0x0091],
-#     'PixelBandwidth': [0x18, 0x95],
-#     'ScanningSequence': [0x18, 0x20],
-#     'SequenceVariant': [0x18, 0x21],
-#     'MRAcquisitionType': [0x18, 0x23],
-#     'PhaseEncodingSteps': [0x18, 0x89],
-#     # 'Model': [0x08, 0x1090],
-#     # 'SoftwareVersions': [0x18, 0x1020],
-#     # 'InstitutionName': [0x08, 0x0080],
-# }
 
 VALID_DATATYPES = [
     'anat',
@@ -67,56 +48,9 @@ VALID_DATATYPES = [
     'perf',
     'pet'
 ]
-# Check  QualityControlSubject
-
-# Constant dicom Identifiers used to extract dicom headers
-# HEADER_TAGS = {
-#     "image_header_info": [0x29, 0x1010],
-#     "series_header_info": [0x29, 0x1020],
-# }
-# SLICE_MODE = {
-#     "1": "sequential",
-#     "2": "interleaved",
-#     "4": "singleshot"
-# }
-# SSDict = {
-#     "SE": "Spin Echo",
-#     "IR": "Inversion Recovery",
-#     "GR": "Gradient Recalled",
-#     "EP": "Echo Planar",
-#     "RM": "Research Mode"
-# }
-# SVDict = {
-#     "SK": "segmented k-space",
-#     "MTC": "magnetization transfer contrast",
-#     "SS": "steady state",
-#     "TRSS": "time reversed steady state",
-#     "SP": "spoiled",
-#     "MP": "MAG prepared",
-#     "OSP": "oversampling phase",
-#     "NONE": "no sequence variant"
-# }
-#
-# PAT = {
-#     "1": 'Not Selected',
-#     "2": 'Grappa',
-#     "3": 'Sense'
-# }
-#
-# SHIM = {
-#     "1": 'tune_up',
-#     "2": 'standard',
-#     "4": 'advanced'
-# }
-#
-# ATDict = ["2D", "3D"]
 
 
 # Suppress duplicated warnings
-@lru_cache(1)
-def warn_once(logger: logging.Logger, msg: str):
-    logger.warning(msg)
-
 
 class MRException(Exception):
     """

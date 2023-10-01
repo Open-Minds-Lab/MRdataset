@@ -27,7 +27,7 @@ from pathlib import Path
 # CACHE_DIR.mkdir(exist_ok=True)
 
 MRDS_EXT = '.mrds.pkl'
-VALID_DATASET_STYLES = [
+VALID_DATASET_FORMATS = [
     'dicom',
     'bids',
 ]

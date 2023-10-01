@@ -6,7 +6,7 @@ from typing import Union, List
 from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.bids import BidsDataset
-from MRdataset.config import VALID_DATASET_STYLES
+from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.dicom import DicomDataset
 from MRdataset.utils import random_name, check_mrds_extension
 
@@ -111,7 +111,7 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
     else:
         raise NotImplementedError(
             f'Dataset ds_format {dataset_ds_format} is not implemented. '
-            f"Valid choices are {', '.join(VALID_DATASET_STYLES)}")
+            f"Valid choices are {', '.join(VALID_DATASET_FORMATS)}")
     return dataset_class
 
 

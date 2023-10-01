@@ -1,7 +1,10 @@
 import unittest
-from MRdataset import import_dataset
 import zipfile
 from pathlib import Path
+
+import pytest
+
+from MRdataset import import_dataset
 
 
 class TestMergeDatasets(unittest.TestCase):
@@ -41,8 +44,16 @@ class TestMergeDatasets(unittest.TestCase):
             config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
         ds2 = import_dataset(data_source=folder_path/'set2', ds_format='dicom',
             config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
+        assert ds1 != ds2
         ds1.merge(ds2)
         assert self.is_same_dataset(ds1, self.complete_dataset)
+
+        with pytest.raises(TypeError):
+            ds1.merge(None)
+
+        with pytest.raises(ValueError):
+            ds2.format = 'invalid_format'
+            ds1.merge(ds2)
 
     @staticmethod
     def is_same_dataset(dataset1, dataset2):

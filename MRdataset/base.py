@@ -8,7 +8,7 @@ from typing import List, Union
 from protocol import BaseSequence
 
 from MRdataset import logger
-from MRdataset.config import VALID_DATASET_STYLES
+from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
 
 
@@ -81,7 +81,7 @@ class BaseDataset(ABC):
         self.data_source = valid_dirs(data_source)
         self.name = convert2ascii(name)
 
-        if ds_format not in VALID_DATASET_STYLES:
+        if ds_format not in VALID_DATASET_FORMATS:
             raise ValueError(f'Invalid dataset format {ds_format}')
         self.format = ds_format
 
@@ -202,12 +202,6 @@ class BaseDataset(ABC):
         """adds a given subject, session or run to the dataset"""
         if not isinstance(seq, BaseSequence):
             raise TypeError(f'Expected BaseSequence but got {type(seq)}')
-        if not isinstance(subject_id, str):
-            raise TypeError(f'Expected str but got {type(subject_id)}')
-        if not isinstance(session_id, str):
-            raise TypeError(f'Expected str but got {type(session_id)}')
-        if not isinstance(seq_id, str):
-            raise TypeError(f'Expected str but got {type(seq_id)}')
 
         if (subject_id, session_id, seq_id, run_id) not in self._flat_map:
             self._flat_map[(subject_id, session_id, seq_id, run_id)] = seq

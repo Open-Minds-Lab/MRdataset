@@ -21,10 +21,10 @@ init_log_files(logger, mode='w')
 
 
 from MRdataset.common import import_dataset, load_mr_dataset, save_mr_dataset
-from MRdataset.config import MRDS_EXT
+from MRdataset.config import MRDS_EXT, DatasetEmptyException
 from MRdataset.dicom_utils import is_dicom_file
+from MRdataset.utils import valid_dirs
 from MRdataset.base import BaseDataset
-from MRdataset.config import DatasetEmptyException
 
 from . import _version
 __version__ = _version.get_versions()['version']

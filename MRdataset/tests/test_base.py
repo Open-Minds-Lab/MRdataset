@@ -1,10 +1,11 @@
 from copy import deepcopy
+from itertools import product
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 
 from MRdataset.dicom import DicomDataset
-from MRdataset.tests.conftest import dcm_dataset_strategy
+from MRdataset.tests.conftest import dcm_dataset_strategy, vertical_dataset_strategy
 from MRdataset.tests.simulate import make_compliant_test_dataset
 from MRdataset.utils import convert2ascii
 
@@ -70,3 +71,94 @@ def test_equality(args):
         assert ds1 == ds2
 
 
+@settings(max_examples=50, deadline=None)
+@given(args=dcm_dataset_strategy)
+def test_horizontal_traversal(args):
+    ds1, attributes = args
+    ds1.load()
+
+    # true attributes
+    num_subjects_on_disk = attributes['num_subjects']
+    sequences_on_disk = {}
+    for subfolder in attributes['fake_ds_dir'].iterdir():
+        seq_name = subfolder.name
+        if seq_name not in sequences_on_disk:
+            sequences_on_disk[seq_name] = []
+        for seq_folder in subfolder.iterdir():
+            subject_name = seq_folder.name
+            sequences_on_disk[seq_name].append(subject_name)
+
+    seq_ids = ds1.get_sequence_ids()
+    for seq_id in seq_ids:
+        for subject, session, run, seq in ds1.traverse_horizontal(seq_id):
+            assert subject in sequences_on_disk[seq_id]
+
+
+# suppress healthcheck.too_slow
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=10, deadline=None)
+@given(args=vertical_dataset_strategy)
+def test_vertical_traversal(args):
+    ds1, attributes = args
+    ds1.load()
+
+    # true attributes
+    sequences_on_disk = {}
+    for subfolder in attributes['fake_ds_dir'].iterdir():
+        seq_name = subfolder.name
+        if seq_name not in sequences_on_disk:
+            sequences_on_disk[seq_name] = []
+        for seq_folder in subfolder.iterdir():
+            subject_name = seq_folder.name
+            sequences_on_disk[seq_name].append(subject_name)
+
+    seq_ids = ds1.get_sequence_ids()
+    for seq_id1, seq_id2 in product(seq_ids, seq_ids):
+        if seq_id1 == seq_id2:
+            continue
+        for subject, session, run1, run2, seq1, seq2 in ds1.traverse_vertical2(seq_id1, seq_id2):
+            assert seq1.run_id != seq2.run_id
+            assert seq1.subject_id == seq2.subject_id
+            assert seq1.session_id == seq2.session_id
+            assert seq1.path != seq2.path
+            assert seq1.name != seq2.name
+
+
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
+@given(args=vertical_dataset_strategy)
+def test_vertical_traversal_multi(args):
+    ds1, attributes = args
+    ds1.load()
+
+    # true attributes
+    sequences_on_disk = {}
+    for subfolder in attributes['fake_ds_dir'].iterdir():
+        seq_name = subfolder.name
+        if seq_name not in sequences_on_disk:
+            sequences_on_disk[seq_name] = []
+        for seq_folder in subfolder.iterdir():
+            subject_name = seq_folder.name
+            sequences_on_disk[seq_name].append(subject_name)
+
+    seq_ids = ds1.get_sequence_ids()
+    for seq_id1, seq_id2, seq_id3 in product(seq_ids, repeat=3):
+        if seq_id1 == seq_id2 or seq_id1 == seq_id3 or seq_id2 == seq_id3:
+            continue
+        seqs = [seq_id1, seq_id2, seq_id3]
+        for subject, session, runs, seqs in ds1.traverse_vertical_multi(*seqs):
+            assert seqs[1].run_id != seqs[2].run_id
+            assert seqs[1].subject_id == seqs[2].subject_id
+            assert seqs[1].session_id == seqs[2].session_id
+            assert seqs[1].path != seqs[2].path
+            assert seqs[1].name != seqs[2].name
+
+            assert seqs[1].run_id != seqs[0].run_id
+            assert seqs[1].subject_id == seqs[0].subject_id
+            assert seqs[1].session_id == seqs[0].session_id
+            assert seqs[1].path != seqs[0].path
+            assert seqs[1].name != seqs[0].name
+
+            assert seqs[0].run_id != seqs[2].run_id
+            assert seqs[0].subject_id == seqs[2].subject_id
+            assert seqs[0].session_id == seqs[2].session_id
+            assert seqs[0].path != seqs[2].path
+            assert seqs[0].name != seqs[2].name

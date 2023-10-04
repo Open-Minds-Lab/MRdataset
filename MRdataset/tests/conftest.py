@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 from hypothesis.strategies import SearchStrategy
 
 from MRdataset.dicom import DicomDataset
-from MRdataset.tests.simulate import make_compliant_test_dataset
+from MRdataset.tests.simulate import make_compliant_test_dataset, make_vertical_test_dataset
 
 
 @pytest.fixture
@@ -73,4 +73,28 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
     return ds, attributes
 
 
+vertical_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
+    st.text(min_size=2, max_size=10),
+    st.integers(min_value=2, max_value=5),
+)
+
+
+@st.composite
+def create_vertical_dataset(draw_from: st.DrawFn) -> Tuple:
+    name, num_subjects = draw_from(vertical_strategy)
+    fake_ds_dir = make_vertical_test_dataset(num_subjects)
+    ds = DicomDataset(name=name,
+                      data_source=fake_ds_dir,
+                      config_path='../../examples/mri-config.json')
+    attributes = {
+        'name': name,
+        'num_subjects': num_subjects,
+        'fake_ds_dir': fake_ds_dir,
+        'config_path': '../../examples/mri-config.json'
+    }
+    return ds, attributes
+
+
 dcm_dataset_strategy: tp.Final[SearchStrategy[Tuple]] = create_dataset()
+
+vertical_dataset_strategy: tp.Final[SearchStrategy[Tuple]] = create_vertical_dataset()

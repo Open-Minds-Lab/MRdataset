@@ -104,7 +104,7 @@ def find_terminal_folders(root):
     return terminal
 
 
-def valid_dirs(folders: Union[List, str]) -> List[Path]:
+def valid_dirs(folders: Union[List, Path, str]) -> List:
     """
     If given a single path, the function will just check if it's valid.
     If given a list of paths, the function validates if all the paths exist or

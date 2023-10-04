@@ -12,6 +12,8 @@ from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
 from bids import BIDSLayout
 import zipfile
 
+from MRdataset.utils import convert2ascii
+
 
 def sample_dicom_dataset(tmp_path='/tmp'):
     DATA_ARCHIVE = '../../examples/example_dicom_data.zip'
@@ -20,7 +22,32 @@ def sample_dicom_dataset(tmp_path='/tmp'):
     if not output_dir.exists():
         with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
             zip_ref.extractall(DATA_ROOT)
-    return DATA_ROOT/'example_dicom_data'
+    return DATA_ROOT / 'example_dicom_data'
+
+
+def sample_vertical_dataset(tmp_path='/tmp'):
+    DATA_ARCHIVE = '../../examples/abcd.zip'
+    DATA_ROOT = Path(tmp_path)
+    output_dir = DATA_ROOT / 'abcd/'
+    if not output_dir.exists():
+        with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
+            zip_ref.extractall(DATA_ROOT)
+    return DATA_ROOT / 'abcd'
+
+
+def make_vertical_test_dataset(num_subjects) -> Path:
+    src_dir, dest_dir = setup_directories(sample_vertical_dataset())
+    dcm_list = list(src_dir.glob('**/*.dcm'))
+
+    subject_names = set()
+    i = 0
+    while len(subject_names) < num_subjects:
+        filepath = dcm_list[i]
+        dicom = pydicom.read_file(filepath)
+        export_file(dicom, filepath, dest_dir)
+        subject_names.add(dicom.get('PatientID', None))
+        i += 1
+    return dest_dir
 
 
 def make_compliant_test_dataset(num_subjects,
@@ -105,7 +132,7 @@ def make_test_dataset(num_noncompliant_subjects,
 
 def export_file(dicom, filepath, out_dir):
     patient_id = str(dicom.data_element('PatientID').value)
-    series_desc = str(dicom.data_element('SeriesDescription').value)
+    series_desc = convert2ascii(dicom.data_element('SeriesDescription').value)
     series_desc = series_desc.replace(' ', '_')
     output_path = out_dir / series_desc / patient_id
     output_path.mkdir(exist_ok=True, parents=True)

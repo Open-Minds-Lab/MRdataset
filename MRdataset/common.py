@@ -1,4 +1,3 @@
-""" Common functions and classes for MRdataset """
 import pickle
 from pathlib import Path
 from typing import Union, List

@@ -69,8 +69,40 @@ from MRdataset.utils import valid_dirs, convert2ascii
 #         self.sessions = sessions
 
 class BaseDataset(ABC):
-    """base class for all MR datasets"""
+    """
+    Base class for all datasets. The class provides a common interface to access
+    the dataset in a hierarchical fashion. The hierarchy is as follows:
+    Subject > Session > Sequence > Run
 
+    Parameters
+    ----------
+    data_source : Union[List, Path, str]
+        valid path to the dataset on disk
+    is_complete : bool
+        flag to indicate if the dataset is complete or not
+    name : str
+        name of the dataset
+    ds_format : str
+        format of the dataset. One of ['dicom', 'bids']
+    """
+
+    # self._subj_ids : set
+    #     List of unique subject IDs in the entire dataset.
+    # self._seq_ids : set
+    #     List of unique sequence IDs in the dataset.
+    # self._seqs_map : dict
+    #     Dictionary mapping sequence IDs to corresponding (subject_id, session_id, run_id) tuples
+    # self._sess_map : dict
+    #     Dictionary mapping session IDs to corresponding sequence IDs
+    # self._tree_map : dict
+    #     A hierarchical representation of the dataset, storing data
+    #     in a tree-like structure with subjects as the root, sessions as children
+    #     of subjects, sequences as children of sessions, and runs as children of sequences.
+    # self._flat_map : dict
+    #     A flat representation of the dataset, storing data in
+    #     a dictionary where keys are tuples (subj_id, sess_id, seq_id, run_id)
+    #     and values are the corresponding protocol.BaseSequence for that specific run.
+    # """
     def __init__(self,
                  data_source: Union[List, Path, str] = None,
                  is_complete: bool = True,
@@ -112,10 +144,19 @@ class BaseDataset(ABC):
                               'subjects'])
 
     def get_sequence_ids(self):
+        """Returns a list of all sequence IDs in the dataset"""
         # Cast to list so that it can be indexed, set is not subscriptable
         return list(self._seq_ids)
 
     def get_subject_ids(self, seq_id):
+        """
+        Returns a list of all subject IDs in the dataset for a given sequence ID
+
+        Parameters
+        ----------
+        seq_id : str
+            Name of the Sequence ID
+        """
         if not isinstance(seq_id, str):
             raise TypeError('seq_id must be a string')
         if seq_id not in self._seqs_map.keys():
@@ -153,10 +194,29 @@ class BaseDataset(ABC):
 
     def _tree_add_node(self, subject_id, session_id, seq_id, run_id,
                        seq_info):
-        """helper to add nodes deep in the tree
+        """
+        A hierarchical representation of the dataset, storing data
+        in a tree-like structure with subjects as the root, sessions as children
+        of subjects, sequences as children of sessions, and runs as children of sequences.
 
-        hierarchy: Subject > Session > Sequence > Run
-
+        Parameters
+        ----------
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        seq_info : protocol.BaseSequence
+            Instance of the sequence
         """
         if subject_id not in self._tree_map:
             self._tree_map[subject_id] = dict()
@@ -181,11 +241,19 @@ class BaseDataset(ABC):
 
     def merge(self, other):
         """
-        merges two datasets
-        Note that the function will add everything from the other dataset
-        to the current dataset. This doesn't mean that other dataset will
-        be equal to the current dataset after the merge. The current dataset
-        will be a superset of the other dataset.
+        Merges two datasets.
+
+        Parameters
+        ----------
+        other : BaseDataset
+            Another instance of BaseDataset to merge with the current dataset
+
+
+        .. note:: Note that the function will add all subjects, sessions, and
+            runs from the *other* dataset
+            to this dataset. This doesn't mean that *other* dataset will
+            be equal to this dataset after the merge. But, this dataset
+            will be a superset of the *other* dataset.
         """
         if not isinstance(other, BaseDataset):
             raise TypeError(f'Both must be a BaseDataset')
@@ -199,7 +267,27 @@ class BaseDataset(ABC):
                          seq_id=seq_id, run_id=run_id, seq=seq)
 
     def add(self, subject_id, session_id, seq_id, run_id, seq):
-        """adds a given subject, session or run to the dataset"""
+        """
+        Adds a given sequence to provided subject_id, session_id and run_id for the dataset
+
+        Parameters
+        ----------
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        """
+
         if not isinstance(seq, BaseSequence):
             raise TypeError(f'Expected BaseSequence but got {type(seq)}')
 
@@ -223,11 +311,32 @@ class BaseDataset(ABC):
             self._seq_ids.add(seq_id)
 
     def get(self, subject_id, session_id, seq_id, run_id, default=None):
-        """returns a given subject/session/seq/run from the dataset"""
+        """
+        Returns a Sequence given subject/session/seq/run from the dataset
+
+        Parameters
+        ----------
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        default : Any
+            Default value to return if the sequence is not found
+        """
         try:
             return self._tree_map[subject_id][session_id][seq_id][run_id]
         except KeyError:
-            logger.error(f'Unable to find {subject_id}/{session_id}/{seq_id}/{run_id}')
+            logger.info(f'Unable to find {subject_id}/{session_id}/{seq_id}/{run_id}')
             return default
 
     def __getitem__(self, subject_id):
@@ -256,7 +365,20 @@ class BaseDataset(ABC):
 
     def traverse_horizontal(self, seq_id):
         """
-        Generator method to traverse the dataset horizontally. i.e., within subject, across sessions/runs
+        Generator to traverse the dataset horizontally. i.e.,
+        all subjects, across sessions and runs for a given sequence.
+        The method will yield a tuple of (subject_id, session_id, run_id,
+        sequence) for each sequence in the dataset.
+
+        Parameters
+        ----------
+        seq_id : str
+            Name of the Sequence ID
+
+        Yields
+        ------
+        tuple_ids : tuple
+            A tuple of subject_id, session_id, run_id, and protocol.Sequence instance
         """
 
         for subj in self._subj_ids:
@@ -268,13 +390,22 @@ class BaseDataset(ABC):
 
     def traverse_vertical2(self, seq_id_one, seq_id_two):
         """
-         method to traverse the dataset vertically
-            i.e., within subject, across sequences
+        Generator to traverse the dataset vertically. i.e.,
+        sequences for a particular subject. The method will yield
+        sequences from the same session for a given subject. For example,
+        fMRI and associated field maps from the same session.
 
-        Returns
-        -------
-        tuple_ids_data : tuple
-            tuple of subj, sess, run, seq_one, seq_two
+        Parameters
+        ----------
+        seq_id_one : str
+            Name of the Sequence ID
+        seq_id_two : str
+            Name of the Sequence ID
+
+        Yields
+        ------
+        tuple_ids : tuple
+            A tuple of subj, sess, run, seq_one, seq_two
         """
 
         count = 0
@@ -299,14 +430,20 @@ class BaseDataset(ABC):
 
     def traverse_vertical_multi(self, *seq_ids):
         """
-         method to traverse the dataset horizontally
-            i.e., within subject, across sequences
+        Generator to traverse the dataset vertically. i.e.,
+        sequences for a particular subject. The method will yield multiple
+        sequences from the same session for a given subject. For example,
+        fMRI, t1w and associated field maps from the same session.
 
+        Parameters
+        ----------
+        seq_ids : list
+            Sequence IDs to retrieve from the dataset
 
         Returns
         -------
         tuple_ids_data : tuple
-            tuple of subj, sess, tuple_runs, tuple_seqs
+            A tuple of subj, sess, tuple_runs, tuple_seqs
         """
 
         count = 0

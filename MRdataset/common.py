@@ -124,7 +124,7 @@ def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
         path to the dataset file
     Returns
     -------
-    dataset : MRdataset.__base.BaseDataset
+    dataset : BaseDataset
         dataset loaded from the file
     """
     check_mrds_extension(filepath)

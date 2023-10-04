@@ -34,7 +34,10 @@ import MRdataset
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.napoleon',
-              'sphinx.ext.mathjax']
+              'sphinx.ext.mathjax',
+              'numpydoc']
+numpydoc_show_class_members = True
+numpydoc_class_members_toctree = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -103,7 +106,7 @@ html_static_path = []
 html_context = {
   'display_github': True,
   'github_user': 'Open-Minds-Lab',
-  'github_repo': 'mrQA',
+  'github_repo': 'MRdataset',
   'github_version': 'master/docs/',
 }
 

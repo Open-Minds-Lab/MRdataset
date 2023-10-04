@@ -12,21 +12,17 @@ The high level API of MRdataset shows how to interface with neuroimaging dataset
 using the elements in Core API. Here is a summarized reference of classes
 which can be used to import BIDS dataset and DICOM dataset.
 
+.. automodule:: MRdataset.common
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 .. automodule:: MRdataset.dicom
    :members:
    :undoc-members:
    :show-inheritance:
 
-
-.. automodule:: MRdataset.naive_bids
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: MRdataset.fastbids
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 
 
@@ -40,7 +36,3 @@ Subject, Run etc.in a neuroimaging experiment.
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: MRdataset.common
-   :members:
-   :undoc-members:
-   :show-inheritance:

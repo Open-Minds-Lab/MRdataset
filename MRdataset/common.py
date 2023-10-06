@@ -41,7 +41,7 @@ def import_dataset(data_source: Union[str, List, Path] = None,
         path to config file
     Returns
     -------
-    dataset : MRdataset.__base.BaseDataset
+    dataset : BaseDataset
         dataset container class
 
     Examples
@@ -99,7 +99,7 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
 
     Returns
     -------
-    dataset: MRdataset.base.BaseDataset()
+    dataset: BaseDataset()
         dataset container class
     """
     # Import the module "{ds_format}_dataset.py"

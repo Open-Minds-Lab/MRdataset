@@ -1,5 +1,6 @@
 import errno
 import json
+import random
 import shutil
 import tempfile
 from collections import defaultdict
@@ -35,18 +36,19 @@ def sample_vertical_dataset(tmp_path='/tmp'):
     return DATA_ROOT / 'abcd'
 
 
-def make_vertical_test_dataset(num_subjects) -> Path:
+def make_vertical_test_dataset(num_sequences) -> Path:
     src_dir, dest_dir = setup_directories(sample_vertical_dataset())
     dcm_list = list(src_dir.glob('**/*.dcm'))
 
-    subject_names = set()
-    i = 0
-    while len(subject_names) < num_subjects:
-        filepath = dcm_list[i]
+    seq_names = defaultdict(set)
+    while True:
+        filepath = random.choice(dcm_list)
         dicom = pydicom.read_file(filepath)
         export_file(dicom, filepath, dest_dir)
-        subject_names.add(dicom.get('PatientID', None))
-        i += 1
+        subject_id = dicom.get('PatientID', None)
+        seq_names[subject_id].add(dicom.get('SeriesDescription', None))
+        if len(seq_names[subject_id]) >= num_sequences:
+            break
     return dest_dir
 
 

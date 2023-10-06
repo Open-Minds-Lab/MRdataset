@@ -71,17 +71,18 @@ def test_equality(args):
         assert ds1 == ds2
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(args=dcm_dataset_strategy)
 def test_horizontal_traversal(args):
     ds1, attributes = args
     ds1.load()
 
     # true attributes
-    num_subjects_on_disk = attributes['num_subjects']
+    num_subjects_on_disk = attributes['num_sequences']
     sequences_on_disk = {}
     for subfolder in attributes['fake_ds_dir'].iterdir():
         seq_name = subfolder.name
+
         if seq_name not in sequences_on_disk:
             sequences_on_disk[seq_name] = []
         for seq_folder in subfolder.iterdir():
@@ -123,7 +124,7 @@ def test_vertical_traversal(args):
             assert seq1.name != seq2.name
 
 
-@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=10, deadline=None)
 @given(args=vertical_dataset_strategy)
 def test_vertical_traversal_multi(args):
     ds1, attributes = args

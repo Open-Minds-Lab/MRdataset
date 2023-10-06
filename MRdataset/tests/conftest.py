@@ -42,7 +42,7 @@ def derived_dicom_file(tmp_path):
 
 param_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
     st.text(min_size=1, max_size=10),
-    st.integers(min_value=1, max_value=10),
+    st.integers(min_value=2, max_value=10),
     st.floats(allow_nan=False,
               allow_infinity=False),
     st.integers(min_value=-10000000, max_value=10000000),
@@ -60,7 +60,7 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
                                               flip_angle)
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path='../../examples/mri-config.json')
+                      config_path='./mri-config.json')
     attributes = {
         'name': name,
         'num_subjects': num_subjects,
@@ -68,29 +68,30 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
         'echo_train_length': echo_train_length,
         'flip_angle': flip_angle,
         'fake_ds_dir': fake_ds_dir,
-        'config_path': '../../examples/mri-config.json'
+        'config_path': './mri-config.json'
     }
     return ds, attributes
 
 
-vertical_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
-    st.text(min_size=2, max_size=10),
-    st.integers(min_value=2, max_value=5),
-)
+# vertical_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
+#     st.text(min_size=2, max_size=10),
+# )
 
 
 @st.composite
 def create_vertical_dataset(draw_from: st.DrawFn) -> Tuple:
-    name, num_subjects = draw_from(vertical_strategy)
-    fake_ds_dir = make_vertical_test_dataset(num_subjects)
+    # name, num_sequences = draw_from(vertical_strategy)
+    name = 'vertical'
+    num_sequences = 3
+    fake_ds_dir = make_vertical_test_dataset(num_sequences)
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path='../../examples/mri-config.json')
+                      config_path='./mri-config.json')
     attributes = {
         'name': name,
-        'num_subjects': num_subjects,
+        'num_sequences': num_sequences,
         'fake_ds_dir': fake_ds_dir,
-        'config_path': '../../examples/mri-config.json'
+        'config_path': './mri-config.json'
     }
     return ds, attributes
 

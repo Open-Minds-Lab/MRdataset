@@ -12,7 +12,7 @@ from pydicom import dcmread
 from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion
 from MRdataset.utils import convert2ascii, read_json, \
     is_folder_with_no_subfolders, find_terminal_folders, \
-    check_mrds_extension, valid_dirs  # Import your function from the correct module
+    check_mrds_extension, valid_dirs, folders_with_min_files  # Import your function from the correct module
 
 
 def test_valid_dicom_file(tmp_path='/tmp'):
@@ -163,7 +163,7 @@ def test_has_subfolders():
     assert has_subfolders is False
     assert subfolder in subfolders
 
-    subfolder.rmdir()
+    folder_path.rmdir()
 
 
 # Test when folder has no subfolders
@@ -229,7 +229,13 @@ def test_find_terminal_folders_nonexistent_folder():
         terminal_folders = find_terminal_folders(root)
         assert terminal_folders == []
 
-
+def test_folder_with_min_files_nonexistent_folder():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        root = Path(tmpdirname) / "nonexistent_folder"
+        with pytest.raises(ValueError):
+            a = list(folders_with_min_files(root, pattern="*.dcm", min_count=1))
+        with pytest.raises(ValueError):
+            a = list(folders_with_min_files([], pattern="*.dcm", min_count=0))
 # Test find_terminal_folders with files
 def test_find_terminal_folders_with_files():
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -271,6 +277,28 @@ def test_find_terminal_folders_multiple_terminals():
         assert set(terminal_folders) == {folder1, folder2, folder3}
 
 
+def test_find_folders_with_min_files():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        root = Path(tmpdirname)
+        folder1 = root / "folder1"
+        folder1.mkdir()
+        file = folder1 / "file.dcm"
+        file.touch()
+        folder2 = root / "folder2"
+        folder2.mkdir()
+        file = folder2 / "file.dcm"
+        file.touch()
+        folder3 = root / "folder3"
+        folder3.mkdir()
+        file = folder3 / "file.dcm"
+        file.touch()
+
+        terminal_folders = folders_with_min_files(root,
+                                                  pattern="*.dcm",
+                                                  min_count=1)
+        assert set(terminal_folders) == {folder1, folder2, folder3}
+
+
 # Define a strategy for generating valid paths (strings)
 @st.composite
 def valid_paths(draw):
@@ -292,6 +320,7 @@ def test_valid_dirs_with_single_path_returns_list(path):
 
     for i in result:
         os.rmdir(i)
+
 
 @given(valid_paths())
 def test_valid_dirs_with_single_path_returns_list(path):

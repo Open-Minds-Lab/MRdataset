@@ -58,9 +58,9 @@ def folders_with_min_files(root: Union[Path, str],
     if not isinstance(root, (Path, str)):
         raise ValueError('root must be a Path-like object (str or Path)')
 
-    root = Path(root).resolve()
     if not root.exists():
         raise ValueError('Root folder does not exist')
+    root = Path(root).resolve()
 
     terminals = find_terminal_folders(root)
 

@@ -28,7 +28,24 @@ from pydicom.errors import InvalidDicomError
 
 
 class DicomDataset(BaseDataset, ABC):
-    """Class to represent a DICOM dataset"""
+    """
+    This class represents a dataset of dicom files. It is a subclass of BaseDataset.
+
+    Parameters
+    ----------
+    data_source : str or List[str]
+        The path or list of folders that contain the dicom files
+    pattern : str
+        The pattern to match the files extension. Default is '*'.
+    name : str
+        The name of the dataset. Default is 'DicomDataset'.
+    config_path : str
+        The path to the config file.
+    verbose : bool
+        Whether to print verbose output on console. Default is False.
+    ds_format : str
+        The format of the dataset. Default is 'dicom'. Choose one of ['dicom']
+    """
 
     def __init__(self,
                  data_source,
@@ -75,10 +92,13 @@ class DicomDataset(BaseDataset, ABC):
 
         # print('')
 
-    def load(self, refresh=False):
+    def load(self):
         """
-        default method to load the dataset. This method is called by import_dataset function. Any
-        dataset_type must implement this method.
+        Default method to load the dataset. It iterates over all the folders
+        in the data_source and finds the sub-folders with at least min_count
+        files. Then it iterates over all the sub-folders and processes them
+        to find the dicom slices. It then runs some basic validation on them
+        and adds them to the dataset.
         """
 
         # if self._saved_path.exists() and not refresh:
@@ -102,7 +122,19 @@ class DicomDataset(BaseDataset, ABC):
         # self.save()
 
     def _process_slice_collection(self, folder):
-        """reads the dicom slices and runs some basic validation on them!"""
+        """
+        Processes a collection of dicom slices in a folder. It iterates over
+        all the slices and collects the slices with divergent parameters, for
+        example, EchoTime and Echonumber for multi-echo sequences.
+
+        It then processes the divergent slices to find the varying parameters and
+        updates the protocol.ImagingSequence object.
+
+        Parameters
+        ----------
+        folder : Path
+            The path to the folder containing the dicom slices
+        """
 
         # within a folder, a volume can be multi-echo, so we must read them all
         #   and find a way to capture the echo time information

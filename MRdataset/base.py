@@ -1,15 +1,12 @@
-import pickle
 from abc import ABC, abstractmethod
-from collections import UserDict
 from itertools import product
 from pathlib import Path
 from typing import List, Union
 
-from protocol import BaseSequence
-
 from MRdataset import logger
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
+from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -256,10 +253,10 @@ class BaseDataset(ABC):
             will be a superset of the *other* dataset.
         """
         if not isinstance(other, BaseDataset):
-            raise TypeError(f'Both must be a BaseDataset')
+            raise TypeError('Both must be a BaseDataset')
 
         if self.format != other.format:
-            raise ValueError(f'Both must be of the same format')
+            raise ValueError('Both must be of the same format')
 
         for seq_id in other.get_sequence_ids():
             for subj_id, sess_id, run_id, seq in other.traverse_horizontal(seq_id):

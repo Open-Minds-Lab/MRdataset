@@ -224,7 +224,7 @@ class DicomDataset(BaseDataset, ABC):
             first_slice.set_echo_times(echo_times, echo_nums)
         return first_slice
 
-    def _process_echo_times(self, divergent_slices: list) -> Tuple[Iterable, Optional[Iterable]]:
+    def _process_echo_times(self, divergent_slices: List) -> Tuple[Iterable, Optional[Iterable]]:
         """
         Finds the set of echo times and echo numbers from the list of
         slices. However, the echo number is not always available

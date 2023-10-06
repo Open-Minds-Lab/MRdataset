@@ -21,9 +21,9 @@ def test_load(args):
     assert attributes['num_subjects'] == len(ds._subj_ids)
     for seq_id in ds.get_sequence_ids():
         for subject, session, run, seq in ds.traverse_horizontal(seq_id):
-            assert seq['RepetitionTime']._value == attributes['repetition_time']
-            assert seq['EchoTrainLength']._value == attributes['echo_train_length']
-            assert seq['FlipAngle']._value == attributes['flip_angle']
+            assert seq['RepetitionTime'].get_value() == attributes['repetition_time']
+            assert seq['EchoTrainLength'].get_value() == attributes['echo_train_length']
+            assert seq['FlipAngle'].get_value() == attributes['flip_angle']
             subjects = ds.get_subject_ids(seq_id)
             assert subject in subjects
     assert not ds.get_subject_ids('non-existent-seq-id')
@@ -78,7 +78,7 @@ def test_horizontal_traversal(args):
     ds1.load()
 
     # true attributes
-    num_subjects_on_disk = attributes['num_sequences']
+    num_subjects_on_disk = attributes['num_subjects']
     sequences_on_disk = {}
     for subfolder in attributes['fake_ds_dir'].iterdir():
         seq_name = subfolder.name

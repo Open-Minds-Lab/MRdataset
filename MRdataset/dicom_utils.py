@@ -130,6 +130,8 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
 
     # check quality control subject :  Not present dicom headers
     series_desc = dicom.get('SeriesDescription', None)
+    image_type = dicom.get('ImageType', None)
+
     if series_desc is not None:
         series_desc = series_desc.lower()
         if not include_phantom:
@@ -145,17 +147,17 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
         if not include_sbref:
             if 'sbref' in series_desc:
                 return False
+    else:
+        return False
 
-    try:
-        image_type = dicom.get('ImageType', None)
-        if image_type is not None:
-            for i in image_type:
-                if not include_moco and 'moco' in i.lower():
-                    return False
-                if not include_derived and 'derived' in i.lower():
-                    return False
-    except AttributeError as e:
-        logger.warning('ImageType not found')
+    if image_type is not None:
+        for i in image_type:
+            if not include_moco and 'moco' in i.lower():
+                return False
+            if not include_derived and 'derived' in i.lower():
+                return False
+    else:
+        return False
 
     return True
 

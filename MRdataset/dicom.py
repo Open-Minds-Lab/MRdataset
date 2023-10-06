@@ -141,11 +141,12 @@ class DicomDataset(BaseDataset, ABC):
         dcm_files = sorted(folder.glob(self.pattern))
 
         # if no files found, return None
-        if len(dcm_files) < self.min_count:
-            logger.warn(
-                f'no files matching the pattern {self.pattern} found in {folder}',
-                UserWarning)
-            return None
+        # Not required as folders_with_min_files already checks for this
+        # if len(dcm_files) < self.min_count:
+        #     logger.warn(
+        #         f'no files matching the pattern {self.pattern} found in {folder}',
+        #         UserWarning)
+        #     return None
 
         # run some basic validation of these dcm slice collection
         #   session_info must match

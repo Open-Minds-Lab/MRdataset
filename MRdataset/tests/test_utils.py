@@ -45,6 +45,37 @@ def test_valid_inclusion(valid_dicom_file):
     result = is_valid_inclusion(dcm)
     assert result is True
 
+    dcm.SeriesDescription = None
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+
+    dcm.ImageType = None
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+
+    dcm.SeriesDescription = 'localizer'
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+
+    dcm.SeriesDescription = 'aahead_scout'
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+    dcm.SeriesDescription = 'fmap_sbref'
+    assert not is_valid_inclusion(dcm, include_sbref=False)
+    assert not is_valid_inclusion(dcm, include_sbref=True)
+
+    dcm.SeriesDescription = 'siemens_mosaic'
+    dcm.ImageType = ['ORIGINAL', 'PRIMARY', 'M', 'ND', 'MOCO']
+    assert not is_valid_inclusion(dcm, include_moco=False)
+    dcm.ImageType = ['ORIGINAL', 'PRIMARY', 'M', 'ND', 'DERIVED']
+    assert not is_valid_inclusion(dcm, include_derived=False)
+
+    dcm.SeriesDescription = 't1w'
+    dcm.PatientID = 'phantom'
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+    dcm.PatientID = 'sub-001'
+    dcm.PatientSex = 'o'
+    assert not is_valid_inclusion(dcm, include_phantom=False)
+    dcm.PatientID = 'sub-001'
+    dcm.PatientSex = 'F'
+    dcm.PatientAge = '001D'
+    assert not is_valid_inclusion(dcm, include_phantom=False)
 
 def test_invalid_inclusion_derived(derived_dicom_file):
     dcm = dcmread(derived_dicom_file)  # Replace with the actual path
@@ -155,28 +186,23 @@ def test_invalid_mrds_ext_raises_error(filename):
 
 # Test when folder has subfolders
 def test_has_subfolders():
-    folder_path = Path("test_folder")
-    subfolder = folder_path / "subfolder"
-    subfolder.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        folder_path = Path(tmpdirname)
+        subfolder = folder_path / "subfolder"
+        subfolder.mkdir(parents=True, exist_ok=True)
 
-    has_subfolders, subfolders = is_folder_with_no_subfolders(str(folder_path))
-    assert has_subfolders is False
-    assert subfolder in subfolders
-
-    folder_path.rmdir()
-
+        has_no_subfolders, subfolders = is_folder_with_no_subfolders(folder_path)
+        assert has_no_subfolders is False
+        assert subfolder in subfolders
 
 # Test when folder has no subfolders
 def test_no_subfolders():
-    folder_path = Path("test_folder")
-    folder_path.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        folder_path = Path(tmpdirname)
 
-    has_no_subfolders, subfolders = is_folder_with_no_subfolders(folder_path)
-    assert has_no_subfolders is True
-    assert subfolders == []
-
-    folder_path.rmdir()
-
+        has_no_subfolders, subfolders = is_folder_with_no_subfolders(folder_path)
+        assert has_no_subfolders is True
+        assert subfolders == []
 
 # Test when folder doesn't exist
 def test_nonexistent_folder():

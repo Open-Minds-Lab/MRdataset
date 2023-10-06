@@ -4,7 +4,6 @@ from typing import Union, List
 
 from MRdataset import logger
 from MRdataset.base import BaseDataset
-from MRdataset.bids import BidsDataset
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.dicom import DicomDataset
 from MRdataset.utils import random_name, check_mrds_extension

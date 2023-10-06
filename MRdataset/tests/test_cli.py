@@ -2,7 +2,7 @@ import subprocess
 
 from hypothesis import given, settings, assume
 
-from MRdataset import load_mr_dataset
+from MRdataset import load_mr_dataset, BaseDataset
 from MRdataset.tests.conftest import dcm_dataset_strategy
 
 

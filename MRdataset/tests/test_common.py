@@ -9,9 +9,7 @@ import pytest
 from hypothesis import given, settings
 import pickle
 
-from MRdataset import import_dataset, save_mr_dataset, load_mr_dataset, logger
-from MRdataset.base import BaseDataset
-from MRdataset.bids import BidsDataset
+from MRdataset import import_dataset, save_mr_dataset, load_mr_dataset, logger, BaseDataset
 from MRdataset.common import find_dataset_using_ds_format
 from MRdataset.config import MRException, MRdatasetWarning, DatasetEmptyException
 from MRdataset.dicom import DicomDataset
@@ -45,7 +43,7 @@ def test_save_load_mr_dataset(num_subjects,
 def test_find_dataset_using_ds_format(ds_format):
     """Test find_dataset_using_ds_format"""
     assert find_dataset_using_ds_format('dicom') == DicomDataset
-    assert find_dataset_using_ds_format('bids') == BidsDataset
+    # assert find_dataset_using_ds_format('bids') == BidsDataset
     # check that any other dataset style raises an error
 
     if ds_format not in ['dicom', 'bids']:

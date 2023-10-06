@@ -75,6 +75,31 @@ def make_compliant_test_dataset(num_subjects,
     return dest_dir
 
 
+def make_multi_echo_dataset(num_subjects,
+                                repetition_time,
+                                echo_train_length,
+                                flip_angle) -> Path:
+    src_dir, dest_dir = setup_directories(sample_dicom_dataset())
+    dcm_list = list(src_dir.glob('**/*.dcm'))
+
+    subject_names = set()
+    i = 0
+    while len(subject_names) < num_subjects:
+        filepath = dcm_list[i]
+        dicom = pydicom.read_file(filepath)
+
+        dicom.RepetitionTime = repetition_time
+        dicom.EchoTrainLength = echo_train_length
+        dicom.FlipAngle = flip_angle
+        dicom.EchoTime = echo_train_length
+        export_file(dicom, filepath, dest_dir)
+        dicom.EchoTime = echo_train_length*2
+        newfilepath = filepath.parent/(filepath.stem+'2.dcm')
+        export_file(dicom, newfilepath, dest_dir)
+        subject_names.add(dicom.get('PatientID', None))
+        i += 1
+    return dest_dir
+
 def setup_directories(src):
     src_dir = Path(src).resolve()
     if not src_dir.exists():

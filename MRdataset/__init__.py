@@ -25,6 +25,7 @@ from MRdataset.config import MRDS_EXT, DatasetEmptyException
 from MRdataset.dicom_utils import is_dicom_file
 from MRdataset.utils import valid_dirs
 from MRdataset.base import BaseDataset
+from MRdataset.dicom import DicomDataset
 
 from . import _version
 __version__ = _version.get_versions()['version']

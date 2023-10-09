@@ -19,6 +19,7 @@
 #
 import os
 import sys
+
 sys.path.insert(0, os.path.abspath('..'))
 
 import MRdataset
@@ -27,20 +28,30 @@ import MRdataset
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = '2.1'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.napoleon',
-              'sphinx.ext.mathjax',
+              'sphinx.ext.intersphinx',
+              'sphinx_copybutton',
               'numpydoc']
 numpydoc_show_class_members = True
 numpydoc_class_members_toctree = False
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
 
+# Automatically extract typehints when specified and place them in
+# descriptions of the relevant function/method.
+# autodoc_typehints = "description"
+
+# Don't show class signature with the class' name.
+autodoc_class_signature = "separated"
+python_maximum_signature_line_length = 80
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+html_title = "MRdataset"
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -78,25 +89,29 @@ language = 'en'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
 
 # -- Options for HTML output -------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 # html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'light_css_variables': {
+        # 'color-code-background': '#000000',
+    },
+    "navigation_with_keys": True,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -104,18 +119,16 @@ html_theme = 'sphinx_rtd_theme'
 # html_static_path = ['_static']
 html_static_path = []
 html_context = {
-  'display_github': True,
-  'github_user': 'Open-Minds-Lab',
-  'github_repo': 'MRdataset',
-  'github_version': 'master/docs/',
+    'display_github': True,
+    'github_user': 'Open-Minds-Lab',
+    'github_repo': 'MRdataset',
+    'github_version': 'master/docs/',
 }
-
 
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'MRdatasetdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------
 
@@ -146,7 +159,6 @@ latex_documents = [
      'Harsh Sinha', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------
 
 # One entry per manual page. List of tuples
@@ -156,7 +168,6 @@ man_pages = [
      'MRdataset Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------
 
@@ -174,5 +185,3 @@ texinfo_documents = [
 
 # -- Options for MathJAX support ---------------------------------------
 mathjax_path = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-
-

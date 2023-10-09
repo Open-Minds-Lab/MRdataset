@@ -10,7 +10,7 @@ from MRdataset.utils import random_name, check_mrds_extension
 
 
 # TODO: data_source can be Path or str or List. Modify type hints
-def import_dataset(data_source: Union[str, List, Path] = None,
+def import_dataset(data_source: Union[str, Path, List],
                    ds_format: str = 'dicom',
                    name: str = None,
                    verbose: bool = False,
@@ -18,35 +18,42 @@ def import_dataset(data_source: Union[str, List, Path] = None,
                    config_path: Union[str, Path] = None,
                    **_kwargs) -> 'BaseDataset':
     """
-    Create dataset as per arguments. This function acts as a Wrapper class for
-    base.BaseDataset. This is the main interface between this package and your
-    analysis.
+    Create MRdataset from data source as per arguments. This function acts as a Wrapper class for
+    BaseDataset. This is the main interface between this package and your
+    dataset. This function is used by the CLI and the python scripts.
 
     Parameters
     ----------
-    data_source : Union[str, List[str]]
-        path/to/my/dataset containing files
+    data_source : Union[str, Path, List]
+        path/to/my/dataset containing files e.g. .dcm
     ds_format : str
-        Specify dataset type. Imports the module "{ds_format}_dataset.py",
-        which will instantiate {Style}Dataset().
+        Specify dataset type. Imports the module "{ds_format}.py",
+        which will instantiate {ds_format}Dataset().
     name : str
-        Identifier for the dataset, like ADNI. The name used to save cached
-        results
+        Name/Identifier for your dataset, like ADNI. The name used to save files
+        and reports. If not provided, a random name is generated e.g. 54231
     verbose: bool
         The flag allows you to change the verbosity of execution
     is_complete: bool
-        whether the dataset is complete or not
+        whether the dataset is subset of a larger dataset. It is useful for
+         parallel processing of large datasets.
     config_path: Union[str, Path]
-        path to config file
+        path to config file which contains the rules for reading the dataset e.g.
+        sequences to read, subjects to ignore, etc.
+
     Returns
     -------
     dataset : BaseDataset
-        dataset container class
+        dataset object containing the dataset
 
     Examples
     --------
-    >>> from MRdataset import import_dataset
-    >>> data = import_dataset('dicom', '/path/to/my/data/')
+    .. code :: python
+
+        from MRdataset import import_dataset
+        data = import_dataset(data_source='/path/to/my/data/',
+                              ds_format='dicom', name='abcd_baseline',
+                              config_path='mri-config.json')
     """
     # TODO: Option to curb logger messages inside import_dataset.
     #  This would ensure option verbose for both python scripts and cli.
@@ -100,12 +107,11 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
     -------
     dataset: BaseDataset()
         dataset container class
+
     """
     # Import the module "{ds_format}_dataset.py"
     if dataset_ds_format == 'dicom':
         dataset_class = DicomDataset
-    elif dataset_ds_format == 'bids':
-        dataset_class = BidsDataset
     else:
         raise NotImplementedError(
             f'Dataset ds_format {dataset_ds_format} is not implemented. '
@@ -115,16 +121,25 @@ def find_dataset_using_ds_format(dataset_ds_format: str):
 
 def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
     """
-    Load a dataset from a file
+    Load a dataset from a file. The file must be a pickle file with extension
+    .mrds.pkl
 
     Parameters
     ----------
     filepath: Union[str, Path]
         path to the dataset file
+
     Returns
     -------
     dataset : BaseDataset
         dataset loaded from the file
+
+    Examples
+    --------
+    .. code :: python
+
+        from MRdataset import load_mr_dataset
+        dataset = load_mr_dataset('/path/to/my/dataset.mrds.pkl')
     """
     check_mrds_extension(filepath)
 
@@ -148,7 +163,7 @@ def load_mr_dataset(filepath: Union[str, Path]) -> 'BaseDataset':
 def save_mr_dataset(filepath: Union[str, Path],
                     mrds_obj: 'BaseDataset') -> None:
     """
-    Save a dataset to a file
+    Save a dataset to a file with extension .mrds.pkl
 
     Parameters
     ----------
@@ -160,6 +175,17 @@ def save_mr_dataset(filepath: Union[str, Path],
     Returns
     -------
     None
+
+    Examples
+    --------
+    .. code :: python
+
+        from MRdataset import save_mr_dataset
+        my_dataset = import_dataset(data_source='/path/to/my/data/',
+                      ds_format='dicom', name='abcd_baseline',
+                      config_path='mri-config.json')
+        dataset = save_mr_dataset(filepath='/path/to/my/dataset.mrds.pkl',
+                                  mrds_obj=my_dataset)
     """
 
     # Extract extension from filename

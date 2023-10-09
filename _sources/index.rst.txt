@@ -16,10 +16,6 @@ MRdataset : unified interface to various neuroimaging datasets
 
 Further
 =======
-.. toctree::
-    :hidden:
-
-    self
 
 .. toctree::
    :maxdepth: 1

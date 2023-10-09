@@ -1,96 +1,161 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
 
-
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>MRdataset.dicom &mdash; MRdataset 0.1.5 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+    <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
+        <title>MRdataset.dicom - MRdataset 0+untagged.766.g1d7cd89.dirty documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=36a5483c" />
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
     
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  --color-code-background: #f8f9fb;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
     
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
 
-          
-            <a href="../../index.html" class="icon icon-home"> MRdataset
-          
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
 
-          
-          </a>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
 
-          
-            
-            
-              <div class="version">
-                0.1.5
-              </div>
-            
-          
 
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
 
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">MRdataset 0+untagged.766.g1d7cd89.dirty documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">MRdataset 0+untagged.766.g1d7cd89.dirty documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">MRdataset : unified interface to various neuroimaging datasets</a></li>
 </ul>
 <ul>
@@ -100,250 +165,333 @@
 <li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a></li>
 </ul>
 
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">MRdataset</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>MRdataset.dicom</li>
-    
-    
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-    
-  </ul>
-
-  
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-            
-  <h1>Source code for MRdataset.dicom</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</div>
 
-<span class="kn">import</span> <span class="nn">pydicom</span>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for MRdataset.dicom</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span>
 
-<span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">config</span>
-<span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span><span class="p">,</span> <span class="n">Run</span><span class="p">,</span> <span class="n">Modality</span><span class="p">,</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">MRdataset.dicom_utils</span> <span class="kn">import</span> <span class="n">is_dicom_file</span><span class="p">,</span> <span class="n">is_valid_inclusion</span><span class="p">,</span> \
-    <span class="n">get_dicom_modality_tag</span><span class="p">,</span> <span class="n">is_same_set</span><span class="p">,</span> <span class="n">parse_imaging_params</span><span class="p">,</span> \
-    <span class="n">combine_varying_params</span>
-<span class="kn">from</span> <span class="nn">MRdataset.log</span> <span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="n">param_difference</span><span class="p">,</span> <span class="n">files_in_path</span>
+<span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
+<span class="kn">from</span> <span class="nn">MRdataset.dicom_utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">is_valid_inclusion</span><span class="p">,</span>
+                                   <span class="n">is_dicom_file</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">MRdataset.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">folders_with_min_files</span><span class="p">,</span> <span class="n">read_json</span><span class="p">,</span> <span class="n">valid_dirs</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">protocol</span> <span class="kn">import</span> <span class="n">ImagingSequence</span>
+<span class="kn">from</span> <span class="nn">pydicom</span> <span class="kn">import</span> <span class="n">dcmread</span>
+<span class="kn">from</span> <span class="nn">pydicom.errors</span> <span class="kn">import</span> <span class="n">InvalidDicomError</span>
 
 
-<span class="c1"># Module-level logger</span>
-<span class="c1"># logger = logging.getLogger(&#39;root&#39;)</span>
+<span class="c1"># A dataset is a collection of subjects</span>
+<span class="c1"># A subject is a collection of sessions</span>
+<span class="c1"># A session is a collection of runs</span>
+<span class="c1"># A run is one instance of a sequence;</span>
+<span class="c1"># A sequence can have multiple runs in a session</span>
+<span class="c1"># A sequence is a collection of parameters</span>
+<span class="c1">#</span>
+<span class="c1"># related useful references</span>
+<span class="c1">#   https://bids-specification.readthedocs.io/en/stable/appendices/entities.html</span>
+<span class="c1">#</span>
+<span class="c1"># dicom2nifti logic for naming files:</span>
+<span class="c1"># https://github.com/icometrix/dicom2nifti/blob</span>
+<span class="c1"># /ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68</span>
+<span class="c1">#</span>
 
 
-<span class="c1"># TODO: check what if each variable is None. Apply try catch</span>
-<div class="viewcode-block" id="DicomDataset"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset">[docs]</a><span class="k">class</span> <span class="nc">DicomDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Container to manage properties and issues of a dataset downloaded from</span>
-<span class="sd">    XNAT. Expects the data_source to be collection of dicom files, which may</span>
-<span class="sd">    belong to different subjects, modalities, sessions or runs.</span>
+<div class="viewcode-block" id="DicomDataset"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset">[docs]</a><span class="k">class</span> <span class="nc">DicomDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class represents a dataset of dicom files. It is a subclass of BaseDataset.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    data_source : str or List[str]</span>
+<span class="sd">        The path or list of folders that contain the dicom files</span>
+<span class="sd">    pattern : str</span>
+<span class="sd">        The pattern to match the files extension. Default is &#39;*&#39;.</span>
 <span class="sd">    name : str</span>
-<span class="sd">        Identifier/name for the node</span>
-<span class="sd">    data_source : Path or str or Iterable</span>
-<span class="sd">        directories containing dicom files, supports nested hierarchies</span>
-<span class="sd">    include_phantom</span>
-<span class="sd">        Whether to include non-subject scans like localizer, acr/phantom,</span>
-<span class="sd">        head_scout</span>
+<span class="sd">        The name of the dataset. Default is &#39;DicomDataset&#39;.</span>
+<span class="sd">    config_path : str</span>
+<span class="sd">        The path to the config file.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Whether to print verbose output on console. Default is False.</span>
+<span class="sd">    ds_format : str</span>
+<span class="sd">        The format of the dataset. Default is &#39;dicom&#39;. Choose one of [&#39;dicom&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">data_source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">include_phantom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">is_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="DicomDataset.__init__"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">data_source</span><span class="p">,</span>
+                 <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s1">&#39;DicomDataset&#39;</span><span class="p">,</span>
+                 <span class="n">config_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">ds_format</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;constructor&quot;&quot;&quot;</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="o">=</span><span class="n">data_source</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">ds_format</span><span class="o">=</span><span class="n">ds_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span> <span class="o">=</span> <span class="n">valid_dirs</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span>
+        <span class="c1"># TODO: Add option to change min_count passing it as an argument</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_count</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># min slice count to be considered a volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_path</span> <span class="o">=</span> <span class="n">config_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># read the config file</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span> <span class="o">=</span> <span class="n">read_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span> <span class="ow">or</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to read config file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="c1"># Whether to use echo numbers to identify multi-echo sequences</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_echo_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;use_echonumbers&#39;</span><span class="p">,</span>
+                                                     <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># These are used to skip certain sequences</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">includes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include_sequence&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;phantom&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_moco</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;moco&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_sbref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sbref&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_derived</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">includes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;derived&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># variables specific to this class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key_vars</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="s1">&#39;pattern&#39;</span><span class="p">,</span> <span class="s1">&#39;min_count&#39;</span><span class="p">,</span> <span class="s1">&#39;include_phantoms&#39;</span><span class="p">])</span></div>
+
+        <span class="c1"># if self._saved_path.exists():</span>
+        <span class="c1">#     self._reload_saved()</span>
+
+        <span class="c1"># print(&#39;&#39;)</span>
+
+<div class="viewcode-block" id="DicomDataset.load"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Default method to load the dataset. It iterates over all the folders</span>
+<span class="sd">        in the data_source and finds the sub-folders with at least min_count</span>
+<span class="sd">        files. Then it iterates over all the sub-folders and processes them</span>
+<span class="sd">        to find the dicom slices. It then runs some basic validation on them</span>
+<span class="sd">        and adds them to the dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if self._saved_path.exists() and not refresh:</span>
+        <span class="c1">#     self._reload_saved()</span>
+        <span class="c1">#     return</span>
+
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="p">:</span>
+            <span class="c1"># find all the sub-folders with at least min_count files</span>
+            <span class="n">sub_folders</span> <span class="o">=</span> <span class="n">folders_with_min_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">,</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">min_count</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">sub_folders</span><span class="p">:</span>
+                <span class="c1"># process each folder</span>
+                <span class="n">seq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_slice_collection</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">seq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to process </span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s1">. Skipping it.&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
+                             <span class="n">run_id</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">seq_id</span><span class="o">=</span><span class="n">seq</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">seq</span><span class="o">=</span><span class="n">seq</span><span class="p">)</span></div>
+
+        <span class="c1"># saving a copy for quicker reload</span>
+        <span class="c1"># self.save()</span>
+
+    <span class="k">def</span> <span class="nf">_process_slice_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes a collection of dicom slices in a folder. It iterates over</span>
+<span class="sd">        all the slices and collects the slices with divergent parameters, for</span>
+<span class="sd">        example, EchoTime and Echonumber for multi-echo sequences.</span>
+
+<span class="sd">        It then processes the divergent slices to find the varying parameters and</span>
+<span class="sd">        updates the protocol.ImagingSequence object.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            an identifier/name for the dataset</span>
-<span class="sd">        data_source : Path or str or Iterable</span>
-<span class="sd">            directory containing dicom files, supports nested hierarchies</span>
-<span class="sd">        include_phantom : bool</span>
-<span class="sd">            whether to include localizer/aahead_scout/phantom/acr</span>
-<span class="sd">        is_complete : bool</span>
-<span class="sd">            whether the dataset is complete or partial (default: True)</span>
-
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; from MRdataset import dicom</span>
-<span class="sd">        &gt;&gt;&gt; dataset = dicom.DicomDataset()</span>
+<span class="sd">        folder : Path</span>
+<span class="sd">            The path to the folder containing the dicom slices</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span> <span class="o">=</span> <span class="n">is_complete</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span> <span class="o">=</span> <span class="n">include_phantom</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-<div class="viewcode-block" id="DicomDataset.walk"><a class="viewcode-back" href="../../API.html#MRdataset.dicom.DicomDataset.walk">[docs]</a>    <span class="k">def</span> <span class="nf">walk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves filenames in the directory tree, verifies if it is dicom</span>
-<span class="sd">        file, extracts relevant parameters and stores it in project. Creates</span>
-<span class="sd">        a desirable hierarchy for a neuroimaging experiment</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">no_files_found</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">study_ids_found</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># within a folder, a volume can be multi-echo, so we must read them all</span>
+        <span class="c1">#   and find a way to capture the echo time information</span>
+        <span class="n">dcm_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">files_in_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_source</span><span class="p">):</span>
-            <span class="n">no_files_found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># if no files found, return None</span>
+        <span class="c1"># Not required as folders_with_min_files already checks for this</span>
+        <span class="c1"># if len(dcm_files) &lt; self.min_count:</span>
+        <span class="c1">#     logger.warn(</span>
+        <span class="c1">#         f&#39;no files matching the pattern {self.pattern} found in {folder}&#39;,</span>
+        <span class="c1">#         UserWarning)</span>
+        <span class="c1">#     return None</span>
+
+        <span class="c1"># run some basic validation of these dcm slice collection</span>
+        <span class="c1">#   session_info must match</span>
+        <span class="c1">#   parameter values must also match in general</span>
+
+        <span class="c1"># However, for certain sequences, the parameter may vary</span>
+        <span class="c1">#   (e.g. EchoTime for multi-echo). Therefore, we need to</span>
+        <span class="c1">#   find a way to capture the varying parameters. We collect</span>
+        <span class="c1">#   all the slices and then process them to find the varying</span>
+        <span class="c1">#   parameters.</span>
+
+        <span class="c1"># collect all the slices with diverging parameters</span>
+        <span class="n">divergent_slices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">first_slice</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># iterate over all the slices</span>
+        <span class="k">for</span> <span class="n">dcm_path</span> <span class="ow">in</span> <span class="n">dcm_files</span><span class="p">:</span>
+            <span class="c1"># check if it is a valid dicom file</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dicom_file</span><span class="p">(</span><span class="n">dcm_path</span><span class="p">):</span>
+                <span class="k">continue</span>
+
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dicom_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                        <span class="s2">&quot;Not a DICOM file : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">filepath</span><span class="p">))</span>
+                <span class="n">dicom</span> <span class="o">=</span> <span class="n">dcmread</span><span class="p">(</span><span class="n">dcm_path</span><span class="p">,</span> <span class="n">stop_before_pixels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InvalidDicomError</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Invalid DICOM file at </span><span class="si">{</span><span class="n">dcm_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># skip localizer, phantom, scouts, sbref, etc</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid_inclusion</span><span class="p">(</span><span class="n">dicom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_moco</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">include_sbref</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_derived</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># until the first slice is found, we cannot compare</span>
+            <span class="c1">#   other slices with it. So, we collect the first slice</span>
+            <span class="c1">#   and then compare other slices with it.</span>
+
+            <span class="c1"># Note that we cannot use enumerate and idx ==0 here, because we</span>
+            <span class="c1">#   may have to skip some slices</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">divergent_slices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">first_slice</span> <span class="o">=</span> <span class="n">ImagingSequence</span><span class="p">(</span>
+                    <span class="n">dicom</span><span class="o">=</span><span class="n">dicom</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">folder</span>
+                <span class="p">)</span>
+                <span class="c1"># We collect the first slice as a reference to compare</span>
+                <span class="c1">#   other slices with, although it is not divergent in</span>
+                <span class="c1">#   its true sense</span>
+                <span class="n">divergent_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">first_slice</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur_slice</span> <span class="o">=</span> <span class="n">ImagingSequence</span><span class="p">(</span>
+                    <span class="n">dicom</span><span class="o">=</span><span class="n">dicom</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+
+                <span class="c1"># check if the session info is same</span>
+                <span class="c1"># Session info includes subject_id, session_id, run_id</span>
+                <span class="k">if</span> <span class="n">cur_slice</span><span class="o">.</span><span class="n">get_session_info</span><span class="p">()</span> <span class="o">!=</span> <span class="n">first_slice</span><span class="o">.</span><span class="n">get_session_info</span><span class="p">():</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Inconsistent session info for </span><span class="si">{</span><span class="n">dcm_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="k">continue</span>
-                <span class="c1"># TODO: Read dicom file : 2</span>
-                <span class="n">dicom</span> <span class="o">=</span> <span class="n">pydicom</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">stop_before_pixels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">is_valid_inclusion</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span>
-                                      <span class="n">dicom</span><span class="p">,</span>
-                                      <span class="bp">self</span><span class="o">.</span><span class="n">include_phantom</span><span class="p">):</span>
 
-                    <span class="n">modality_name</span> <span class="o">=</span> <span class="n">get_dicom_modality_tag</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
-                    <span class="n">modality_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_modality_by_name</span><span class="p">(</span><span class="n">modality_name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">modality_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">modality_obj</span> <span class="o">=</span> <span class="n">Modality</span><span class="p">(</span><span class="n">modality_name</span><span class="p">)</span>
+                <span class="c1"># check if the parameters are same with the slices</span>
+                <span class="c1">#   collected so far</span>
+                <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="nb">slice</span> <span class="ow">in</span> <span class="n">divergent_slices</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cur_slice</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">:</span>
+                        <span class="n">flag</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">divergent_slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur_slice</span><span class="p">)</span>
 
-                    <span class="n">patient_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;PatientID&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-                    <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">modality_obj</span><span class="o">.</span><span class="n">get_subject_by_name</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">subject_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">subject_obj</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="n">patient_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">divergent_slices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># if there are divergent slices, we need to process them</span>
+            <span class="c1">#   to find the varying parameters. For now we just look for echo-time</span>
+            <span class="c1">#   and echo-number, but we can extend this to other parameters such as</span>
+            <span class="c1">#   flip-angle, etc.</span>
+            <span class="n">echo_times</span><span class="p">,</span> <span class="n">echo_nums</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_echo_times</span><span class="p">(</span><span class="n">divergent_slices</span><span class="p">)</span>
+            <span class="n">first_slice</span><span class="o">.</span><span class="n">set_echo_times</span><span class="p">(</span><span class="n">echo_times</span><span class="p">,</span> <span class="n">echo_nums</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">first_slice</span>
 
-                    <span class="n">series_num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;SeriesNumber&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-                    <span class="n">session_node</span> <span class="o">=</span> <span class="n">subject_obj</span><span class="o">.</span><span class="n">get_session_by_name</span><span class="p">(</span><span class="n">series_num</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">session_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">session_node</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">series_num</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_process_echo_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">divergent_slices</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the set of echo times and echo numbers from the list of</span>
+<span class="sd">        slices. However, the echo number is not always available</span>
+<span class="sd">        in the dicom header. In that case, we may have to look for a unique</span>
+<span class="sd">        set of echo times. Although this is not preferred, but we can use this.</span>
 
-                    <span class="n">run_name</span> <span class="o">=</span> <span class="n">is_same_set</span><span class="p">(</span><span class="n">dicom</span><span class="p">)</span>
-                    <span class="n">run_node</span> <span class="o">=</span> <span class="n">session_node</span><span class="o">.</span><span class="n">get_run_by_name</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">run_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">run_node</span> <span class="o">=</span> <span class="n">Run</span><span class="p">(</span><span class="n">run_name</span><span class="p">)</span>
-                        <span class="n">run_node</span><span class="o">.</span><span class="n">echo_time</span> <span class="o">=</span> <span class="n">dicom</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-                    <span class="c1"># TODO: dcm img params doesnt make sense</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        divergent_slices : list</span>
+<span class="sd">            ImagingSequence objects with divergent parameters</span>
 
-                    <span class="n">dcm_img_params</span> <span class="o">=</span> <span class="n">parse_imaging_params</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
-                    <span class="n">param_diff</span> <span class="o">=</span> <span class="n">param_difference</span><span class="p">(</span><span class="n">dcm_img_params</span><span class="p">,</span>
-                                                  <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="n">run_node</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">dcm_img_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="k">elif</span> <span class="n">param_diff</span><span class="p">:</span>
-                        <span class="n">run_node</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">combine_varying_params</span><span class="p">(</span>
-                                            <span class="n">param_diff</span><span class="p">,</span>
-                                            <span class="n">run_node</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-                                            <span class="n">filepath</span><span class="p">)</span>
-                    <span class="n">session_node</span><span class="o">.</span><span class="n">add_run</span><span class="p">(</span><span class="n">run_node</span><span class="p">)</span>
-                    <span class="n">subject_obj</span><span class="o">.</span><span class="n">add_session</span><span class="p">(</span><span class="n">session_node</span><span class="p">)</span>
-                    <span class="n">modality_obj</span><span class="o">.</span><span class="n">add_subject</span><span class="p">(</span><span class="n">subject_obj</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">add_modality</span><span class="p">(</span><span class="n">modality_obj</span><span class="p">)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        echo_times : list</span>
+<span class="sd">            collected list of echo times</span>
+<span class="sd">        echo_nums : Optional[List]</span>
+<span class="sd">            collected list of echo numbers</span>
 
-                    <span class="c1"># Collect all unique study ids found in DICOM</span>
-                    <span class="n">study_ids_found</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dicom</span><span class="o">.</span><span class="n">StudyID</span><span class="p">))</span>
-
-            <span class="k">except</span> <span class="n">config</span><span class="o">.</span><span class="n">MRException</span> <span class="k">as</span> <span class="n">mrd_exc</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">mrd_exc</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">PermissionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">exc</span>
-        <span class="k">if</span> <span class="n">no_files_found</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">EOFError</span><span class="p">(</span><span class="s2">&quot;Read 0 files&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">study_ids_found</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">MultipleProjectsInDataset</span><span class="p">(</span><span class="n">study_ids_found</span><span class="p">))</span></div></div>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_echo_numbers</span><span class="p">:</span>
+            <span class="n">echo_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="nb">slice</span> <span class="ow">in</span> <span class="n">divergent_slices</span><span class="p">:</span>
+                <span class="n">enum</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">[</span><span class="s1">&#39;EchoNumber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">enum</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">echo_dict</span><span class="p">:</span>
+                    <span class="n">echo_dict</span><span class="p">[</span><span class="n">enum</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">[</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">echo_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">echo_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">echo_times</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="nb">slice</span> <span class="ow">in</span> <span class="n">divergent_slices</span><span class="p">:</span>
+                <span class="n">echo_times</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">slice</span><span class="p">[</span><span class="s1">&#39;EchoTime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">echo_times</span><span class="p">,</span> <span class="kc">None</span></div>
 </pre></div>
-
-           </div>
-           
-          </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2023, Harsh Sinha.
-
-    </p>
-  </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
+        </article>
       </div>
-
-    </section>
-
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Harsh Sinha
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
   </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=b117ff57"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    </body>
 </html>

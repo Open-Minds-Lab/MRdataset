@@ -50,9 +50,9 @@ def main():
                              name=args.name,
                              verbose=args.verbose,
                              is_complete=not args.is_partial,
-                             config_path=args.config)
-    if args.output_dir:
-        save_mr_dataset(f"{args.output_dir}/{args.name}.mrds.pkl", dataset)
+                             config_path=args.config,
+                             output_dir=args.output_dir)
+    save_mr_dataset(f"{args.output_dir}/{args.name}.mrds.pkl", dataset)
     return dataset
 
 

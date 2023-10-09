@@ -20,7 +20,8 @@ class TestMergeDatasets(unittest.TestCase):
         cls.complete_dataset = import_dataset(
             data_source=temp_dir/'test_merge_data/full_data',
             ds_format='dicom',
-            config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
+            config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json',
+            output_dir=temp_dir, name='test_dataset')
         cls.data_source = temp_dir/'test_merge_data'
 
     def test_modalities(self):
@@ -41,9 +42,11 @@ class TestMergeDatasets(unittest.TestCase):
 
     def merge_and_check(self, folder_path):
         ds1 = import_dataset(data_source=folder_path/'set1', ds_format='dicom',
-            config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
+                             config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json',
+                             output_dir=folder_path, name='test_dataset')
         ds2 = import_dataset(data_source=folder_path/'set2', ds_format='dicom',
-            config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json')
+                             config_path='/home/sinhah/github/mrQA/examples/mri-config-full.json',
+                             output_dir=folder_path, name='test_dataset')
         assert ds1 != ds2
         ds1.merge(ds2)
         assert self.is_same_dataset(ds1, self.complete_dataset)

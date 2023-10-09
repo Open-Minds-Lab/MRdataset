@@ -3,10 +3,11 @@ from itertools import product
 from pathlib import Path
 from typing import List, Union
 
+from protocol import BaseSequence
+
 from MRdataset import logger
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
-from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -482,23 +483,23 @@ class BaseDataset(ABC):
 
         return run_list
 
-    @staticmethod
-    def _run_combinations_across_sequences(seq_list):
-        """returns a combinatorial pairs of runs from sequence list"""
-
-        run_lists = [list(seq.keys()) for seq in seq_list if
-                     len(seq.keys()) >= 1]
-
-        for ii in range(len(run_lists)):
-            # remaining lists
-            for jj in range(ii + 1, len(run_lists)):
-                # for each element from first list
-                for kk in range(len(run_lists[ii])):
-                    # all elements from the other lists
-                    for qq in range(len(run_lists[jj])):
-                        yield run_lists[ii][kk], run_lists[jj][qq]
-
-        return run_lists
+    # @staticmethod
+    # def _run_combinations_across_sequences(seq_list):
+    #     """returns a combinatorial pairs of runs from sequence list"""
+    #
+    #     run_lists = [list(seq.keys()) for seq in seq_list if
+    #                  len(seq.keys()) >= 1]
+    #
+    #     for ii in range(len(run_lists)):
+    #         # remaining lists
+    #         for jj in range(ii + 1, len(run_lists)):
+    #             # for each element from first list
+    #             for kk in range(len(run_lists[ii])):
+    #                 # all elements from the other lists
+    #                 for qq in range(len(run_lists[jj])):
+    #                     yield run_lists[ii][kk], run_lists[jj][qq]
+    #
+    #     return run_lists
 
     @staticmethod
     def _link_runs_across_sequences(seq_dict1, seq_dict2):

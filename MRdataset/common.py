@@ -6,7 +6,7 @@ from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.dicom import DicomDataset
-from MRdataset.utils import random_name, check_mrds_extension
+from MRdataset.utils import random_name, check_mrds_extension, _init_logger
 
 
 # TODO: data_source can be Path or str or List. Modify type hints
@@ -59,9 +59,11 @@ def import_dataset(data_source: Union[str, Path, List],
     #  This would ensure option verbose for both python scripts and cli.
     #  Consider removing it from cli.main
     if verbose:
-        logger.setLevel('INFO')
+        _init_logger(logger, output_dir=output_dir,
+                     mode='w', level='WARNING')
     else:
-        logger.setLevel('WARNING')
+        _init_logger(logger, output_dir=output_dir,
+                     mode='w', level='ERROR')
 
     if data_source is None:
         raise ValueError(f'Please provide a valid data source.'

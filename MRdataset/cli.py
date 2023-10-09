@@ -1,14 +1,13 @@
 """Console script for MRdataset."""
 import argparse
-import sys
 from pathlib import Path
 
 from MRdataset import import_dataset, save_mr_dataset
-from MRdataset import logger
+from MRdataset.utils import is_writable
 
 
-def main():
-    """Console script for MRdataset."""
+def get_parser():
+    """Parser for MRdataset"""
     parser = argparse.ArgumentParser(
         description='MRdataset : generates dataset for analysis',
         add_help=False)
@@ -22,8 +21,7 @@ def main():
                           help='path to config file')
     optional.add_argument('-o', '--output-dir', type=str,
                           help='specify the directory where the dataset would'
-                               ' be saved. By default, the dataset will not be '
-                               'saved')
+                               ' be saved.')
     optional.add_argument('-f', '--format', type=str, default='dicom',
                           help='choose type of dataset, expected'
                                'one of [dicom|bids|pybids]')
@@ -36,15 +34,62 @@ def main():
                           help='flag dataset as a partial dataset')
     optional.add_argument('-v', '--verbose', action='store_true',
                           help='allow verbose output on console')
+    return parser
+
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = get_parser()
     args = parser.parse_args()
     if not Path(args.data_source).is_dir():
         raise OSError('Expected valid directory for --data_source argument, '
                       f'Got {args.data_source}')
-    if args.verbose:
-        logger.setLevel('INFO')
-    else:
-        logger.setLevel('WARNING')
+    if not args.config:
+        raise ValueError('Please provide a valid config file. Got NoneType')
 
+    if args.output_dir:
+        if not is_writable(args.output_dir):
+            raise OSError('Expected a writable directory for --output_dir '
+                          f'argument, Got {args.output_dir}')
+    else:
+        raise ValueError('Please provide a valid output directory. '
+                         'Got NoneType')
+    return args
+
+
+def cli():
+    """
+    Command line interface for MRdataset. This function is called when
+    MRdataset is run from the command line.
+
+    The following arguments are supported:
+
+    -d, --data-source : str
+        directory containing downloaded dataset with dicom files, supports
+        nested hierarchies
+    --config : str
+        path to config file
+    -o, --output-dir : str
+        specify the directory where the dataset would be saved. By default,
+        the dataset will not be saved
+    -f, --format : str
+        choose type of dataset, expected one of [dicom|bids]
+    -n, --name : str
+        provide a identifier/name for dataset. If not provided, the name of
+        the dataset will be a random string e.g. '54321'
+    --is-partial : bool
+        flag dataset as a partial dataset. The flag is useful while reading a
+        dataset in chunks e.g. when the dataset is too large to fit in memory.
+        If the dataset is complete, the flag should not be set.
+
+    Examples
+    --------
+    ..code :: bash
+
+        $ MRdataset -d /path/to/my/data/ --format dicom --name abcd_baseline
+        --config mri-config.json --output-dir /path/to/my/output/dir/
+    """
+    args = parse_args()
     dataset = import_dataset(data_source=args.data_source,
                              ds_format=args.format,
                              name=args.name,
@@ -57,4 +102,4 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())  # pragma: no cover
+    cli()  # pragma: no cover

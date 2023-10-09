@@ -16,6 +16,7 @@ def import_dataset(data_source: Union[str, Path, List],
                    verbose: bool = False,
                    is_complete: bool = True,
                    config_path: Union[str, Path] = None,
+                   output_dir: Union[str, Path] = None,
                    **_kwargs) -> 'BaseDataset':
     """
     Create MRdataset from data source as per arguments. This function acts as a Wrapper class for
@@ -40,6 +41,8 @@ def import_dataset(data_source: Union[str, Path, List],
     config_path: Union[str, Path]
         path to config file which contains the rules for reading the dataset e.g.
         sequences to read, subjects to ignore, etc.
+    output_dir: Union[str, Path]
+        path to the directory where the output files will be saved.
 
     Returns
     -------
@@ -53,7 +56,8 @@ def import_dataset(data_source: Union[str, Path, List],
         from MRdataset import import_dataset
         data = import_dataset(data_source='/path/to/my/data/',
                               ds_format='dicom', name='abcd_baseline',
-                              config_path='mri-config.json')
+                              config_path='mri-config.json',
+                              output_dir='/path/to/my/output/dir/')
     """
     # TODO: Option to curb logger messages inside import_dataset.
     #  This would ensure option verbose for both python scripts and cli.

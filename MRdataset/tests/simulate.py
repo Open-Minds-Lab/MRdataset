@@ -3,17 +3,16 @@ import json
 import random
 import shutil
 import tempfile
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 
 import MRdataset.config
 import pydicom
-from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
+from MRdataset.tests.config import compl_data_xnat, \
     compl_data_bids
-from bids import BIDSLayout
-import zipfile
-
 from MRdataset.utils import convert2ascii
+from bids import BIDSLayout
 
 
 def sample_dicom_dataset(tmp_path='/tmp'):
@@ -132,11 +131,17 @@ def make_test_dataset(num_noncompliant_subjects,
                       flip_angle):
     src_dir, dest_dir = setup_directories(compl_data_xnat)  # noqa
     print()
-    copyeverything(src_dir, dest_dir)
+    # copyeverything(src_dir, dest_dir)
     dataset_info = defaultdict(set)
     modalities = [s.name for s in src_dir.iterdir() if (s.is_dir() and
                                                         'mrdataset' not in
                                                         s.name)]
+    for i, modality in enumerate(modalities):
+        subject_paths = [s for s in (src_dir / modality).iterdir()]
+        for sub_path in subject_paths:
+            for filepath in sub_path.glob('*.dcm'):
+                dicom = pydicom.read_file(filepath)
+                export_file(dicom, filepath, dest_dir)
 
     for i, modality in enumerate(modalities):
         count = num_noncompliant_subjects[i]
@@ -158,9 +163,9 @@ def make_test_dataset(num_noncompliant_subjects,
 
 
 def export_file(dicom, filepath, out_dir):
-    patient_id = str(dicom.data_element('PatientID').value)
-    series_desc = convert2ascii(dicom.data_element('SeriesDescription').value)
-    series_desc = series_desc.replace(' ', '_')
+    patient_id = dicom.get('PatientID', None)
+    series_desc = dicom.get('SeriesDescription', None)
+    series_desc = convert2ascii(series_desc.replace(' ', '_'))
     output_path = out_dir / series_desc / patient_id
     output_path.mkdir(exist_ok=True, parents=True)
     dicom.save_as(output_path / filepath.name)

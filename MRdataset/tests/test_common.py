@@ -7,13 +7,12 @@ from pathlib import Path
 # use hypothesis to generate multiple test cases
 import hypothesis.strategies as st
 import pytest
-from hypothesis import given, settings
-
 from MRdataset import import_dataset, save_mr_dataset, load_mr_dataset, BaseDataset
 from MRdataset.common import find_dataset_using_ds_format
 from MRdataset.config import MRException, MRdatasetWarning, DatasetEmptyException
 from MRdataset.dicom import DicomDataset
 from MRdataset.tests.simulate import make_compliant_test_dataset
+from hypothesis import given, settings
 
 
 @settings(max_examples=50, deadline=None)
@@ -29,7 +28,7 @@ def test_save_load_mr_dataset(num_subjects,
                               flip_angle):
     """Test save_mr_dataset"""
     fake_ds_dir = make_compliant_test_dataset(num_subjects, repetition_time, echo_train_length, flip_angle)
-    mrd = import_dataset(fake_ds_dir, config_path='./mri-config.json',
+    mrd = import_dataset(fake_ds_dir, config_path='./resources/mri-config.json',
                          output_dir=fake_ds_dir, name='test_dataset')
     save_mr_dataset(filepath='test.mrds.pkl', mrds_obj=mrd)
     mrd2 = load_mr_dataset('test.mrds.pkl')
@@ -58,7 +57,7 @@ def test_import_dataset(capfd):
     fake_ds_dir = make_compliant_test_dataset(1, 1, 1, 1)
     mrd = import_dataset(fake_ds_dir,
                          verbose=True,
-                         config_path='./mri-config.json',
+                         config_path='./resources/mri-config.json',
                          output_dir=fake_ds_dir)
     assert mrd.name != 'test_dataset'
     out, err = capfd.readouterr()
@@ -67,7 +66,7 @@ def test_import_dataset(capfd):
     mrd = import_dataset(fake_ds_dir,
                          verbose=False,
                          name='test_dataset',
-                         config_path='./mri-config.json',
+                         config_path='./resources/mri-config.json',
                          output_dir=fake_ds_dir)
     # assert logger.level == 30
     assert mrd.name == 'test_dataset'
@@ -75,7 +74,7 @@ def test_import_dataset(capfd):
     with pytest.raises(ValueError):
         mrd = import_dataset(None,
                              verbose=False,
-                             config_path='./mri-config.json',
+                             config_path='./resources/mri-config.json',
                              output_dir=fake_ds_dir, name='test_dataset')
     assert isinstance(mrd, BaseDataset)
     shutil.rmtree(fake_ds_dir)
@@ -85,7 +84,7 @@ def test_import_dataset(capfd):
 def test_save_mr_dataset():
     """Test save_mr_dataset on a non-writable directory"""
     fake_ds_dir = make_compliant_test_dataset(1, 1, 1, 1)
-    mrd = import_dataset(fake_ds_dir, config_path='./mri-config.json',
+    mrd = import_dataset(fake_ds_dir, config_path='./resources/mri-config.json',
                          output_dir=fake_ds_dir, name='test_dataset')
     with pytest.raises(OSError):
         save_mr_dataset(filepath='/mycomputer/test.mrds.pkl', mrds_obj=mrd)

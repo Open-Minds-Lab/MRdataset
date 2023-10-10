@@ -26,13 +26,13 @@ def sample_dicom_dataset(tmp_path='/tmp'):
 
 
 def sample_vertical_dataset(tmp_path='/tmp'):
-    DATA_ARCHIVE = '../../examples/abcd.zip'
+    DATA_ARCHIVE = './resources/vertical.zip'
     DATA_ROOT = Path(tmp_path)
-    output_dir = DATA_ROOT / 'abcd/'
+    output_dir = DATA_ROOT / 'vertical/'
     if not output_dir.exists():
         with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
             zip_ref.extractall(DATA_ROOT)
-    return DATA_ROOT / 'abcd'
+    return DATA_ROOT / 'vertical'
 
 
 def make_vertical_test_dataset(num_sequences) -> Path:
@@ -165,10 +165,13 @@ def make_test_dataset(num_noncompliant_subjects,
 def export_file(dicom, filepath, out_dir):
     patient_id = dicom.get('PatientID', None)
     series_desc = dicom.get('SeriesDescription', None)
-    series_desc = convert2ascii(series_desc.replace(' ', '_'))
+    series_number = dicom.get('SeriesNumber', None)
+    series_desc = convert2ascii(series_desc.replace(' ', '_')) + '_' + str(series_number)
     output_path = out_dir / series_desc / patient_id
+    number = dicom.get('InstanceNumber', None)
     output_path.mkdir(exist_ok=True, parents=True)
-    dicom.save_as(output_path / filepath.name)
+    filename = f'{patient_id}_{number}.dcm'
+    dicom.save_as(output_path / filename)
 
 
 def make_bids_test_dataset(num_noncompliant_subjects,

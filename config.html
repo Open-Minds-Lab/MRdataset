@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="API Reference" href="API.html" />
 
-    <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 --><title>Python Module Index - MRdataset</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
+        <title>Configuration - MRdataset</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
@@ -133,7 +135,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -153,10 +155,10 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
 </ul>
@@ -178,7 +180,8 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
@@ -186,64 +189,47 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          
-<section class="domainindex-section">
-  <h1>Python Module Index</h1>
-  <div class="domainindex-jumpbox"><a href="#cap-m"><strong>m</strong></a></div>
+          <section id="module-MRdataset.config">
+<span id="configuration"></span><h1>Configuration<a class="headerlink" href="#module-MRdataset.config" title="Permalink to this heading">#</a></h1>
+<dl class="py data">
+<dt class="sig sig-object py" id="MRdataset.config.VALID_PARAMETERS">
+<span class="sig-name descname"><span class="pre">VALID_PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['AcquisitionMatrix',</span> <span class="pre">'AngioFlag',</span> <span class="pre">'BitsAllocated',</span> <span class="pre">'BitsStored',</span> <span class="pre">'BodyPartExamined',</span> <span class="pre">'CoilString',</span> <span class="pre">'Columns',</span> <span class="pre">'DwellTime',</span> <span class="pre">'EchoNumber',</span> <span class="pre">'EchoTime',</span> <span class="pre">'EchoTrainLength',</span> <span class="pre">'FlipAngle',</span> <span class="pre">'FlowCompensation',</span> <span class="pre">'GradientMode',</span> <span class="pre">'HighBit',</span> <span class="pre">'ImageOrientationPatient',</span> <span class="pre">'ImagePositionPatient',</span> <span class="pre">'ImagedNucleus',</span> <span class="pre">'ImagingFrequency',</span> <span class="pre">'InversionTime',</span> <span class="pre">'LargestImagePixelValue',</span> <span class="pre">'MRAcquisitionType',</span> <span class="pre">'MRTransmitCoilSequence',</span> <span class="pre">'MTState',</span> <span class="pre">'MagneticFieldStrength',</span> <span class="pre">'Manufacturer',</span> <span class="pre">'ManufacturersModelName',</span> <span class="pre">'MultiBandAccelerationFactor',</span> <span class="pre">'MultiSliceMode',</span> <span class="pre">'NonLinearGradientCorrection',</span> <span class="pre">'NumberOfAverages',</span> <span class="pre">'PATMode',</span> <span class="pre">'ParallelAcquisitionTechnique',</span> <span class="pre">'ParallelReductionFactorInPlane',</span> <span class="pre">'PartialFourier',</span> <span class="pre">'PartialFourierDirection',</span> <span class="pre">'PatientPosition',</span> <span class="pre">'PercentPhaseFOV',</span> <span class="pre">'PercentSampling',</span> <span class="pre">'PhaseEncodingDirection',</span> <span class="pre">'PhaseEncodingSteps',</span> <span class="pre">'PhasePolarity',</span> <span class="pre">'PhotometricInterpretation',</span> <span class="pre">'PixelBandwidth',</span> <span class="pre">'PixelRepresentation',</span> <span class="pre">'PixelSpacing',</span> <span class="pre">'PositivePCSDirections',</span> <span class="pre">'ReceiveCoilActiveElements',</span> <span class="pre">'ReceiveCoilName',</span> <span class="pre">'RepetitionTime',</span> <span class="pre">'Rows',</span> <span class="pre">'SAR',</span> <span class="pre">'SamplesPerPixel',</span> <span class="pre">'ScanOptions',</span> <span class="pre">'ScanningSequence',</span> <span class="pre">'SequenceName',</span> <span class="pre">'SequenceVariant',</span> <span class="pre">'ShimMode',</span> <span class="pre">'ShimSetting',</span> <span class="pre">'SliceLocation',</span> <span class="pre">'SliceMeasurementDuration',</span> <span class="pre">'SliceResolution',</span> <span class="pre">'SliceThickness',</span> <span class="pre">'SmallestImagePixelValue',</span> <span class="pre">'SoftwareVersions',</span> <span class="pre">'SpacingBetweenSlices',</span> <span class="pre">'SpoilingState',</span> <span class="pre">'TransmitCoilName',</span> <span class="pre">'VariableFlipAngleFlag',</span> <span class="pre">'WindowCenter',</span> <span class="pre">'WindowCenterWidthExplanation',</span> <span class="pre">'WindowWidth']</span></em><a class="headerlink" href="#MRdataset.config.VALID_PARAMETERS" title="Permalink to this definition">#</a></dt>
+<dd><p>Parameters that are supported by MRdataset</p>
+</dd></dl>
+
 </section>
-<table class="domainindex-table">
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-m">
-    <td></td><td><strong>m</strong></td><td></td>
-  </tr>
-  <tr>
-    <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-    <td>
-        <code class="xref">MRdataset</code></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="API.html#module-MRdataset.base"><code class="xref">MRdataset.base</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="API.html#module-MRdataset.common"><code class="xref">MRdataset.common</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="config.html#module-MRdataset.config"><code class="xref">MRdataset.config</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="API.html#module-MRdataset.dicom"><code class="xref">MRdataset.dicom</code></a></td><td>
-    <em></em></td>
-  </tr>
-</table>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="contributing.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Contributing</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="API.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">API Reference</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -262,8 +248,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#MRdataset.config.VALID_PARAMETERS"><code class="docutils literal notranslate"><span class="pre">VALID_PARAMETERS</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

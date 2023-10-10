@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Contributing" href="contributing.html" /><link rel="prev" title="Installation" href="installation.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Configuration" href="config.html" /><link rel="prev" title="Installation" href="installation.html" />
 
     <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
         <title>API Reference - MRdataset</title>
@@ -158,6 +158,7 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
 </ul>
@@ -196,7 +197,7 @@
         <article role="main">
           <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
-<p>The page holds MRdataset’s API documentation, which might be helpful for users or
+<p>The page holds MRdataset's API documentation, which might be helpful for users or
 developers to create interface with their own neuroimaging datasets. Among the
 different sub-packages and modules, there are two categories: core API and
 high-level API. The core api contains modules for important elements (e.g.
@@ -217,6 +218,7 @@ pickle files.</p>
 <dd><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">is_complete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em>,</dd>
 </dl>
 
@@ -229,7 +231,7 @@ dataset. This function is used by the CLI and the python scripts.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>data_source</strong><span class="classifier">Union[str, Path, List]</span></dt><dd><p>path/to/my/dataset containing files e.g. .dcm</p>
 </dd>
-<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>Specify dataset type. Imports the module “{ds_format}.py”,
+<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>Specify dataset type. Imports the module &quot;{ds_format}.py&quot;,
 which will instantiate {ds_format}Dataset().</p>
 </dd>
 <dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>Name/Identifier for your dataset, like ADNI. The name used to save files
@@ -245,6 +247,8 @@ and reports. If not provided, a random name is generated e.g. 54231</p>
 <dt><strong>config_path: Union[str, Path]</strong></dt><dd><p>path to config file which contains the rules for reading the dataset e.g.
 sequences to read, subjects to ignore, etc.</p>
 </dd>
+<dt><strong>output_dir: Union[str, Path]</strong></dt><dd><p>path to the directory where the output files will be saved.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -258,7 +262,8 @@ sequences to read, subjects to ignore, etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">import_dataset</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_source</span><span class="o">=</span><span class="s1">&#39;/path/to/my/data/&#39;</span><span class="p">,</span>
                       <span class="n">ds_format</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;abcd_baseline&#39;</span><span class="p">,</span>
-                      <span class="n">config_path</span><span class="o">=</span><span class="s1">&#39;mri-config.json&#39;</span><span class="p">)</span>
+                      <span class="n">config_path</span><span class="o">=</span><span class="s1">&#39;mri-config.json&#39;</span><span class="p">,</span>
+                      <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;/path/to/my/output/dir/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -341,15 +346,15 @@ Subject, Run etc.in a neuroimaging experiment.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>data_source</strong><span class="classifier">str or List[str]</span></dt><dd><p>The path or list of folders that contain the dicom files</p>
 </dd>
-<dt><strong>pattern</strong><span class="classifier">str</span></dt><dd><p>The pattern to match the files extension. Default is ‘*’.</p>
+<dt><strong>pattern</strong><span class="classifier">str</span></dt><dd><p>The pattern to match the files extension. Default is '*'.</p>
 </dd>
-<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>The name of the dataset. Default is ‘DicomDataset’.</p>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>The name of the dataset. Default is 'DicomDataset'.</p>
 </dd>
 <dt><strong>config_path</strong><span class="classifier">str</span></dt><dd><p>The path to the config file.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Whether to print verbose output on console. Default is False.</p>
 </dd>
-<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>The format of the dataset. Default is ‘dicom’. Choose one of [‘dicom’]</p>
+<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>The format of the dataset. Default is 'dicom'. Choose one of ['dicom']</p>
 </dd>
 </dl>
 </dd>
@@ -434,7 +439,7 @@ Subject &gt; Session &gt; Sequence &gt; Run</p>
 </dd>
 <dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>name of the dataset</p>
 </dd>
-<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>format of the dataset. One of [‘dicom’, ‘bids’]</p>
+<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>format of the dataset. One of ['dicom', 'bids']</p>
 </dd>
 </dl>
 </dd>
@@ -496,17 +501,17 @@ Subject &gt; Session &gt; Sequence &gt; Run</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>subject_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier for the Subject. For example, a subject ID can be
-a string like ‘sub-01’ or ‘001’.</p>
+a string like 'sub-01' or '001'.</p>
 </dd>
 <dt><strong>session_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Session. For example, a session ID can be
-a string like ‘ses-01’ or ‘001’. For DICOM datasets, this can be
+a string like 'ses-01' or '001'. For DICOM datasets, this can be
 StudyInstanceUID.</p>
 </dd>
 <dt><strong>seq_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Sequence. For example, a sequence ID can be
-a string like ‘fMRI’ or ‘t1w’.</p>
+a string like 'fMRI' or 't1w'.</p>
 </dd>
 <dt><strong>run_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Run. For example, a run ID can be
-a string like ‘run-01’ or ‘001’. For DICOM datasets, this can be
+a string like 'run-01' or '001'. For DICOM datasets, this can be
 SeriesInstanceUID.</p>
 </dd>
 </dl>
@@ -522,17 +527,17 @@ SeriesInstanceUID.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>subject_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier for the Subject. For example, a subject ID can be
-a string like ‘sub-01’ or ‘001’.</p>
+a string like 'sub-01' or '001'.</p>
 </dd>
 <dt><strong>session_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Session. For example, a session ID can be
-a string like ‘ses-01’ or ‘001’. For DICOM datasets, this can be
+a string like 'ses-01' or '001'. For DICOM datasets, this can be
 StudyInstanceUID.</p>
 </dd>
 <dt><strong>seq_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Sequence. For example, a sequence ID can be
-a string like ‘fMRI’ or ‘t1w’.</p>
+a string like 'fMRI' or 't1w'.</p>
 </dd>
 <dt><strong>run_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Run. For example, a run ID can be
-a string like ‘run-01’ or ‘001’. For DICOM datasets, this can be
+a string like 'run-01' or '001'. For DICOM datasets, this can be
 SeriesInstanceUID.</p>
 </dd>
 <dt><strong>default</strong><span class="classifier">Any</span></dt><dd><p>Default value to return if the sequence is not found</p>
@@ -578,7 +583,7 @@ SeriesInstanceUID.</p>
 <dt><strong>other</strong><span class="classifier">BaseDataset</span></dt><dd><p>Another instance of BaseDataset to merge with the current dataset</p>
 </dd>
 <dt><strong>.. note:: Note that the function will add all subjects, sessions, and</strong></dt><dd><p>runs from the <em>other</em> dataset
-to this dataset. This doesn’t mean that <em>other</em> dataset will
+to this dataset. This doesn't mean that <em>other</em> dataset will
 be equal to this dataset after the merge. But, this dataset
 will be a superset of the <em>other</em> dataset.</p>
 </dd>
@@ -668,12 +673,12 @@ fMRI, t1w and associated field maps from the same session.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="contributing.html">
+          <a class="next-page" href="config.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Contributing</div>
+                <div class="title">Configuration</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -757,7 +762,7 @@ fMRI, t1w and associated field maps from the same session.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b117ff57"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87c7b5fc"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

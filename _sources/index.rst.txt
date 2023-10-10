@@ -22,6 +22,7 @@ Further
 
    installation
    API
+   config
    contributing
    authors
 

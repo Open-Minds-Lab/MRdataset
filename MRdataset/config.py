@@ -1,3 +1,8 @@
+from protocol.config import ACRONYMS_IMAGING_PARAMETERS
+
+#: Parameters that are supported by MRdataset
+VALID_PARAMETERS = sorted(list(ACRONYMS_IMAGING_PARAMETERS.keys()))
+
 MRDS_EXT = '.mrds.pkl'
 VALID_DATASET_FORMATS = [
     'dicom',

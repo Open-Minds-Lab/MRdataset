@@ -1,6 +1,6 @@
 {
-    "begin": "2014-03-12T13:37:27+00:00",
-    "end": "2017-03-12T13:37:27+00:00",
+    "begin": "2014-03-12",
+    "end": "2017-03-12",
     "include_sequence": {
         "phantom": true,
         "nifti_header": false,
@@ -26,7 +26,7 @@
         "FlipAngle",
         "PhaseEncodingDirection"
     ],
-    "exclude_subects": [
+    "exclude_subjects": [
         "210098",
         "210078"
     ]

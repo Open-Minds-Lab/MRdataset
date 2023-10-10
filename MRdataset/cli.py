@@ -1,4 +1,3 @@
-"""Console script for MRdataset."""
 import argparse
 from pathlib import Path
 
@@ -59,9 +58,6 @@ def parse_args():
 
 def cli():
     """
-    Command line interface for MRdataset. This function is called when
-    MRdataset is run from the command line.
-
     The following arguments are supported:
 
     -d, --data-source : str
@@ -70,8 +66,7 @@ def cli():
     --config : str
         path to config file
     -o, --output-dir : str
-        specify the directory where the dataset would be saved. By default,
-        the dataset will not be saved
+        specify the directory where the dataset would be saved.
     -f, --format : str
         choose type of dataset, expected one of [dicom|bids]
     -n, --name : str
@@ -84,9 +79,9 @@ def cli():
 
     Examples
     --------
-    ..code :: bash
+    .. code :: bash
 
-        $ MRdataset -d /path/to/my/data/ --format dicom --name abcd_baseline
+        mrds -d /path/to/my/data/ --format dicom --name abcd_baseline
         --config mri-config.json --output-dir /path/to/my/output/dir/
     """
     args = parse_args()

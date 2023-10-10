@@ -13,6 +13,12 @@ For a BIDS dataset
 
     mrds --data-source /path/to/dataset --format bids
 
+.. automodule:: MRdataset.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :exclude-members: get_parser, parse_args
+   :noindex:
 
 API usage
 ----------------------
@@ -39,10 +45,11 @@ it creates a dataset.
 
 .. code:: python
 
-    data_folder = '/home/user/datasets/ABCD'
+    data_folder = '/home/user/datasets/XYZ'
     dataset = import_dataset(data_source=data_folder,
                              ds_format='dicom',
-                             name='ABCD')
+                             config_file='mri_config.json',
+                             output_dir='/home/user/datasets/XYZ',
 
 By default, the ``import_dataset`` expects a DICOM dataset. However, this can
 be changed using ``ds_format`` argument. For example, use ``ds_format='bids'`` for
@@ -61,7 +68,7 @@ NID (NeuroImaging Dataset), inherit ``MRdataset.base.BaseDataset`` in a file
             super().init(data_source)
             pass
 
-         def walk():
+         def load():
             pass
 
 Finally, ``save_mr_dataset`` and ``load_mr_dataset`` can be used to save and load a

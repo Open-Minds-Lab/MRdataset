@@ -49,6 +49,8 @@ add_module_names = False
 # Don't show class signature with the class' name.
 autodoc_class_signature = "separated"
 python_maximum_signature_line_length = 80
+# It was this one-liner configuration that solved the double-dash -- issue
+smartquotes = False
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 html_title = "MRdataset"

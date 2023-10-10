@@ -9,7 +9,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Union, List, Optional
 
-from MRdataset import logger
 from MRdataset.config import MRDS_EXT
 
 
@@ -202,7 +201,7 @@ def is_writable(dir_path):
     return True
 
 
-def _init_logger(log, output_dir, mode='w', level='WARNING'):
+def configure_logger(log, output_dir, mode='w', level='ERROR'):
     """
     Initiate log files.
 
@@ -229,10 +228,11 @@ def _init_logger(log, output_dir, mode='w', level='WARNING'):
     # keep only errors on console
     console_handler.setLevel(logging.ERROR)  # sets the handler info
     console_handler.setFormatter(logging.Formatter(error_formatter))
-    logger.addHandler(console_handler)
+    log.addHandler(console_handler)
 
     error_file = output_dir / 'error.log'
     error = logging.FileHandler(error_file, mode=mode)
     error.setLevel(logging.ERROR)
     error.setFormatter(logging.Formatter(error_formatter))
     log.addHandler(error)
+    return log

@@ -3,11 +3,10 @@ from itertools import product
 from pathlib import Path
 from typing import List, Union
 
-from protocol import BaseSequence
-
 from MRdataset import logger
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
+from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -74,7 +73,7 @@ class BaseDataset(ABC):
 
     Parameters
     ----------
-    data_source : Union[List, Path, str]
+    data_source : List | Path | str
         valid path to the dataset on disk
     is_complete : bool
         flag to indicate if the dataset is complete or not

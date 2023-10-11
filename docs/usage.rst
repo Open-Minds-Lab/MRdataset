@@ -1,25 +1,3 @@
-Command line usage
-------------------
-
-MRdataset can be used on the command line interface. For a DICOM dataset
-
-.. code:: bash
-
-    mrds --data-source /path/to/dataset --format dicom
-
-For a BIDS dataset
-
-.. code:: bash
-
-    mrds --data-source /path/to/dataset --format bids
-
-.. automodule:: MRdataset.cli
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   :exclude-members: get_parser, parse_args
-   :noindex:
-
 API usage
 ----------------------
 The following section provides a brief overview of the API. For more details,
@@ -88,6 +66,29 @@ Similarly, to load a dataset
     dataset = load_mr_dataset('/home/user/datasets/xyz.mrds.pkl')
 
 Note that the dataset is saved as a pickle file with an extension ``.mrds.pkl``.
+
+Command line usage
+------------------
+
+MRdataset can be used on the command line interface. For a DICOM dataset
+
+.. code:: bash
+
+    mrds --data-source /path/to/dataset --format dicom
+
+For a BIDS dataset
+
+.. code:: bash
+
+    mrds --data-source /path/to/dataset --format bids
+
+.. automodule:: MRdataset.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :exclude-members: get_parser, parse_args
+   :noindex:
+
 
 Configuration file
 ------------------

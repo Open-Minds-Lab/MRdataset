@@ -1,5 +1,6 @@
 from copy import deepcopy
 from itertools import product
+from pathlib import Path
 
 import pytest
 from MRdataset.dicom import DicomDataset
@@ -7,6 +8,8 @@ from MRdataset.tests.conftest import dcm_dataset_strategy, vertical_dataset_stra
 from MRdataset.tests.simulate import make_compliant_test_dataset
 from MRdataset.utils import convert2ascii
 from hypothesis import given, settings, HealthCheck
+
+THIS_DIR = Path(__file__).parent.resolve()
 
 
 @settings(max_examples=50, deadline=None)
@@ -37,7 +40,7 @@ def test_accept_valid_dataset_format():
         ds = DicomDataset(name='invalid_format',
                           data_source=fake_ds_dir,
                           ds_format='invalid_format',
-                          config_path='./resources/mri-config.json')
+                          config_path=THIS_DIR / 'resources/mri-config.json')
 
 @settings(max_examples=50, deadline=None)
 @given(args=dcm_dataset_strategy)

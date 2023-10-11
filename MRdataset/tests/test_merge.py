@@ -5,11 +5,12 @@ from pathlib import Path
 import pytest
 from MRdataset import import_dataset
 
+THIS_DIR = Path(__file__).parent.resolve()
 
 class TestMergeDatasets(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        zip_path = './resources/test_merge_data.zip'
+        zip_path = THIS_DIR / 'resources/test_merge_data.zip'
         if not Path(zip_path).is_file():
             raise FileNotFoundError(f'Expected valid file for --data_source argument, '
                                      f'Got {zip_path}')
@@ -19,7 +20,7 @@ class TestMergeDatasets(unittest.TestCase):
         cls.complete_dataset = import_dataset(
             data_source=temp_dir/'test_merge_data/full_data',
             ds_format='dicom',
-            config_path='./resources/mri-config.json',
+            config_path=THIS_DIR / 'resources/mri-config.json',
             output_dir=temp_dir, name='test_dataset')
         cls.data_source = temp_dir/'test_merge_data'
 
@@ -41,10 +42,10 @@ class TestMergeDatasets(unittest.TestCase):
 
     def merge_and_check(self, folder_path):
         ds1 = import_dataset(data_source=folder_path/'set1', ds_format='dicom',
-                             config_path='./resources/mri-config.json',
+                             config_path=THIS_DIR / 'resources/mri-config.json',
                              output_dir=folder_path, name='test_dataset')
         ds2 = import_dataset(data_source=folder_path/'set2', ds_format='dicom',
-                             config_path='./resources/mri-config.json',
+                             config_path=THIS_DIR / 'resources/mri-config.json',
                              output_dir=folder_path, name='test_dataset')
         assert ds1 != ds2
         ds1.merge(ds2)

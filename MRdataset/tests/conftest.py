@@ -9,6 +9,7 @@ from MRdataset.tests.simulate import make_compliant_test_dataset, make_vertical_
 from hypothesis import strategies as st
 from hypothesis.strategies import SearchStrategy
 
+THIS_DIR = Path(__file__).parent.resolve()
 
 @pytest.fixture
 def sample_dicom_object(tmp_path='/tmp'):
@@ -24,17 +25,17 @@ def sample_dicom_object(tmp_path='/tmp'):
 
 @pytest.fixture
 def valid_dicom_file(tmp_path):
-    return Path('./resources/valid.dcm').resolve()
+    return Path(THIS_DIR / 'resources/valid.dcm').resolve()
 
 
 @pytest.fixture
 def invalid_dicom_file(tmp_path):
-    return Path('./resources/invalid.dcm').resolve()
+    return Path(THIS_DIR / 'resources/invalid.dcm').resolve()
 
 
 @pytest.fixture
 def derived_dicom_file(tmp_path):
-    return Path('./resources/derived.dcm').resolve()
+    return Path(THIS_DIR / 'resources/derived.dcm').resolve()
 
 
 param_strategy: tp.Final[SearchStrategy[Tuple]] = st.tuples(
@@ -57,7 +58,7 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
                                               flip_angle)
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path='./resources/mri-config.json')
+                      config_path=THIS_DIR / 'resources/mri-config.json')
     attributes = {
         'name': name,
         'num_subjects': num_subjects,
@@ -65,7 +66,7 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
         'echo_train_length': echo_train_length,
         'flip_angle': flip_angle,
         'fake_ds_dir': fake_ds_dir,
-        'config_path': './resources/mri-config.json'
+        'config_path': THIS_DIR / 'resources/mri-config.json'
     }
     return ds, attributes
 
@@ -83,12 +84,12 @@ def create_vertical_dataset(draw_from: st.DrawFn) -> Tuple:
     fake_ds_dir = make_vertical_test_dataset(num_sequences)
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path='./resources/mri-config.json')
+                      config_path=THIS_DIR / 'resources/mri-config.json')
     attributes = {
         'name': name,
         'num_sequences': num_sequences,
         'fake_ds_dir': fake_ds_dir,
-        'config_path': './resources/mri-config.json'
+        'config_path': THIS_DIR / 'resources/mri-config.json'
     }
     return ds, attributes
 

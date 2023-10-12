@@ -2,7 +2,7 @@ import logging
 import tempfile
 from pathlib import Path
 
-from protocol.config import ACRONYMS_IMAGING_PARAMETERS
+from protocol import ACRONYMS_IMAGING_PARAMETERS
 
 #: Parameters that are supported by MRdataset
 VALID_PARAMETERS = sorted(list(ACRONYMS_IMAGING_PARAMETERS.keys()))

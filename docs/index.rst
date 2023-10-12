@@ -11,7 +11,8 @@ MRdataset : unified interface to various neuroimaging datasets
 .. image:: ./images/hierarchy.jpg
 
 * A unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc.
-* Documentation: https://open-minds-lab.github.io/MRdataset/
+* **Tutorial**: Please refer to the Jupyter Notebook `tutorial`_.
+* **Documentation**: https://open-minds-lab.github.io/MRdataset/
 
 .. include:: ./usage.rst
 
@@ -35,3 +36,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb

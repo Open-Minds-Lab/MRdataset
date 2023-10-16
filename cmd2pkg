@@ -1,0 +1,10 @@
+#!/bin/bash
+
+rm -rf dist
+
+hatch build
+
+hatch publish
+
+rm -rf dist
+

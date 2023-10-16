@@ -28,7 +28,24 @@ from pydicom.errors import InvalidDicomError
 
 
 class DicomDataset(BaseDataset, ABC):
-    """Class to represent a DICOM dataset"""
+    """
+    This class represents a dataset of dicom files. It is a subclass of BaseDataset.
+
+    Parameters
+    ----------
+    data_source : str or List[str]
+        The path or list of folders that contain the dicom files
+    pattern : str
+        The pattern to match the files extension. Default is '*'.
+    name : str
+        The name of the dataset. Default is 'DicomDataset'.
+    config_path : str
+        The path to the config file.
+    verbose : bool
+        Whether to print verbose output on console. Default is False.
+    ds_format : str
+        The format of the dataset. Default is 'dicom'. Choose one of ['dicom']
+    """
 
     def __init__(self,
                  data_source,
@@ -36,10 +53,11 @@ class DicomDataset(BaseDataset, ABC):
                  name='DicomDataset',
                  config_path=None,
                  verbose=False,
+                 ds_format='dicom',
                  **kwargs):
         """constructor"""
 
-        super().__init__(data_source=data_source, name=name, ds_format='DICOM')
+        super().__init__(data_source=data_source, name=name, ds_format=ds_format)
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         # TODO: Add option to change min_count passing it as an argument
@@ -74,10 +92,13 @@ class DicomDataset(BaseDataset, ABC):
 
         # print('')
 
-    def load(self, refresh=False):
+    def load(self):
         """
-        default method to load the dataset. This method is called by import_dataset function. Any
-        dataset_type must implement this method.
+        Default method to load the dataset. It iterates over all the folders
+        in the data_source and finds the sub-folders with at least min_count
+        files. Then it iterates over all the sub-folders and processes them
+        to find the dicom slices. It then runs some basic validation on them
+        and adds them to the dataset.
         """
 
         # if self._saved_path.exists() and not refresh:
@@ -101,18 +122,31 @@ class DicomDataset(BaseDataset, ABC):
         # self.save()
 
     def _process_slice_collection(self, folder):
-        """reads the dicom slices and runs some basic validation on them!"""
+        """
+        Processes a collection of dicom slices in a folder. It iterates over
+        all the slices and collects the slices with divergent parameters, for
+        example, EchoTime and Echonumber for multi-echo sequences.
+
+        It then processes the divergent slices to find the varying parameters and
+        updates the protocol.ImagingSequence object.
+
+        Parameters
+        ----------
+        folder : Path
+            The path to the folder containing the dicom slices
+        """
 
         # within a folder, a volume can be multi-echo, so we must read them all
         #   and find a way to capture the echo time information
         dcm_files = sorted(folder.glob(self.pattern))
 
         # if no files found, return None
-        if len(dcm_files) < self.min_count:
-            logger.warn(
-                f'no files matching the pattern {self.pattern} found in {folder}',
-                UserWarning)
-            return None
+        # Not required as folders_with_min_files already checks for this
+        # if len(dcm_files) < self.min_count:
+        #     logger.warn(
+        #         f'no files matching the pattern {self.pattern} found in {folder}',
+        #         UserWarning)
+        #     return None
 
         # run some basic validation of these dcm slice collection
         #   session_info must match
@@ -190,7 +224,7 @@ class DicomDataset(BaseDataset, ABC):
             first_slice.set_echo_times(echo_times, echo_nums)
         return first_slice
 
-    def _process_echo_times(self, divergent_slices: list) -> Tuple[Iterable, Optional[Iterable]]:
+    def _process_echo_times(self, divergent_slices: List) -> Tuple[Iterable, Optional[Iterable]]:
         """
         Finds the set of echo times and echo numbers from the list of
         slices. However, the echo number is not always available

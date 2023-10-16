@@ -5,10 +5,14 @@ MRdataset : unified interface to various neuroimaging datasets
 .. image:: https://img.shields.io/pypi/v/MRdataset.svg
         :target: https://pypi.python.org/pypi/MRdataset
 
+.. image:: https://app.codacy.com/project/badge/Grade/4e6e129acb3340e3b422541be3924a90
+        :target: https://app.codacy.com/gh/sinhaharsh/MRdataset/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
+
 .. image:: ./images/hierarchy.jpg
 
 * A unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc.
-* Documentation: https://open-minds-lab.github.io/MRdataset/
+* **Tutorial**: Please refer to the Jupyter Notebook `tutorial`_.
+* **Documentation**: https://open-minds-lab.github.io/MRdataset/
 
 .. include:: ./usage.rst
 
@@ -16,16 +20,13 @@ MRdataset : unified interface to various neuroimaging datasets
 
 Further
 =======
-.. toctree::
-    :hidden:
-
-    self
 
 .. toctree::
    :maxdepth: 1
 
    installation
    API
+   config
    contributing
    authors
 
@@ -35,3 +36,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb

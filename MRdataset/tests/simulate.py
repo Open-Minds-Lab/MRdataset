@@ -1,26 +1,55 @@
 import errno
 import json
+import random
 import shutil
 import tempfile
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 
 import MRdataset.config
 import pydicom
-from MRdataset.tests.config import anon_data_dir, compl_data_xnat, \
+from MRdataset.tests.config import compl_data_xnat, \
     compl_data_bids
+from MRdataset.utils import convert2ascii
 from bids import BIDSLayout
-import zipfile
 
+THIS_DIR = Path(__file__).parent.resolve()
 
 def sample_dicom_dataset(tmp_path='/tmp'):
-    DATA_ARCHIVE = '../../examples/example_dicom_data.zip'
+    DATA_ARCHIVE = THIS_DIR / 'resources/example_dicom_data.zip'
     DATA_ROOT = Path(tmp_path)
     output_dir = DATA_ROOT / 'example_dicom_data'
     if not output_dir.exists():
         with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
             zip_ref.extractall(DATA_ROOT)
-    return DATA_ROOT/'example_dicom_data'
+    return DATA_ROOT / 'example_dicom_data'
+
+
+def sample_vertical_dataset(tmp_path='/tmp'):
+    DATA_ARCHIVE = THIS_DIR / 'resources/vertical.zip'
+    DATA_ROOT = Path(tmp_path)
+    output_dir = DATA_ROOT / 'vertical/'
+    if not output_dir.exists():
+        with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
+            zip_ref.extractall(DATA_ROOT)
+    return DATA_ROOT / 'vertical'
+
+
+def make_vertical_test_dataset(num_sequences) -> Path:
+    src_dir, dest_dir = setup_directories(sample_vertical_dataset())
+    dcm_list = list(src_dir.glob('**/*.dcm'))
+
+    seq_names = defaultdict(set)
+    while True:
+        filepath = random.choice(dcm_list)
+        dicom = pydicom.read_file(filepath)
+        export_file(dicom, filepath, dest_dir)
+        subject_id = dicom.get('PatientID', None)
+        seq_names[subject_id].add(dicom.get('SeriesDescription', None))
+        if len(seq_names[subject_id]) >= num_sequences:
+            break
+    return dest_dir
 
 
 def make_compliant_test_dataset(num_subjects,
@@ -45,6 +74,31 @@ def make_compliant_test_dataset(num_subjects,
         i += 1
     return dest_dir
 
+
+def make_multi_echo_dataset(num_subjects,
+                                repetition_time,
+                                echo_train_length,
+                                flip_angle) -> Path:
+    src_dir, dest_dir = setup_directories(sample_dicom_dataset())
+    dcm_list = list(src_dir.glob('**/*.dcm'))
+
+    subject_names = set()
+    i = 0
+    while len(subject_names) < num_subjects:
+        filepath = dcm_list[i]
+        dicom = pydicom.read_file(filepath)
+
+        dicom.RepetitionTime = repetition_time
+        dicom.EchoTrainLength = echo_train_length
+        dicom.FlipAngle = flip_angle
+        dicom.EchoTime = echo_train_length
+        export_file(dicom, filepath, dest_dir)
+        dicom.EchoTime = echo_train_length*2
+        newfilepath = filepath.parent/(filepath.stem+'2.dcm')
+        export_file(dicom, newfilepath, dest_dir)
+        subject_names.add(dicom.get('PatientID', None))
+        i += 1
+    return dest_dir
 
 def setup_directories(src):
     src_dir = Path(src).resolve()
@@ -78,11 +132,17 @@ def make_test_dataset(num_noncompliant_subjects,
                       flip_angle):
     src_dir, dest_dir = setup_directories(compl_data_xnat)  # noqa
     print()
-    copyeverything(src_dir, dest_dir)
+    # copyeverything(src_dir, dest_dir)
     dataset_info = defaultdict(set)
     modalities = [s.name for s in src_dir.iterdir() if (s.is_dir() and
                                                         'mrdataset' not in
                                                         s.name)]
+    for i, modality in enumerate(modalities):
+        subject_paths = [s for s in (src_dir / modality).iterdir()]
+        for sub_path in subject_paths:
+            for filepath in sub_path.glob('*.dcm'):
+                dicom = pydicom.read_file(filepath)
+                export_file(dicom, filepath, dest_dir)
 
     for i, modality in enumerate(modalities):
         count = num_noncompliant_subjects[i]
@@ -104,12 +164,15 @@ def make_test_dataset(num_noncompliant_subjects,
 
 
 def export_file(dicom, filepath, out_dir):
-    patient_id = str(dicom.data_element('PatientID').value)
-    series_desc = str(dicom.data_element('SeriesDescription').value)
-    series_desc = series_desc.replace(' ', '_')
+    patient_id = dicom.get('PatientID', None)
+    series_desc = dicom.get('SeriesDescription', None)
+    series_number = dicom.get('SeriesNumber', None)
+    series_desc = convert2ascii(series_desc.replace(' ', '_'))  # + '_' + str(series_number)
     output_path = out_dir / series_desc / patient_id
+    number = dicom.get('InstanceNumber', None)
     output_path.mkdir(exist_ok=True, parents=True)
-    dicom.save_as(output_path / filepath.name)
+    filename = f'{patient_id}_{number}.dcm'
+    dicom.save_as(output_path / filename)
 
 
 def make_bids_test_dataset(num_noncompliant_subjects,

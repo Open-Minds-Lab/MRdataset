@@ -1,0 +1,33 @@
+{
+    "begin": "2014-03-12",
+    "end": "2017-03-12",
+    "include_sequence": {
+        "phantom": true,
+        "nifti_header": false,
+        "moco": true,
+        "sbref": true,
+        "derived": true
+    },
+    "use_echonumbers": true,
+    "include_parameters": [
+        "BodyPartExamined",
+        "EchoTrainLength",
+        "ParallelAcquisitionTechnique",
+        "MagneticFieldStrength",
+        "MRAcquisitionType",
+        "MultiSliceMode",
+        "PhasePolarity",
+        "PhaseEncodingSteps",
+        "PixelBandwidth",
+        "ScanningSequence",
+        "SequenceVariant",
+        "RepetitionTime",
+        "EchoTime",
+        "FlipAngle",
+        "PhaseEncodingDirection"
+    ],
+    "exclude_subjects": [
+        "210098",
+        "210078"
+    ]
+}

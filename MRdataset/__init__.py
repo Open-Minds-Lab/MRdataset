@@ -15,5 +15,4 @@ from MRdataset.utils import valid_dirs
 from MRdataset.base import BaseDataset
 from MRdataset.dicom import DicomDataset
 
-from . import _version
-__version__ = _version.get_versions()['version']
+from MRdataset._version import __version__

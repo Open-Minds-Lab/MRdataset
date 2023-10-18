@@ -3,6 +3,7 @@ pydicom~=2.3.1
 dicom2nifti>=2.4.2
 protocol
 hypothesis~=6.29.3
+coverage
 
 numpy~=1.23.5
 setuptools~=65.6.3

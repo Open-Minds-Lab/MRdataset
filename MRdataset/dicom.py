@@ -1,14 +1,15 @@
 from abc import ABC
 from typing import Optional, Tuple, List, Iterable
 
+from protocol import ImagingSequence
+from pydicom import dcmread
+from pydicom.errors import InvalidDicomError
+
 from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.dicom_utils import (is_valid_inclusion,
                                    is_dicom_file)
 from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
-from protocol import ImagingSequence
-from pydicom import dcmread
-from pydicom.errors import InvalidDicomError
 
 
 # A dataset is a collection of subjects
@@ -222,6 +223,9 @@ class DicomDataset(BaseDataset, ABC):
             #   flip-angle, etc.
             echo_times, echo_nums = self._process_echo_times(divergent_slices)
             first_slice.set_echo_times(echo_times, echo_nums)
+            # TODO: Add support for other parameters
+            # TODO: Calculate number of slices using SliceLocation
+            #   See: https://stackoverflow.com/questions/59458801/how-to-sort-dicom-slices-in-correct-order # noqa
         return first_slice
 
     def _process_echo_times(self, divergent_slices: List) -> Tuple[Iterable, Optional[Iterable]]:

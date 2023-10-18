@@ -3,10 +3,11 @@ from itertools import product
 from pathlib import Path
 from typing import List, Union
 
+from protocol import BaseSequence
+
 from MRdataset import logger
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
-from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -144,6 +145,9 @@ class BaseDataset(ABC):
         """Returns a list of all sequence IDs in the dataset"""
         # Cast to list so that it can be indexed, set is not subscriptable
         return list(self._seq_ids)
+
+    def subjects(self):
+        return list(self._subj_ids)
 
     def get_subject_ids(self, seq_id):
         """

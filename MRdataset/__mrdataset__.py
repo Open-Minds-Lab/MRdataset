@@ -9,7 +9,7 @@ else:
 
 def main():
     """Entry point."""
-    cli.main()
+    cli.cli()
 
 
 if __name__ == '__main__':

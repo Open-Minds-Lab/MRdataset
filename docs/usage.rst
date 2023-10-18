@@ -126,7 +126,7 @@ dataset.
 * **exclude_subjects**: The scans from the subjects in this list are excluded
   from the dataset. This is a list of strings. For example, ``['sub-01', 'sub-02']``.
 
-.. literalinclude:: ../examples/mri-config.json
+.. literalinclude:: mri-config.json
    :language: json
    :linenos:
 

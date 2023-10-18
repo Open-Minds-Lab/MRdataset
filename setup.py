@@ -37,8 +37,8 @@ setup(
     description="MRdataset",
     entry_points={
         'console_scripts': [
-            'mrdataset=MRdataset.cli:main',
-            'mrds=MRdataset.cli:main'
+            'mrdataset=MRdataset.cli:cli',
+            'mrds=MRdataset.cli:cli'
         ],
     },
     install_requires=requirements,

@@ -8,10 +8,12 @@ from pathlib import Path
 
 import hypothesis.strategies as st
 import pytest
+from hypothesis import given, settings
+
 from MRdataset import import_dataset
 from MRdataset.tests.simulate import make_compliant_test_dataset, make_multi_echo_dataset
-# from MRdataset.dicom_utils import get_csa_props
-from hypothesis import given, settings
+
+THIS_DIR = Path(__file__).parent.resolve()
 
 
 @settings(max_examples=50, deadline=None)
@@ -29,7 +31,7 @@ def test_parse_compliant_dataset(num_subjects,
                                               repetition_time,
                                               echo_train_length,
                                               flip_angle)
-    mrd = import_dataset(fake_ds_dir, config_path='./resources/mri-config.json',
+    mrd = import_dataset(fake_ds_dir, config_path=THIS_DIR / 'resources/mri-config.json',
                          output_dir=fake_ds_dir, name='test_dataset')
     seq_ids = mrd.get_sequence_ids()
 
@@ -60,7 +62,7 @@ def test_parse_dataset_no_echo_numbers(num_subjects,
                                           repetition_time,
                                           echo_train_length,
                                           flip_angle)
-    mrd = import_dataset(fake_ds_dir, config_path='./resources/mri-config-2.json',
+    mrd = import_dataset(fake_ds_dir, config_path=THIS_DIR / 'resources/mri-config-2.json',
                          output_dir=fake_ds_dir, name='test_dataset')
     seq_ids = mrd.get_sequence_ids()
 
@@ -91,7 +93,7 @@ def test_empty_folders():
         filepath = subfolder / "test.dcm"
         filepath.touch()
 
-        mrd = import_dataset(folder_path, config_path='./resources/mri-config.json',
+        mrd = import_dataset(folder_path, config_path=THIS_DIR / 'resources/mri-config.json',
                              output_dir=folder_path, name='test_dataset')
         assert len(mrd.get_sequence_ids()) == 0
 

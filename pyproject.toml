@@ -32,8 +32,8 @@ dependencies = [
 ]
 
 [project.scripts]
-mrdataset = "MRdataset.cli:main"
-mrds = "MRdataset.cli:main"
+mrdataset = "MRdataset.cli:cli"
+mrds = "MRdataset.cli:cli"
 
 [project.urls]
 Homepage = "https://github.com/Open-Minds-Lab/MRdataset"

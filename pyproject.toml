@@ -10,6 +10,7 @@ readme = "README.rst"
 license = "Apache-2.0"
 requires-python = ">=3.8"
 authors = [
+    { name = "Harsh Sinha", email = "sinha.harsh@pitt.edu" },
     { name = "Pradeep Raamana", email = "raamana@gmail.com" },
 ]
 keywords = [
@@ -41,10 +42,10 @@ Documentation = "https://open-minds-lab.github.io/MRdataset/"
 
 [tool.hatch.build]
 include = [
-    "protocol/*.py",
+    "MRdataset/*.py",
 ]
 exclude = [
-    "protocol/tests/*",
+    "MRdataset/tests/*",
 ]
 
 [tool.hatch.version]
@@ -59,6 +60,6 @@ include = [
     "/mrdataset",
 ]
 exclude = [
-  "/.github",
-  "/docs",
+    "/.github",
+    "/docs",
 ]

@@ -6,5 +6,5 @@ hypothesis~=6.29.3
 coverage
 
 numpy~=1.23.5
-setuptools~=65.6.3
+setuptools
 pytest~=7.1.2

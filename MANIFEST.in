@@ -4,8 +4,9 @@ include LICENSE
 include README.rst
 include HISTORY.rst
 
-recursive-include tests *
-recursive-include resources *
+graft MRdataset/tests
+prune MRdataset/tests/htmlcov
+prune MRdataset/tests/.hypothesis
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 

@@ -7,7 +7,7 @@ name = "MRdataset"
 dynamic = ["version"]
 description = "MRdataset"
 readme = "README.rst"
-license = "Apache-2.0"
+license = { file = "LICENSE" }
 requires-python = ">=3.8"
 authors = [
     { name = "Harsh Sinha", email = "sinha.harsh@pitt.edu" },

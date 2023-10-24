@@ -1,15 +1,14 @@
 from abc import ABC
 from typing import Optional, Tuple, List, Iterable
 
-from protocol import ImagingSequence
-from pydicom import dcmread
-from pydicom.errors import InvalidDicomError
-
 from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.dicom_utils import (is_valid_inclusion,
                                    is_dicom_file)
 from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
+from protocol import ImagingSequence
+from pydicom import dcmread
+from pydicom.errors import InvalidDicomError
 
 
 # A dataset is a collection of subjects
@@ -215,8 +214,10 @@ class DicomDataset(BaseDataset, ABC):
                         flag = 1
                 if flag == 0:
                     divergent_slices.append(cur_slice)
-
-        if len(divergent_slices) > 1:
+        # as we also collect the first slice. We can process all slices
+        #   to find the varying parameters. Atleast one slice would be
+        #   present in divergent_slices.
+        if len(divergent_slices) > 0:
             # if there are divergent slices, we need to process them
             #   to find the varying parameters. For now we just look for echo-time
             #   and echo-number, but we can extend this to other parameters such as

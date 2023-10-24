@@ -48,7 +48,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint/flake8: ## check style with flake8
-	flake8 MRdataset tests
+	flake8 MRdataset
 
 lint: lint/flake8 ## check style
 

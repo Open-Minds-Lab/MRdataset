@@ -208,10 +208,20 @@ class DicomDataset(BaseDataset, ABC):
 
                 # check if the parameters are same with the slices
                 #   collected so far
+                if len(divergent_slices) > 100:
+                    logger.critical('Too many slices with divergent parameters. This should rarely happen.'
+                                    'This would make data reading really slow. Please check the dataset.')
                 flag = 0
                 for slice in divergent_slices:
-                    if cur_slice == slice:
+                    # we only compare the parameters that are subject to variation e.g. EchoTime
+                    #   It is not recommended to compare all parameters as it would be
+                    #   very slow. Also some parameters are e.g. SliceLocation would be
+                    #   different for each slice. If SliceLocation is also compared,
+                    #   we will end up having all slices in divergent_slices list.
+                    if cur_slice.compare_subset_params(slice) == True:
                         flag = 1
+                        break  # If number of divergent slices is large, this would make it faster
+
                 if flag == 0:
                     divergent_slices.append(cur_slice)
         # as we also collect the first slice. We can process all slices

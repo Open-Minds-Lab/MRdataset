@@ -89,7 +89,7 @@ def test_save_mr_dataset():
     mrd = import_dataset(fake_ds_dir, config_path=THIS_DIR / 'resources/mri-config.json',
                          output_dir=fake_ds_dir, name='test_dataset')
     with pytest.raises(OSError):
-        save_mr_dataset(filepath='/mycomputer/test.mrds.pkl', mrds_obj=mrd)
+        save_mr_dataset(filepath='/sys/mycomputer/test.mrds.pkl', mrds_obj=mrd)
     shutil.rmtree(fake_ds_dir)
     return
 

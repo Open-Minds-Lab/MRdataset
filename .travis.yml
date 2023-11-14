@@ -1,9 +1,15 @@
 # Config file for automatic testing at travis-ci.com
+# Exclusive file for mrds-issue-12 branch
+
 
 language: python
 python:
   - 3.8
 
+before_install:
+    - wget https://github.com/sinhaharsh/protocol/archive/refs/heads/mrdsv2.zip
+    - unzip mrdsv2.zip -d protocol
+    - pip install protocol/
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -U tox-travis

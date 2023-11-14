@@ -8,8 +8,7 @@ MRdataset : unified interface to various neuroimaging datasets
 .. image:: https://app.codacy.com/project/badge/Grade/4e6e129acb3340e3b422541be3924a90
         :target: https://app.codacy.com/gh/sinhaharsh/MRdataset/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 
-.. image:: https://app.travis-ci.com/sinhaharsh/MRdataset.svg?branch=main
-    :target: https://app.travis-ci.com/sinhaharsh/MRdataset
+[![tests](https://github.com/sinhaharsh/MRdataset/actions/workflows/continuos-integration.yml/badge.svg?branch=main)](https://github.com/sinhaharsh/MRdataset/actions/workflows/continuos-integration.yml)
 
 .. image:: ./docs/images/hierarchy.jpg
 

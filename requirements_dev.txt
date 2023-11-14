@@ -8,3 +8,4 @@ coverage
 numpy~=1.23.5
 setuptools
 pytest~=7.1.2
+flake8

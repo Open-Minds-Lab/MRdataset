@@ -19,7 +19,8 @@ def import_dataset(data_source: Union[str, Path, List],
                    output_dir: Union[str, Path] = None,
                    **_kwargs) -> 'BaseDataset':
     """
-    Create MRdataset from data source as per arguments. This function acts as a Wrapper class for
+    Create MRdataset from data source as per arguments. This function acts as a
+    Wrapper class for
     BaseDataset. This is the main interface between this package and your
     dataset. This function is used by the CLI and the python scripts.
 
@@ -39,7 +40,8 @@ def import_dataset(data_source: Union[str, Path, List],
         whether the dataset is subset of a larger dataset. It is useful for
          parallel processing of large datasets.
     config_path: Union[str, Path]
-        path to config file which contains the rules for reading the dataset e.g.
+        path to config file which contains the rules for reading the dataset
+        e.g.
         sequences to read, subjects to ignore, etc.
     output_dir: Union[str, Path]
         path to the directory where the output files will be saved.
@@ -70,8 +72,8 @@ def import_dataset(data_source: Union[str, Path, List],
     #                               mode='w', level='ERROR')
 
     if data_source is None:
-        raise ValueError(f'Please provide a valid data source.'
-                         f' Got NoneType. ')
+        raise ValueError('Please provide a valid data source.'
+                         ' Got NoneType. ')
     # Check if name is provided by user, otherwise use random name
     if name is None:
         logger.info(
@@ -201,7 +203,8 @@ def save_mr_dataset(filepath: Union[str, Path],
     try:
         parent_folder.mkdir(exist_ok=True, parents=True)
     except OSError as exc:
-        logger.error(f'Unable to create folder {parent_folder} for saving dataset')
+        logger.error(f'Unable to create folder {parent_folder} '
+                     'for saving dataset')
         raise exc
 
     with open(filepath, 'wb') as f:

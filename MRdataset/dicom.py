@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Optional, Tuple, List, Iterable
+from typing import Tuple, List
 
 from MRdataset import logger
 from MRdataset.base import BaseDataset
@@ -29,7 +29,8 @@ from pydicom.errors import InvalidDicomError
 
 class DicomDataset(BaseDataset, ABC):
     """
-    This class represents a dataset of dicom files. It is a subclass of BaseDataset.
+    This class represents a dataset of dicom files. It is a subclass of
+    BaseDataset.
 
     Parameters
     ----------
@@ -57,7 +58,8 @@ class DicomDataset(BaseDataset, ABC):
                  **kwargs):
         """constructor"""
 
-        super().__init__(data_source=data_source, name=name, ds_format=ds_format)
+        super().__init__(data_source=data_source, name=name,
+                         ds_format=ds_format)
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         # TODO: Add option to change min_count passing it as an argument
@@ -115,7 +117,8 @@ class DicomDataset(BaseDataset, ABC):
                 if seq is None:
                     logger.info(f'Unable to process {folder}. Skipping it.')
                 else:
-                    self.add(subject_id=seq.subject_id, session_id=seq.session_id,
+                    self.add(subject_id=seq.subject_id,
+                             session_id=seq.session_id,
                              run_id=seq.run_id, seq_id=seq.name, seq=seq)
 
         # saving a copy for quicker reload
@@ -127,8 +130,8 @@ class DicomDataset(BaseDataset, ABC):
         all the slices and collects the slices with divergent parameters, for
         example, EchoTime and Echonumber for multi-echo sequences.
 
-        It then processes the divergent slices to find the varying parameters and
-        updates the protocol.ImagingSequence object.
+        It then processes the divergent slices to find the varying parameters
+        and updates the protocol.ImagingSequence object.
 
         Parameters
         ----------
@@ -140,18 +143,8 @@ class DicomDataset(BaseDataset, ABC):
         #   and find a way to capture the echo time information
         dcm_files = sorted(folder.glob(self.pattern))
 
-        # if no files found, return None
-        # Not required as folders_with_min_files already checks for this
-        # if len(dcm_files) < self.min_count:
-        #     logger.warn(
-        #         f'no files matching the pattern {self.pattern} found in {folder}',
-        #         UserWarning)
-        #     return None
-
         # run some basic validation of these dcm slice collection
-        #   session_info must match
-        #   parameter values must also match in general
-
+        #   session_info must match, parameter values must also match in general
         # However, for certain sequences, the parameter may vary
         #   (e.g. EchoTime for multi-echo). Therefore, we need to
         #   find a way to capture the varying parameters. We collect
@@ -161,13 +154,11 @@ class DicomDataset(BaseDataset, ABC):
         # collect all the slices with diverging parameters
         divergent_slices = list()
         first_slice = None
-
-        # iterate over all the slices
-        for dcm_path in dcm_files:
-            # check if it is a valid dicom file
-            if not is_dicom_file(dcm_path):
-                continue
-
+        localizer_flag = False
+        # iterate over all the slices, check if it is a valid dicom file
+        for dcm_path in filter(is_dicom_file, dcm_files):
+            # if not is_dicom_file(dcm_path):
+            #     continue
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)
             except InvalidDicomError:
@@ -175,8 +166,12 @@ class DicomDataset(BaseDataset, ABC):
                 continue
 
             # skip localizer, phantom, scouts, sbref, etc
-            if not is_valid_inclusion(dicom, self.include_phantom, self.include_moco,
-                                      self.include_sbref, self.include_derived):
+            if not is_valid_inclusion(dicom, self.include_phantom,
+                                      self.include_moco, self.include_sbref,
+                                      self.include_derived,
+                                      folder=dcm_path.parent,
+                                      suppress_warnings=localizer_flag):
+                localizer_flag = True
                 continue
 
             # until the first slice is found, we cannot compare
@@ -186,41 +181,43 @@ class DicomDataset(BaseDataset, ABC):
             # Note that we cannot use enumerate and idx ==0 here, because we
             #   may have to skip some slices
             if len(divergent_slices) == 0:
-                first_slice = ImagingSequence(
-                    dicom=dicom,
-                    path=folder
-                )
+                first_slice = ImagingSequence(dicom=dicom, path=folder)
                 # We collect the first slice as a reference to compare
                 #   other slices with, although it is not divergent in
                 #   its true sense
                 divergent_slices.append(first_slice)
 
             else:
-                cur_slice = ImagingSequence(
-                    dicom=dicom,
-                    path=folder)
+                cur_slice = ImagingSequence(dicom=dicom, path=folder)
 
                 # check if the session info is same
                 # Session info includes subject_id, session_id, run_id
-                if cur_slice.get_session_info() != first_slice.get_session_info():
+                if (cur_slice.get_session_info() !=
+                    first_slice.get_session_info()):
                     logger.warn(f'Inconsistent session info for {dcm_path}')
                     continue
 
                 # check if the parameters are same with the slices
                 #   collected so far
                 if len(divergent_slices) > 100:
-                    logger.critical('Too many slices with divergent parameters. This should rarely happen.'
-                                    'This would make data reading really slow. Please check the dataset.')
+                    logger.critical('Too many slices with divergent parameters.'
+                                    ' This should rarely happen.'
+                                    'This would make data reading really slow. '
+                                    'Please check the dataset.')
                 flag = 0
-                for slice in divergent_slices:
-                    # we only compare the parameters that are subject to variation e.g. EchoTime
-                    #   It is not recommended to compare all parameters as it would be
-                    #   very slow. Also some parameters are e.g. SliceLocation would be
-                    #   different for each slice. If SliceLocation is also compared,
-                    #   we will end up having all slices in divergent_slices list.
-                    if cur_slice.compare_subset_params(slice) == True:
+                for each_slice in divergent_slices:
+                    # we only compare the parameters that are subject to
+                    # variation e.g. EchoTime
+                    #   It is not recommended to compare all parameters as it
+                    #   would be very slow. Also, some parameters are e.g.
+                    #   SliceLocation would be different for each slice.
+                    #   If SliceLocation is also compared, We will end up having
+                    #   all slices in divergent_slices list.
+                    if cur_slice.compare_subset_params(each_slice):
                         flag = 1
-                        break  # If number of divergent slices is large, this would make it faster
+                        break
+                        # If number of divergent slices is large,
+                        # this would make it faster
 
                 if flag == 0:
                     divergent_slices.append(cur_slice)
@@ -229,9 +226,9 @@ class DicomDataset(BaseDataset, ABC):
         #   present in divergent_slices.
         if len(divergent_slices) > 0:
             # if there are divergent slices, we need to process them
-            #   to find the varying parameters. For now we just look for echo-time
-            #   and echo-number, but we can extend this to other parameters such as
-            #   flip-angle, etc.
+            #   to find the varying parameters. For now, we just look for
+            #   echo-time and echo-number, but we can extend this to other
+            #   parameters such as flip-angle, etc.
             echo_times, echo_nums = self._process_echo_times(divergent_slices)
             first_slice.set_echo_times(echo_times, echo_nums)
             # TODO: Add support for other parameters
@@ -239,7 +236,7 @@ class DicomDataset(BaseDataset, ABC):
             #   See: https://stackoverflow.com/questions/59458801/how-to-sort-dicom-slices-in-correct-order # noqa
         return first_slice
 
-    def _process_echo_times(self, divergent_slices: List) -> Tuple[Iterable, Optional[Iterable]]:
+    def _process_echo_times(self, divergent_slices: List) -> Tuple:
         """
         Finds the set of echo times and echo numbers from the list of
         slices. However, the echo number is not always available
@@ -255,7 +252,7 @@ class DicomDataset(BaseDataset, ABC):
         -------
         echo_times : list
             collected list of echo times
-        echo_nums : Optional[List]
+        echo_nums : List
             collected list of echo numbers
 
         """

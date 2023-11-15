@@ -37,12 +37,13 @@ def is_dicom_file(filename: str):
     return False
 
 
-
 def is_valid_inclusion(dicom: pydicom.FileDataset,
                        include_phantom=False,
                        include_moco=False,
                        include_sbref=False,
-                       include_derived=False) -> bool:
+                       include_derived=False,
+                       suppress_warnings=False,
+                       folder=None) -> bool:
     """
     Function will do some basic checks to see if it is a valid imaging dicom
 
@@ -52,6 +53,17 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
         dicom object returned by pydicom.dcmread or pydicom.read_file
     include_phantom : bool
         whether to include AAhead_coil/localizer/ACR/Phantom
+    include_moco : bool
+        whether to include moco series
+    include_sbref : bool
+        whether to include sbref series
+    include_derived : bool
+        whether to include derived series
+    suppress_warnings : bool
+        if folder has been already flagged as localizer, do not raise
+        warning again
+    folder : str
+        path to the dicom folder. Used to raise warning
 
     Returns
     -------
@@ -69,34 +81,54 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
     series_desc = dicom.get('SeriesDescription', None)
     image_type = dicom.get('ImageType', None)
 
-    if series_desc is not None:
-        series_desc = series_desc.lower()
-        if not include_phantom:
-            if 'local' in series_desc:
-                # logger.info('Localizer: Skipping %s', filepath.parent)
-                return False
-            if 'aahead' in series_desc:
-                # logger.info('AAhead_Scout: Skipping %s', filepath.parent)
-                return False
-            if is_phantom(dicom):
-                # logger.info('ACR/Phantom: %s', filepath.parent)
-                return False
-        if not include_sbref:
-            if 'sbref' in series_desc:
-                return False
-    else:
+    if series_desc is None:
         return False
 
-    if image_type is not None:
-        for i in image_type:
-            if not include_moco and 'moco' in i.lower():
-                return False
-            if not include_derived and 'derived' in i.lower():
-                return False
-    else:
+    series_desc = series_desc.lower()
+    if not include_phantom:
+        if 'local' in series_desc:
+            raise_warning('Phantom', folder, suppress_warnings)
+            return False
+        if 'aahead' in series_desc:
+            raise_warning('Phantom', folder, suppress_warnings)
+            return False
+        if is_phantom(dicom):
+            raise_warning('Phantom', folder, suppress_warnings)
+            return False
+    if not include_sbref and 'sbref' in series_desc:
+        raise_warning('SBRef', folder, suppress_warnings)
         return False
+
+    if image_type is None:
+        return False
+
+    for i in image_type:
+        if not include_moco and 'moco' in i.lower():
+            raise_warning('MOCO', folder, suppress_warnings)
+            return False
+        if not include_derived and 'derived' in i.lower():
+            raise_warning('Derived', folder, suppress_warnings)
+            return False
 
     return True
+
+
+def raise_warning(msg: str, path, suppress_warnings=False):
+    """
+    Raise warning
+    Parameters
+    ----------
+    msg : str
+        warning message
+    path : str
+        path to the file
+    Returns
+    -------
+    None
+    """
+    if not suppress_warnings:
+        logger.warning(f'Set {msg.lower()} as true in config.json to include.\n'
+                       f'Skipping : {path}')
 
 
 def is_phantom(dicom: pydicom.FileDataset) -> bool:

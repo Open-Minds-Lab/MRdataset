@@ -38,8 +38,8 @@ def folders_with_min_files(root: Union[Path, str],
                            pattern: Optional[str] = "*.dcm",
                            min_count=3) -> List[Path]:
     """
-    Returns all the folders with at least min_count of files matching the pattern
-    One at time via generator.
+    Returns all the folders with at least min_count of files
+    matching the pattern. One at time via generator.
 
     Parameters
     ----------
@@ -47,9 +47,9 @@ def folders_with_min_files(root: Union[Path, str],
         List of folder paths
     pattern : str
         pattern to filter files
-
     min_count : int
-        size representing the number of files in folder matching the input pattern
+        size representing the number of files in folder
+        matching the input pattern
 
     Returns
     -------
@@ -195,8 +195,6 @@ def is_writable(dir_path):
     try:
         with tempfile.TemporaryFile(dir=dir_path, mode='w') as testfile:
             testfile.write("OS write to directory test.")
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         return False
     return True
-
-

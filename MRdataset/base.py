@@ -3,11 +3,10 @@ from itertools import product
 from pathlib import Path
 from typing import List, Union
 
-from protocol import BaseSequence
-
 from MRdataset import logger
 from MRdataset.config import VALID_DATASET_FORMATS
 from MRdataset.utils import valid_dirs, convert2ascii
+from protocol import BaseSequence
 
 
 # class Run(UserDict):
@@ -15,7 +14,8 @@ from MRdataset.utils import valid_dirs, convert2ascii
 #
 #     Design:
 #     - A run is an instance of a sequence
-#     - A session can have multiple runs acquired with the same sequence/parameters
+#     - A session can have multiple runs acquired with the same
+#           sequence/parameters
 #     - for only a SINGLE subject
 #
 #     """
@@ -37,7 +37,8 @@ from MRdataset.utils import valid_dirs, convert2ascii
 #
 #     Design:
 #     - A session is a collection of runs,
-#         and each run is different acquisition with the same sequence/parameters
+#         and each run is different acquisition with the same
+#         sequence/parameters
 #     - for only a SINGLE subject
 #     - like a Visit in longitudinal studies
 #     """
@@ -89,17 +90,20 @@ class BaseDataset(ABC):
     # self._seq_ids : set
     #     List of unique sequence IDs in the dataset.
     # self._seqs_map : dict
-    #     Dictionary mapping sequence IDs to corresponding (subject_id, session_id, run_id) tuples
+    #     Dictionary mapping sequence IDs to corresponding
+    #     (subject_id, session_id, run_id) tuples
     # self._sess_map : dict
     #     Dictionary mapping session IDs to corresponding sequence IDs
     # self._tree_map : dict
     #     A hierarchical representation of the dataset, storing data
-    #     in a tree-like structure with subjects as the root, sessions as children
-    #     of subjects, sequences as children of sessions, and runs as children of sequences.
+    #     in a tree-like structure with subjects as the root, sessions as
+    #     children of subjects, sequences as children of sessions, and
+    #     runs as children of sequences.
     # self._flat_map : dict
     #     A flat representation of the dataset, storing data in
     #     a dictionary where keys are tuples (subj_id, sess_id, seq_id, run_id)
-    #     and values are the corresponding protocol.BaseSequence for that specific run.
+    #     and values are the corresponding protocol.BaseSequence for that
+    #     specific run.
     # """
     def __init__(self,
                  data_source: Union[List, Path, str] = None,
@@ -198,7 +202,8 @@ class BaseDataset(ABC):
         """
         A hierarchical representation of the dataset, storing data
         in a tree-like structure with subjects as the root, sessions as children
-        of subjects, sequences as children of sessions, and runs as children of sequences.
+        of subjects, sequences as children of sessions, and runs as children of
+        sequences.
 
         Parameters
         ----------
@@ -263,13 +268,15 @@ class BaseDataset(ABC):
             raise ValueError('Both must be of the same format')
 
         for seq_id in other.get_sequence_ids():
-            for subj_id, sess_id, run_id, seq in other.traverse_horizontal(seq_id):
+            for subj_id, sess_id, run_id, seq in other.traverse_horizontal(
+                seq_id):
                 self.add(subject_id=subj_id, session_id=sess_id,
                          seq_id=seq_id, run_id=run_id, seq=seq)
 
     def add(self, subject_id, session_id, seq_id, run_id, seq):
         """
-        Adds a given sequence to provided subject_id, session_id and run_id for the dataset
+        Adds a given sequence to provided subject_id, session_id and run_id for
+        the dataset
 
         Parameters
         ----------
@@ -337,7 +344,8 @@ class BaseDataset(ABC):
         try:
             return self._tree_map[subject_id][session_id][seq_id][run_id]
         except KeyError:
-            logger.info(f'Unable to find {subject_id}/{session_id}/{seq_id}/{run_id}')
+            logger.info('Unable to find '
+                        f'{subject_id}/{session_id}/{seq_id}/{run_id}')
             return default
 
     def __getitem__(self, subject_id):
@@ -379,7 +387,8 @@ class BaseDataset(ABC):
         Yields
         ------
         tuple_ids : tuple
-            A tuple of subject_id, session_id, run_id, and protocol.Sequence instance
+            A tuple of subject_id, session_id, run_id, and protocol.Sequence
+            instance
         """
 
         for subj in self._subj_ids:
@@ -389,7 +398,7 @@ class BaseDataset(ABC):
                         yield (subj, sess, run,
                                self._tree_map[subj][sess][seq_id][run])
 
-    def traverse_vertical2(self, seq_id_one, seq_id_two):
+    def traverse_vertical2(self, seq_id1, seq_id2):
         """
         Generator to traverse the dataset vertically. i.e.,
         sequences for a particular subject. The method will yield
@@ -398,9 +407,9 @@ class BaseDataset(ABC):
 
         Parameters
         ----------
-        seq_id_one : str
+        seq_id1 : str
             Name of the Sequence ID
-        seq_id_two : str
+        seq_id2 : str
             Name of the Sequence ID
 
         Yields
@@ -413,18 +422,19 @@ class BaseDataset(ABC):
         for subj in self._subj_ids:
             for sess in self._tree_map[subj]:
                 # checking for subset relationship
-                if {seq_id_one, seq_id_two} <= self._tree_map[subj][sess].keys():
+                if {seq_id1, seq_id2} <= self._tree_map[subj][sess].keys():
                     # two sequences may not have a common run ID
-                    #   they might have multiple runs, with different number of runs
+                    #   they might have multiple runs, with different number
+                    #   of runs
                     #   so getting all of their linked combinations
                     linked_runs = self._link_runs_across_sequences(
-                        self._tree_map[subj][sess][seq_id_one],
-                        self._tree_map[subj][sess][seq_id_two])
-                    for run_one, run_two in linked_runs:
+                        self._tree_map[subj][sess][seq_id1],
+                        self._tree_map[subj][sess][seq_id2])
+                    for run1, run2 in linked_runs:
                         count = count + 1
-                        yield (subj, sess, run_one, run_two,
-                               self._tree_map[subj][sess][seq_id_one][run_one],
-                               self._tree_map[subj][sess][seq_id_two][run_two])
+                        yield (subj, sess, run1, run2,
+                               self._tree_map[subj][sess][seq_id1][run1],
+                               self._tree_map[subj][sess][seq_id2][run2])
 
         if count < 1:
             logger.warning('There were no sessions/runs in these sequences!')
@@ -456,7 +466,8 @@ class BaseDataset(ABC):
                     seqs = [self._tree_map[subj][sess][sq] for sq in seq_ids]
 
                     # two sequences may not have a common run ID
-                    #   they might have multiple runs, with different number of runs
+                    #   they might have multiple runs, with different number
+                    #   of runs
                     #   so getting all of their linked combinations
                     runs = self._first_run_from_sequences(seqs)
 
@@ -468,7 +479,8 @@ class BaseDataset(ABC):
 
         if count < 1:
             logger.warning(
-                f'There were no sessions with all {len(seq_ids)} input sequences!')
+                f'There were no sessions with all {len(seq_ids)} '
+                'input sequences!')
 
     @staticmethod
     def _first_run_from_sequences(seq_list):
@@ -523,10 +535,10 @@ class BaseDataset(ABC):
         """equality check"""
 
         if not isinstance(other, BaseDataset):
-            raise TypeError(f'Both must be a BaseDataset')
+            raise TypeError('Both must be a BaseDataset')
 
         if self.format != other.format:
-            raise ValueError(f'Both must be of the same format')
+            raise ValueError('Both must be of the same format')
 
         if self._flat_map == other._flat_map:
             return True

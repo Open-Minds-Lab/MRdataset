@@ -6,7 +6,6 @@ name: tests
 on:
     push:
         branches:
-            - mrds-issue-12
             - main
 
 jobs:

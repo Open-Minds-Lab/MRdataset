@@ -437,7 +437,7 @@ class BaseDataset(ABC):
                                self._tree_map[subj][sess][seq_id2][run2])
 
         if count < 1:
-            logger.warning('There were no sessions/runs in these sequences!')
+            logger.info('There were no sessions/runs in these sequences!')
 
     def traverse_vertical_multi(self, *seq_ids):
         """

@@ -148,10 +148,11 @@ class BaseDataset(ABC):
     def get_sequence_ids(self):
         """Returns a list of all sequence IDs in the dataset"""
         # Cast to list so that it can be indexed, set is not subscriptable
-        return list(self._seq_ids)
+        return sorted(self._seq_ids)
 
     def subjects(self):
-        return list(self._subj_ids)
+        """Returns a list of all subject IDs in the dataset"""
+        return sorted(self._subj_ids)
 
     def get_subject_ids(self, seq_id):
         """
@@ -172,7 +173,7 @@ class BaseDataset(ABC):
         subj_ids = set([t[0] for t in tuples])
 
         # Cast to list so that it can be indexed, set is not subscriptable
-        return list(subj_ids)
+        return sorted(subj_ids)
 
     # def _reload_saved(self):
     #     """helper to reload previously saved MRdataset"""

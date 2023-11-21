@@ -92,6 +92,7 @@ def import_dataset(data_source: Union[str, Path, List],
         is_complete=is_complete,
         name=name,
         config_path=config_path,
+        output_dir=output_dir,
         **_kwargs
     )
     dataset.load()

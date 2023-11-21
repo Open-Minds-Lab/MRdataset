@@ -1,4 +1,7 @@
+import json
 from abc import ABC
+from itertools import islice
+from pathlib import Path
 from typing import Tuple, List
 
 from MRdataset import logger
@@ -22,8 +25,7 @@ from pydicom.errors import InvalidDicomError
 #   https://bids-specification.readthedocs.io/en/stable/appendices/entities.html
 #
 # dicom2nifti logic for naming files:
-# https://github.com/icometrix/dicom2nifti/blob
-# /ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68
+# https://github.com/icometrix/dicom2nifti/blob/ecbf43a66174375285fae485439ea8dd940005ba/dicom2nifti/convert_dir.py#L68 # noqa
 #
 
 
@@ -37,7 +39,7 @@ class DicomDataset(BaseDataset, ABC):
     data_source : str or List[str]
         The path or list of folders that contain the dicom files
     pattern : str
-        The pattern to match the files extension. Default is '*'.
+        The pattern to match the file extension. Default is '*'.
     name : str
         The name of the dataset. Default is 'DicomDataset'.
     config_path : str
@@ -55,6 +57,7 @@ class DicomDataset(BaseDataset, ABC):
                  config_path=None,
                  verbose=False,
                  ds_format='dicom',
+                 output_dir=None,
                  **kwargs):
         """constructor"""
 
@@ -70,7 +73,7 @@ class DicomDataset(BaseDataset, ABC):
 
         # read the config file
         try:
-            self.config_dict = read_json(self.config_path)
+            self.config_dict = read_json(Path(self.config_path))
         except (FileNotFoundError or ValueError) as e:
             logger.error(f'Unable to read config file {self.config_path}')
             raise e
@@ -89,8 +92,17 @@ class DicomDataset(BaseDataset, ABC):
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])
 
-        # if self._saved_path.exists():
-        #     self._reload_saved()
+        # key-value pairs which store how many dcm files were processed from
+        #   each folder
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        filename = f'{self.name}_previous_run_log.json'
+        self._previous_run_log = self.output_dir / filename
+        if self._previous_run_log.exists():
+            self._process_whole_folder = read_json(self._previous_run_log)
+        else:
+            self._process_whole_folder = dict()
 
         # print('')
 
@@ -115,6 +127,7 @@ class DicomDataset(BaseDataset, ABC):
                 # process each folder
                 seq = self._process_slice_collection(folder)
                 if seq is None:
+                    self._process_whole_folder[str(folder)] = False
                     logger.info(f'Unable to process {folder}. Skipping it.')
                 else:
                     self.add(subject_id=seq.subject_id,
@@ -123,6 +136,32 @@ class DicomDataset(BaseDataset, ABC):
 
         # saving a copy for quicker reload
         # self.save()
+        # dump the log to json file
+        with open(self._previous_run_log, 'w') as f:
+            json.dump(self._process_whole_folder, f, indent=4)
+
+    def _filter_dcm_files(self, folder):
+        dcm_files = sorted(folder.glob(self.pattern))
+        # check if we have processed this folder before
+        process_whole = self._process_whole_folder.get(str(folder), True)
+        # filter dicom files from the folder
+        valid_dicom_files = filter(is_dicom_file, dcm_files)
+        # if valid_dicom_files is empty, we cannot process this folder
+        if not valid_dicom_files:
+            return []
+
+        if process_whole:
+            return valid_dicom_files
+        else:
+            # just return a single file
+            logger.info(f'Processing only one file from {folder}')
+            return islice(valid_dicom_files, 0, 3)
+
+    def _set_folder_status(self, folder, divergent_slices):
+        # update the folder processed status. If more than 1 divergent slice
+        #   is found, we need to process whole folder to
+        #   find the varying parameters
+        self._process_whole_folder[str(folder)] = len(divergent_slices) > 1
 
     def _process_slice_collection(self, folder):
         """
@@ -141,8 +180,7 @@ class DicomDataset(BaseDataset, ABC):
 
         # within a folder, a volume can be multi-echo, so we must read them all
         #   and find a way to capture the echo time information
-        dcm_files = sorted(folder.glob(self.pattern))
-
+        dcm_files = self._filter_dcm_files(folder)
         # run some basic validation of these dcm slice collection
         #   session_info must match, parameter values must also match in general
         # However, for certain sequences, the parameter may vary
@@ -156,9 +194,7 @@ class DicomDataset(BaseDataset, ABC):
         first_slice = None
         localizer_flag = False
         # iterate over all the slices, check if it is a valid dicom file
-        for dcm_path in filter(is_dicom_file, dcm_files):
-            # if not is_dicom_file(dcm_path):
-            #     continue
+        for dcm_path in dcm_files:
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)
             except InvalidDicomError:
@@ -221,8 +257,10 @@ class DicomDataset(BaseDataset, ABC):
 
                 if flag == 0:
                     divergent_slices.append(cur_slice)
+
+        self._set_folder_status(folder, divergent_slices)
         # as we also collect the first slice. We can process all slices
-        #   to find the varying parameters. Atleast one slice would be
+        #   to find the varying parameters. At least one slice would be
         #   present in divergent_slices.
         if len(divergent_slices) > 0:
             # if there are divergent slices, we need to process them

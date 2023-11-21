@@ -194,7 +194,7 @@ class DicomDataset(BaseDataset, ABC):
                 # Session info includes subject_id, session_id, run_id
                 if (cur_slice.get_session_info() !=
                     first_slice.get_session_info()):
-                    logger.warn(f'Inconsistent session info for {dcm_path}')
+                    logger.warning(f'Inconsistent session info for {dcm_path}')
                     continue
 
                 # check if the parameters are same with the slices

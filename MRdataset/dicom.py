@@ -296,13 +296,13 @@ class DicomDataset(BaseDataset, ABC):
         """
         if self.use_echo_numbers:
             echo_dict = dict()
-            for slice in divergent_slices:
-                enum = slice['EchoNumber'].get_value()
+            for i_slice in divergent_slices:
+                enum = i_slice['EchoNumber'].get_value()
                 if enum not in echo_dict:
-                    echo_dict[enum] = slice['EchoTime'].get_value()
+                    echo_dict[enum] = i_slice['EchoTime'].get_value()
             return echo_dict.values(), echo_dict.keys()
         else:
             echo_times = set()
-            for slice in divergent_slices:
-                echo_times.add(slice['EchoTime'].get_value())
+            for i_slice in divergent_slices:
+                echo_times.add(i_slice['EchoTime'].get_value())
             return echo_times, None

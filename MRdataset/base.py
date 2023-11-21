@@ -270,7 +270,7 @@ class BaseDataset(ABC):
 
         for seq_id in other.get_sequence_ids():
             for subj_id, sess_id, run_id, seq in other.traverse_horizontal(
-                seq_id):
+                    seq_id):
                 self.add(subject_id=subj_id, session_id=sess_id,
                          seq_id=seq_id, run_id=run_id, seq=seq)
 

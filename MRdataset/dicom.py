@@ -6,6 +6,7 @@ from typing import Tuple, List
 
 from MRdataset import logger
 from MRdataset.base import BaseDataset
+from MRdataset.config import previous_log_fpath
 from MRdataset.dicom_utils import (is_valid_inclusion,
                                    is_dicom_file)
 from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
@@ -94,13 +95,17 @@ class DicomDataset(BaseDataset, ABC):
 
         # key-value pairs which store how many dcm files were processed from
         #   each folder
-        self.output_dir = Path(output_dir)
+        try:
+            self.output_dir = Path(output_dir)
+        except TypeError as exc:
+            logger.error(f'Output directory is not valid. Got {output_dir}')
+            raise exc
+
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        filename = f'{self.name}_previous_run_log.json'
-        self._previous_run_log = self.output_dir / filename
-        if self._previous_run_log.exists():
-            self._process_whole_folder = read_json(self._previous_run_log)
+        self._previous_log_path = previous_log_fpath(self.output_dir, self.name)
+        if self._previous_log_path.exists():
+            self._process_whole_folder = read_json(self._previous_log_path)
         else:
             self._process_whole_folder = dict()
 
@@ -144,7 +149,13 @@ class DicomDataset(BaseDataset, ABC):
         # saving a copy for quicker reload
         # self.save()
         # dump the log to json file
-        with open(self._previous_run_log, 'w') as f:
+        # self.save_process_log()
+
+    def save_process_log(self, output_dir=None):
+        if not output_dir:
+            output_dir = self.output_dir
+        log_path = previous_log_fpath(output_dir, self.name)
+        with open(log_path, 'w') as f:
             json.dump(self._process_whole_folder, f, indent=4)
 
     def _filter_dcm_files(self, folder):

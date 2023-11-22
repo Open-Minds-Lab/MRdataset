@@ -112,3 +112,7 @@ def configure_logger(log, output_dir, mode='w', level='WARNING'):
     console_handler.setFormatter(logging.Formatter(config['formatter']))
     log.addHandler(console_handler)
     return log
+
+
+def previous_log_fpath(folder, name):
+    return Path(folder) / f'{name}_previous_run_log.json'

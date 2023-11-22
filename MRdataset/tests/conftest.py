@@ -1,3 +1,4 @@
+import tempfile
 import typing as tp
 from pathlib import Path
 from typing import Tuple
@@ -5,7 +6,8 @@ from typing import Tuple
 import pydicom
 import pytest
 from MRdataset.dicom import DicomDataset
-from MRdataset.tests.simulate import make_compliant_test_dataset, make_vertical_test_dataset
+from MRdataset.tests.simulate import make_compliant_test_dataset, \
+    make_vertical_test_dataset
 from hypothesis import strategies as st
 from hypothesis.strategies import SearchStrategy
 
@@ -56,9 +58,12 @@ def create_dataset(draw_from: st.DrawFn) -> Tuple:
                                               repetition_time,
                                               echo_train_length,
                                               flip_angle)
+    temp_dir = Path(tempfile.mkdtemp())
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path=THIS_DIR / 'resources/mri-config.json')
+                      config_path=THIS_DIR / 'resources/mri-config.json',
+                      output_dir=temp_dir)
+
     attributes = {
         'name': name,
         'num_subjects': num_subjects,
@@ -82,9 +87,11 @@ def create_vertical_dataset(draw_from: st.DrawFn) -> Tuple:
     name = 'vertical'
     num_sequences = 3
     fake_ds_dir = make_vertical_test_dataset(num_sequences)
+    temp_dir = Path(tempfile.mkdtemp())
     ds = DicomDataset(name=name,
                       data_source=fake_ds_dir,
-                      config_path=THIS_DIR / 'resources/mri-config.json')
+                      config_path=THIS_DIR / 'resources/mri-config.json',
+                      output_dir=temp_dir)
     attributes = {
         'name': name,
         'num_sequences': num_sequences,

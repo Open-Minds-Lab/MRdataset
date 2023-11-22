@@ -106,6 +106,13 @@ class DicomDataset(BaseDataset, ABC):
 
         # print('')
 
+    def merge(self, other):
+        """Merges two dicom datasets"""
+        self._merge(other)
+        self._process_whole_folder = {
+            **self._process_whole_folder, **other._process_whole_folder}
+        # self.save_process_log()
+
     def load(self):
         """
         Default method to load the dataset. It iterates over all the folders

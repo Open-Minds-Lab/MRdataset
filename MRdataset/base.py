@@ -246,7 +246,7 @@ class BaseDataset(ABC):
     def __repr__(self):
         return self.__str__()
 
-    def merge(self, other):
+    def _merge(self, other):
         """
         Merges two datasets.
 
@@ -273,6 +273,19 @@ class BaseDataset(ABC):
                     seq_id):
                 self.add(subject_id=subj_id, session_id=sess_id,
                          seq_id=seq_id, run_id=run_id, seq=seq)
+
+    def merge(self, other):
+        """
+        Merges two datasets. This function is an alias for _merge(). It is
+        provided for intuitive use. See _merge() for more details. It can be
+        overloaded by the child classes to provide additional functionality.
+
+        Parameters
+        ----------
+        other : BaseDataset
+            Another instance of BaseDataset to merge with the current dataset
+        """
+        self._merge(other)
 
     def add(self, subject_id, session_id, seq_id, run_id, seq):
         """

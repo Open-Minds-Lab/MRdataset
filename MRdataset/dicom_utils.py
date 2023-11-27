@@ -34,6 +34,8 @@ def is_dicom_file(filename: str):
                 return True
     except FileNotFoundError:
         logger.error(f'File not found : {filename}')
+    except PermissionError as e:
+        logger.warning(f'Permission denied : {filename}')
     return False
 
 

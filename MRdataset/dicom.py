@@ -215,8 +215,8 @@ class DicomDataset(BaseDataset, ABC):
         for dcm_path in dcm_files:
             try:
                 dicom = dcmread(dcm_path, stop_before_pixels=True)
-            except InvalidDicomError:
-                logger.info(f'Invalid DICOM file at {dcm_path}')
+            except (InvalidDicomError, PermissionError) as e:
+                logger.info(f'Invalid DICOM file at {dcm_path}. Got {e}')
                 continue
 
             # skip localizer, phantom, scouts, sbref, etc

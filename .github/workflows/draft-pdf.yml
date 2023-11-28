@@ -1,6 +1,9 @@
 name: joss-paper
 
-on: [push]
+on:
+    push:
+        branches:
+            - joss
 
 jobs:
   paper:

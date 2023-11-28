@@ -73,7 +73,14 @@ def folders_with_min_files(root: Union[Path, str],
 
 
 def is_folder_with_no_subfolders(fpath):
-    """"""
+    """
+    Check if the folder has any subfolders
+
+    Parameters
+    ----------
+    fpath: str | Path
+        filepath pointing to the folder
+    """
     if isinstance(fpath, str):
         fpath = Path(fpath)
     if not fpath.is_dir():
@@ -85,6 +92,14 @@ def is_folder_with_no_subfolders(fpath):
 
 
 def find_terminal_folders(root):
+    """
+    Find all the terminal folders in the given root folder
+
+    Parameters
+    ----------
+    root: str | Path
+        filepath pointing to the folder
+    """
     try:
         no_more_subdirs, sub_dirs = is_folder_with_no_subfolders(root)
     except FileNotFoundError:
@@ -175,6 +190,14 @@ def check_mrds_extension(filepath: Union[str, Path]):
 
 
 def read_json(filepath: Path):
+    """
+    Read json file and return a dictionary
+
+    Parameters
+    ----------
+    filepath: str or pathlib.Path
+        filepath pointing to the file
+    """
     try:
         filepath = Path(filepath)
     except TypeError:
@@ -192,6 +215,18 @@ def read_json(filepath: Path):
 
 
 def is_writable(dir_path):
+    """
+    Check if the directory is writable
+
+    Parameters
+    ----------
+    dir_path: str or pathlib.Path
+        filepath pointing to the directory
+
+    Returns
+    -------
+    bool
+    """
     try:
         with tempfile.TemporaryFile(dir=dir_path, mode='w') as testfile:
             testfile.write("OS write to directory test.")

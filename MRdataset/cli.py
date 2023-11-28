@@ -70,7 +70,7 @@ def cli():
     -f, --format : str
         choose type of dataset, expected one of [dicom|bids]
     -n, --name : str
-        provide a identifier/name for dataset. If not provided, the name of
+        provide an identifier/name for dataset. If not provided, the name of
         the dataset will be a random string e.g. '54321'
     --is-partial : bool
         flag dataset as a partial dataset. The flag is useful while reading a

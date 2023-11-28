@@ -115,4 +115,7 @@ def configure_logger(log, output_dir, mode='w', level='WARNING'):
 
 
 def previous_log_fpath(folder, name):
+    """
+    Return the path to the previous run log file
+    """
     return Path(folder) / f'{name}_previous_run_log.json'

@@ -1,5 +1,7 @@
 """ Utility functions for dicom files """
 import warnings
+from pathlib import Path
+from typing import Union
 
 import dicom2nifti
 import pydicom
@@ -12,13 +14,13 @@ with warnings.catch_warnings():
 # logger = logging.getLogger('root')
 
 
-def is_dicom_file(filename: str):
+def is_dicom_file(filename: Union[str, Path]):
     """
     The first 4 bytes are read from the file. For a valid DICOM file,
     the bytes should be DICM. Otherwise, it is not a valid DICOM file.
     Parameters
     ----------
-    filename : str
+    filename : Path | str
         path to the file
 
     Returns
@@ -34,7 +36,7 @@ def is_dicom_file(filename: str):
                 return True
     except FileNotFoundError:
         logger.error(f'File not found : {filename}')
-    except PermissionError as e:
+    except PermissionError:
         logger.warning(f'Permission denied : {filename}')
     return False
 
@@ -124,6 +126,8 @@ def raise_warning(msg: str, path, suppress_warnings=False):
         warning message
     path : str
         path to the file
+    suppress_warnings : bool
+        whether to suppress warnings. If True, warning will not be raised
     Returns
     -------
     None

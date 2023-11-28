@@ -152,13 +152,39 @@ class DicomDataset(BaseDataset, ABC):
         # self.save_process_log()
 
     def save_process_log(self, output_dir=None):
+        """
+        Saves the log file to the output directory. This log file contains
+        the information about how many dicom files were processed from each
+        folder. This is used to speed up the loading process.
+
+        Parameters
+        ----------
+        output_dir : str | Path
+            The path to the output directory. Default is None.
+        """
+
         if not output_dir:
             output_dir = self.output_dir
         log_path = previous_log_fpath(output_dir, self.name)
-        with open(log_path, 'w') as f:
-            json.dump(self._process_whole_folder, f, indent=4)
+
+        try:
+            with open(log_path, 'w') as f:
+                json.dump(self._process_whole_folder, f, indent=4)
+        except AttributeError as e:
+            logger.error(f'Unable to save log file. Got {e}')
 
     def _filter_dcm_files(self, folder):
+        """
+        Filters the dicom files from the folder. It also checks if the folder
+        was processed before. If it was processed before, it only returns
+        a single file from the folder. Otherwise, it returns all the dicom
+        files from the folder.
+
+        Parameters
+        ----------
+        folder : Path
+            The path to the folder containing the dicom slices
+        """
         dcm_files = sorted(folder.glob(self.pattern))
         # check if we have processed this folder before
         process_whole = self._process_whole_folder.get(str(folder), True)

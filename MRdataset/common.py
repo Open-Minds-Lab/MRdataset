@@ -208,7 +208,8 @@ def save_mr_dataset(filepath: Union[str, Path],
                      'for saving dataset')
         raise exc
 
-    mrds_obj.save_process_log(parent_folder)
+    if isinstance(mrds_obj, DicomDataset):
+        mrds_obj.save_process_log(parent_folder)
     with open(filepath, 'wb') as f:
         # save dict of the object as pickle
         pickle.dump(mrds_obj, f)

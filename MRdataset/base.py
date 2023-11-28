@@ -133,7 +133,7 @@ class BaseDataset(ABC):
         self._saved_path = ''
         # self.data_source[0] / "mrdataset" / "mrdataset.pkl"
         self._reloaded = False
-
+        self._process_whole_folder = dict()
         self._key_vars = set(['_flat_map',  # noqa
                               '_tree_map',
                               '_seqs_map',
@@ -147,7 +147,7 @@ class BaseDataset(ABC):
 
     def get_sequence_ids(self):
         """Returns a list of all sequence IDs in the dataset"""
-        # Cast to list so that it can be indexed, set is not subscriptable
+        # Cast to list so that it can be indexed, set is not subscript-able
         return sorted(self._seq_ids)
 
     def subjects(self):
@@ -188,7 +188,7 @@ class BaseDataset(ABC):
     #         for attr in self._key_vars:
     #             self.__setattr__(attr, getattr(prev, attr))
     #     except Exception as exc:
-    #         print(f'unable to reload from {self._saved_path}')
+    #         print(f' unable to reload from {self._saved_path}')
     #         raise exc
     #     else:
     #         self._reloaded = True
@@ -308,6 +308,8 @@ class BaseDataset(ABC):
             Unique identifier the Run. For example, a run ID can be
             a string like 'run-01' or '001'. For DICOM datasets, this can be
             SeriesInstanceUID.
+        seq : protocol.BaseSequence
+            Instance of the sequence
         """
 
         if not isinstance(seq, BaseSequence):

@@ -25,9 +25,7 @@ it creates a dataset.
 
     data_folder = '/home/user/datasets/XYZ'
     dataset = import_dataset(data_source=data_folder,
-                             ds_format='dicom',
-                             config_file='mri_config.json',
-                             output_dir='/home/user/datasets/XYZ',
+                             ds_format='dicom')
 
 By default, the ``import_dataset`` expects a DICOM dataset. However, this can
 be changed using ``ds_format`` argument. For example, use ``ds_format='bids'`` for
@@ -99,37 +97,5 @@ For a BIDS dataset
    :noindex:
 
 
-Configuration file
-------------------
-
-The configuration file is a JSON file that contains the following keys. The
-values of these keys are used to include or exclude certain scans from the
-dataset.
-
-* **begin**: The scans acquired before this date are
-  excluded from the dataset. This is a string in the format ``YYYY-MM-DD``.
-  For example, ``2019-01-01``.
-* **end**: The scans acquired after this date are
-  excluded from the dataset. This is a string in the format ``YYYY-MM-DD``.
-  For example, ``2019-01-01``.
-* **include_sequences**: The user can choose to skip phantoms, localizers, motion-correction
-  scans (moco), derived sequences (perfusion-weighted) and single-band references (sbref)
-  by setting the values for ``phantom``, ``moco`` and ``sbref`` as ``false``.
-* **use_echonumbers**: In general (for Siemens) multi-echo sequences can be identified by
-  the presence of ``EchoNumber`` in the DICOM header. However, this is not always the case.
-  Then, the folder is scanned for the presence of multiple echo times. In the future, we
-  plan to add support for GE and Philips scanners.
-* **include_parameters**: The user can choose to include or exclude certain parameters
-  from the dataset. For example, ``include_parameters: ['RepetitionTime', 'EchoTime']``.
-  Note that the parameters are case-sensitive. They should be specified in camel-case. A
-  complete list of parameters can be found `here`_.
-* **exclude_subjects**: The scans from the subjects in this list are excluded
-  from the dataset. This is a list of strings. For example, ``['sub-01', 'sub-02']``.
-
-.. literalinclude:: mri-config.json
-   :language: json
-   :linenos:
-
 
 .. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb
-.. _here: config.html

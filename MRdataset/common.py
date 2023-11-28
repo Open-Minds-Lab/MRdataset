@@ -70,7 +70,12 @@ def import_dataset(data_source: Union[str, Path, List],
     # else:
     #     logger = configure_logger(logger, output_dir=output_dir,
     #                               mode='w', level='ERROR')
-
+    if output_dir is None:
+        # Use current working directory as output directory
+        output_dir = Path.cwd()
+    if config_path is None:
+        THIS_DIR = Path(__file__).parent.resolve()
+        config_path = THIS_DIR / 'resources/mri-config.json'
     if data_source is None:
         raise ValueError('Please provide a valid data source.'
                          ' Got NoneType. ')

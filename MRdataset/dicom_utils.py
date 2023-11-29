@@ -92,8 +92,7 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
     series_desc = series_desc.lower()
     if not include_phantom:
         phantom_keys = {'localizer', 'aahead'}
-        sequence_names = {series_desc}
-        if phantom_keys.intersection(sequence_names):
+        if any(x in series_desc for x in phantom_keys):
             raise_warning('Phantom', folder, suppress_warnings)
             return False
         if is_phantom(dicom):

@@ -12,8 +12,6 @@ To use MRdataset in a project -
 The most important method is ``import_dataset``. The dataset type
 such as ``dicom`` or ``bids`` can be specified using the ``ds_format`` argument.
 
-First of all, you have to import the relevant module
-
 .. code:: python
 
     from MRdataset import import_dataset

@@ -4,15 +4,16 @@ from itertools import islice
 from pathlib import Path
 from typing import Tuple, List
 
+from protocol import ImagingSequence
+from pydicom import dcmread
+from pydicom.errors import InvalidDicomError
+
 from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.config import previous_log_fpath
 from MRdataset.dicom_utils import (is_valid_inclusion,
                                    is_dicom_file)
 from MRdataset.utils import (folders_with_min_files, read_json, valid_dirs)
-from protocol import ImagingSequence
-from pydicom import dcmread
-from pydicom.errors import InvalidDicomError
 
 
 # A dataset is a collection of subjects
@@ -75,7 +76,7 @@ class DicomDataset(BaseDataset, ABC):
         # read the config file
         try:
             self.config_dict = read_json(Path(self.config_path))
-        except (FileNotFoundError or ValueError) as e:
+        except (FileNotFoundError, ValueError) as e:
             logger.error(f'Unable to read config file {self.config_path}')
             raise e
 
@@ -85,10 +86,10 @@ class DicomDataset(BaseDataset, ABC):
 
         # These are used to skip certain sequences
         self.includes = self.config_dict.get('include_sequence', {})
-        self.include_phantom = self.includes.get('phantom', None)
-        self.include_moco = self.includes.get('moco', None)
-        self.include_sbref = self.includes.get('sbref', None)
-        self.include_derived = self.includes.get('derived', None)
+        self.include_phantom = self.includes.get('phantom', False)
+        self.include_moco = self.includes.get('moco', False)
+        self.include_sbref = self.includes.get('sbref', False)
+        self.include_derived = self.includes.get('derived', False)
 
         # variables specific to this class
         self._key_vars.update(['pattern', 'min_count', 'include_phantoms'])

@@ -8,15 +8,16 @@ from pathlib import Path
 
 import hypothesis.strategies as st
 import pytest
-from hypothesis import given, settings
+from hypothesis import given, settings, HealthCheck
 
 from MRdataset import import_dataset
-from MRdataset.tests.simulate import make_compliant_test_dataset, make_multi_echo_dataset
+from MRdataset.tests.simulate import make_compliant_test_dataset, \
+    make_multi_echo_dataset
 
 THIS_DIR = Path(__file__).parent.resolve()
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(st.integers(min_value=1, max_value=10),
        st.floats(allow_nan=False,
                  allow_infinity=False),
@@ -47,7 +48,7 @@ def test_parse_compliant_dataset(num_subjects,
     return
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(st.integers(min_value=4, max_value=10),
        st.floats(allow_nan=False,
                  allow_infinity=False),

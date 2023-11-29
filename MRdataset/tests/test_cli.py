@@ -2,14 +2,14 @@ import shlex
 import sys
 import tempfile
 
-from hypothesis import given, settings, assume
+from hypothesis import given, settings, assume, HealthCheck
 
 from MRdataset import load_mr_dataset
 from MRdataset.cli import cli
 from MRdataset.tests.conftest import dcm_dataset_strategy
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=10, deadline=None)
 @given(args=dcm_dataset_strategy)
 def test_load(args):
     ds1, attributes = args

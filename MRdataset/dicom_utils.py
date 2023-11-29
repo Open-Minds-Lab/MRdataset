@@ -5,6 +5,7 @@ from typing import Union
 
 import dicom2nifti
 import pydicom
+
 from MRdataset import logger
 
 with warnings.catch_warnings():
@@ -90,10 +91,9 @@ def is_valid_inclusion(dicom: pydicom.FileDataset,
 
     series_desc = series_desc.lower()
     if not include_phantom:
-        if 'local' in series_desc:
-            raise_warning('Phantom', folder, suppress_warnings)
-            return False
-        if 'aahead' in series_desc:
+        phantom_keys = {'localizer', 'aahead'}
+        sequence_names = {series_desc}
+        if phantom_keys.intersection(sequence_names):
             raise_warning('Phantom', folder, suppress_warnings)
             return False
         if is_phantom(dicom):

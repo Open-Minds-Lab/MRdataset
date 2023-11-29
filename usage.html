@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
-        <title>Command line usage - MRdataset</title>
+        <title>API usage - MRdataset</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -195,7 +195,62 @@
           </label>
         </div>
         <article role="main">
-          <section id="command-line-usage">
+          <section id="api-usage">
+<h1>API usage<a class="headerlink" href="#api-usage" title="Permalink to this heading">#</a></h1>
+<p>To use MRdataset in a project -</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">MRdataset</span>
+</pre></div>
+</div>
+<p>The most important method is <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code>. The dataset type
+such as <code class="docutils literal notranslate"><span class="pre">dicom</span></code> or <code class="docutils literal notranslate"><span class="pre">bids</span></code> can be specified using the <code class="docutils literal notranslate"><span class="pre">ds_format</span></code> argument.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">import_dataset</span>
+</pre></div>
+</div>
+<p>Given a valid folder path to a dataset of MR images (e.g. DICOM images),
+it creates a dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_folder</span> <span class="o">=</span> <span class="s1">&#39;/home/user/datasets/XYZ&#39;</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_source</span><span class="o">=</span><span class="n">data_folder</span><span class="p">,</span>
+                         <span class="n">ds_format</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code> expects a DICOM dataset. However, this can
+be changed using <code class="docutils literal notranslate"><span class="pre">ds_format</span></code> argument. For example, use <code class="docutils literal notranslate"><span class="pre">ds_format='bids'</span></code> for
+importing a BIDS dataset.</p>
+<p>We follow a hierarchical structure in our dataset as shown above. And we provide methods for
+accessing each of these elements. These access-methods are <code class="docutils literal notranslate"><span class="pre">traverse_horizontal</span></code>
+and <code class="docutils literal notranslate"><span class="pre">traverse_vertical2</span></code>. For example, we can traverse through all the subjects for a given sequence
+using <code class="docutils literal notranslate"><span class="pre">traverse_horizontal</span></code> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seq_name</span> <span class="o">=</span> <span class="s1">&#39;3D_T2_FLAIR&#39;</span>
+<span class="k">for</span> <span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">sequence</span> <span class="ow">in</span> <span class="n">dicom_dataset</span><span class="o">.</span><span class="n">traverse_horizontal</span><span class="p">(</span><span class="n">seq_name</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Subject: </span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">Session: </span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">Run: </span><span class="si">{</span><span class="n">run</span><span class="si">}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">Sequence: </span><span class="si">{</span><span class="n">sequence</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, we can traverse through all the sequences/modality for
+a given subject using <cite>traverse_vertical2</cite> method. It is helpful for retrieving epi and
+corresponding fieldmaps for a given subject. Let's see an example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seq_id1</span> <span class="o">=</span> <span class="s1">&#39;me_fMRI&#39;</span>
+<span class="n">seq_id2</span> <span class="o">=</span> <span class="s1">&#39;me_FieldMap_GRE&#39;</span>
+
+<span class="k">for</span> <span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">run1</span><span class="p">,</span> <span class="n">run2</span><span class="p">,</span> <span class="n">seq1</span><span class="p">,</span> <span class="n">seq2</span> <span class="ow">in</span> <span class="n">dicom_dataset</span><span class="o">.</span><span class="n">traverse_vertical2</span><span class="p">(</span><span class="n">seq_id1</span><span class="p">,</span> <span class="n">seq_id2</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">seq1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">seq2</span><span class="p">)</span>
+    <span class="k">break</span>
+</pre></div>
+</div>
+<p>Finally, <code class="docutils literal notranslate"><span class="pre">save_mr_dataset</span></code> and <code class="docutils literal notranslate"><span class="pre">load_mr_dataset</span></code> can be used to save and load a
+dataset. For example, to save a dataset</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">save_mr_dataset</span>
+<span class="n">save_mr_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;/home/user/datasets/xyz.mrds.pkl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, to load a dataset</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">load_mr_dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">load_mr_dataset</span><span class="p">(</span><span class="s1">&#39;/home/user/datasets/xyz.mrds.pkl&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that the dataset is saved as a pickle file with an extension <code class="docutils literal notranslate"><span class="pre">.mrds.pkl</span></code>.</p>
+</section>
+<section id="command-line-usage">
 <h1>Command line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this heading">#</a></h1>
 <p>MRdataset can be used on the command line interface. For a DICOM dataset</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mrds<span class="w"> </span>--data-source<span class="w"> </span>/path/to/dataset<span class="w"> </span>--format<span class="w"> </span>dicom
@@ -219,7 +274,7 @@ nested hierarchies</p>
 </dd>
 <dt>-f, --format<span class="classifier">str</span></dt><dd><p>choose type of dataset, expected one of [dicom|bids]</p>
 </dd>
-<dt>-n, --name<span class="classifier">str</span></dt><dd><p>provide a identifier/name for dataset. If not provided, the name of
+<dt>-n, --name<span class="classifier">str</span></dt><dd><p>provide an identifier/name for dataset. If not provided, the name of
 the dataset will be a random string e.g. '54321'</p>
 </dd>
 <dt>--is-partial<span class="classifier">bool</span></dt><dd><p>flag dataset as a partial dataset. The flag is useful while reading a
@@ -234,121 +289,6 @@ If the dataset is complete, the flag should not be set.</p>
 </div>
 </dd></dl>
 
-</section>
-<section id="api-usage">
-<h1>API usage<a class="headerlink" href="#api-usage" title="Permalink to this heading">#</a></h1>
-<p>The following section provides a brief overview of the API. For more details,
-please refer to the Jupyter Notebook <a class="reference external" href="https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb">tutorial</a>.</p>
-<p>To use MRdataset in a project -</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">MRdataset</span>
-</pre></div>
-</div>
-<p>The most important method is <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code>. The dataset type
-such as <code class="docutils literal notranslate"><span class="pre">dicom</span></code> or <code class="docutils literal notranslate"><span class="pre">bids</span></code> can be specified using the <code class="docutils literal notranslate"><span class="pre">ds_format</span></code> argument.</p>
-<p>First of all, you have to import the relevant module</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">import_dataset</span>
-</pre></div>
-</div>
-<p>Given a valid folder path to a dataset of MR images (e.g. DICOM images),
-it creates a dataset.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_folder</span> <span class="o">=</span> <span class="s1">&#39;/home/user/datasets/XYZ&#39;</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">import_dataset</span><span class="p">(</span><span class="n">data_source</span><span class="o">=</span><span class="n">data_folder</span><span class="p">,</span>
-                         <span class="n">ds_format</span><span class="o">=</span><span class="s1">&#39;dicom&#39;</span><span class="p">,</span>
-                         <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;mri_config.json&#39;</span><span class="p">,</span>
-                         <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;/home/user/datasets/XYZ&#39;</span><span class="p">,</span>
-</pre></div>
-</div>
-<p>By default, the <code class="docutils literal notranslate"><span class="pre">import_dataset</span></code> expects a DICOM dataset. However, this can
-be changed using <code class="docutils literal notranslate"><span class="pre">ds_format</span></code> argument. For example, use <code class="docutils literal notranslate"><span class="pre">ds_format='bids'</span></code> for
-importing a BIDS dataset.</p>
-<p>The library is highly extensible, and a developer can extend it to their own
-neuroimaging formats. For example, to create an interface with a new format, say
-NID (NeuroImaging Dataset), inherit <code class="docutils literal notranslate"><span class="pre">MRdataset.base.BaseDataset</span></code> in a file
-<code class="docutils literal notranslate"><span class="pre">NID_dataset.py</span></code></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset.base</span> <span class="kn">import</span> <span class="n">BaseDataset</span>
-<span class="k">class</span> <span class="nc">NIDDataset</span><span class="p">(</span><span class="n">BaseDataset</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">data_source</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">data_source</span><span class="p">)</span>
-        <span class="k">pass</span>
-
-     <span class="k">def</span> <span class="nf">load</span><span class="p">():</span>
-        <span class="k">pass</span>
-</pre></div>
-</div>
-<p>Finally, <code class="docutils literal notranslate"><span class="pre">save_mr_dataset</span></code> and <code class="docutils literal notranslate"><span class="pre">load_mr_dataset</span></code> can be used to save and load a
-dataset. For example, to save a dataset</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">save_mr_dataset</span>
-<span class="n">save_mr_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;/home/user/datasets/xyz.mrds.pkl&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Similarly, to load a dataset</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">MRdataset</span> <span class="kn">import</span> <span class="n">load_mr_dataset</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">load_mr_dataset</span><span class="p">(</span><span class="s1">&#39;/home/user/datasets/xyz.mrds.pkl&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Note that the dataset is saved as a pickle file with an extension <code class="docutils literal notranslate"><span class="pre">.mrds.pkl</span></code>.</p>
-</section>
-<section id="configuration-file">
-<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading">#</a></h1>
-<p>The configuration file is a JSON file that contains the following keys. The
-values of these keys are used to include or exclude certain scans from the
-dataset.</p>
-<ul class="simple">
-<li><p><strong>begin</strong>: The scans acquired before this date are
-excluded from the dataset. This is a string in the format <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code>.
-For example, <code class="docutils literal notranslate"><span class="pre">2019-01-01</span></code>.</p></li>
-<li><p><strong>end</strong>: The scans acquired after this date are
-excluded from the dataset. This is a string in the format <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code>.
-For example, <code class="docutils literal notranslate"><span class="pre">2019-01-01</span></code>.</p></li>
-<li><p><strong>include_sequences</strong>: The user can choose to skip phantoms, localizers, motion-correction
-scans (moco), derived sequences (perfusion-weighted) and single-band references (sbref)
-by setting the values for <code class="docutils literal notranslate"><span class="pre">phantom</span></code>, <code class="docutils literal notranslate"><span class="pre">moco</span></code> and <code class="docutils literal notranslate"><span class="pre">sbref</span></code> as <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
-<li><p><strong>use_echonumbers</strong>: In general (for Siemens) multi-echo sequences can be identified by
-the presence of <code class="docutils literal notranslate"><span class="pre">EchoNumber</span></code> in the DICOM header. However, this is not always the case.
-Then, the folder is scanned for the presence of multiple echo times. In the future, we
-plan to add support for GE and Philips scanners.</p></li>
-<li><p><strong>include_parameters</strong>: The user can choose to include or exclude certain parameters
-from the dataset. For example, <code class="docutils literal notranslate"><span class="pre">include_parameters:</span> <span class="pre">['RepetitionTime',</span> <span class="pre">'EchoTime']</span></code>.
-Note that the parameters are case-sensitive. They should be specified in camel-case. A
-complete list of parameters can be found <a class="reference external" href="config.html">here</a>.</p></li>
-<li><p><strong>exclude_subjects</strong>: The scans from the subjects in this list are excluded
-from the dataset. This is a list of strings. For example, <code class="docutils literal notranslate"><span class="pre">['sub-01',</span> <span class="pre">'sub-02']</span></code>.</p></li>
-</ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">{</span>
-<span class="linenos"> 2</span><span class="w">    </span><span class="nt">&quot;begin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2014-03-12&quot;</span><span class="p">,</span>
-<span class="linenos"> 3</span><span class="w">    </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2017-03-12&quot;</span><span class="p">,</span>
-<span class="linenos"> 4</span><span class="w">    </span><span class="nt">&quot;include_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="linenos"> 5</span><span class="w">        </span><span class="nt">&quot;phantom&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="linenos"> 6</span><span class="w">        </span><span class="nt">&quot;nifti_header&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="linenos"> 7</span><span class="w">        </span><span class="nt">&quot;moco&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="linenos"> 8</span><span class="w">        </span><span class="nt">&quot;sbref&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="linenos"> 9</span><span class="w">        </span><span class="nt">&quot;derived&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<span class="linenos">10</span><span class="w">    </span><span class="p">},</span>
-<span class="linenos">11</span><span class="w">    </span><span class="nt">&quot;use_echonumbers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="linenos">12</span><span class="w">    </span><span class="nt">&quot;include_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="linenos">13</span><span class="w">        </span><span class="s2">&quot;BodyPartExamined&quot;</span><span class="p">,</span>
-<span class="linenos">14</span><span class="w">        </span><span class="s2">&quot;EchoTrainLength&quot;</span><span class="p">,</span>
-<span class="linenos">15</span><span class="w">        </span><span class="s2">&quot;ParallelAcquisitionTechnique&quot;</span><span class="p">,</span>
-<span class="linenos">16</span><span class="w">        </span><span class="s2">&quot;MagneticFieldStrength&quot;</span><span class="p">,</span>
-<span class="linenos">17</span><span class="w">        </span><span class="s2">&quot;MRAcquisitionType&quot;</span><span class="p">,</span>
-<span class="linenos">18</span><span class="w">        </span><span class="s2">&quot;MultiSliceMode&quot;</span><span class="p">,</span>
-<span class="linenos">19</span><span class="w">        </span><span class="s2">&quot;PhasePolarity&quot;</span><span class="p">,</span>
-<span class="linenos">20</span><span class="w">        </span><span class="s2">&quot;PhaseEncodingSteps&quot;</span><span class="p">,</span>
-<span class="linenos">21</span><span class="w">        </span><span class="s2">&quot;PixelBandwidth&quot;</span><span class="p">,</span>
-<span class="linenos">22</span><span class="w">        </span><span class="s2">&quot;ScanningSequence&quot;</span><span class="p">,</span>
-<span class="linenos">23</span><span class="w">        </span><span class="s2">&quot;SequenceVariant&quot;</span><span class="p">,</span>
-<span class="linenos">24</span><span class="w">        </span><span class="s2">&quot;RepetitionTime&quot;</span><span class="p">,</span>
-<span class="linenos">25</span><span class="w">        </span><span class="s2">&quot;EchoTime&quot;</span><span class="p">,</span>
-<span class="linenos">26</span><span class="w">        </span><span class="s2">&quot;FlipAngle&quot;</span><span class="p">,</span>
-<span class="linenos">27</span><span class="w">        </span><span class="s2">&quot;PhaseEncodingDirection&quot;</span>
-<span class="linenos">28</span><span class="w">    </span><span class="p">],</span>
-<span class="linenos">29</span><span class="w">    </span><span class="nt">&quot;exclude_subjects&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="linenos">30</span><span class="w">        </span><span class="s2">&quot;210098&quot;</span><span class="p">,</span>
-<span class="linenos">31</span><span class="w">        </span><span class="s2">&quot;210078&quot;</span>
-<span class="linenos">32</span><span class="w">    </span><span class="p">]</span>
-<span class="linenos">33</span><span class="p">}</span>
-</pre></div>
-</div>
 </section>
 
         </article>
@@ -382,7 +322,7 @@ from the dataset. This is a list of strings. For example, <code class="docutils 
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87c7b5fc"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7185041f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

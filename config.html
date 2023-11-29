@@ -195,12 +195,83 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-MRdataset.config">
-<span id="configuration"></span><h1>Configuration<a class="headerlink" href="#module-MRdataset.config" title="Permalink to this heading">#</a></h1>
-<dl class="py data">
+          <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h1>
+<p>The configuration file is a JSON file that contains the following keys. The
+values of these keys are used to include or exclude certain scans from the
+dataset.</p>
+<ul class="simple">
+<li><p><strong>begin</strong>: The scans acquired before this date are
+excluded from the dataset. This is a string in the format <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code>.
+For example, <code class="docutils literal notranslate"><span class="pre">2019-01-01</span></code>.</p></li>
+<li><p><strong>end</strong>: The scans acquired after this date are
+excluded from the dataset. This is a string in the format <code class="docutils literal notranslate"><span class="pre">YYYY-MM-DD</span></code>.
+For example, <code class="docutils literal notranslate"><span class="pre">2019-01-01</span></code>.</p></li>
+<li><p><strong>include_sequences</strong>: The user can choose to skip phantoms, localizers, motion-correction
+scans (moco), derived sequences (perfusion-weighted) and single-band references (sbref)
+by setting the values for <code class="docutils literal notranslate"><span class="pre">phantom</span></code>, <code class="docutils literal notranslate"><span class="pre">moco</span></code> and <code class="docutils literal notranslate"><span class="pre">sbref</span></code> as <code class="docutils literal notranslate"><span class="pre">false</span></code>.</p></li>
+<li><p><strong>use_echonumbers</strong>: In general (for Siemens) multi-echo sequences can be identified by
+the presence of <code class="docutils literal notranslate"><span class="pre">EchoNumber</span></code> in the DICOM header. However, this is not always the case.
+Then, the folder is scanned for the presence of multiple echo times. In the future, we
+plan to add support for GE and Philips scanners.</p></li>
+<li><p><strong>include_parameters</strong>: The user can choose to include or exclude certain parameters
+from the dataset. For example, <code class="docutils literal notranslate"><span class="pre">include_parameters:</span> <span class="pre">['RepetitionTime',</span> <span class="pre">'EchoTime']</span></code>.
+Note that the parameters are case-sensitive. They should be specified in camel-case. A
+complete list of parameters can be found here.</p></li>
+<li><p><strong>exclude_subjects</strong>: The scans from the subjects in this list are excluded
+from the dataset. This is a list of strings. For example, <code class="docutils literal notranslate"><span class="pre">['sub-01',</span> <span class="pre">'sub-02']</span></code>.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">{</span>
+<span class="linenos"> 2</span><span class="w">    </span><span class="nt">&quot;begin&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2014-03-12&quot;</span><span class="p">,</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nt">&quot;end&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2017-03-12&quot;</span><span class="p">,</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nt">&quot;include_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 5</span><span class="w">        </span><span class="nt">&quot;phantom&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="linenos"> 6</span><span class="w">        </span><span class="nt">&quot;nifti_header&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="linenos"> 7</span><span class="w">        </span><span class="nt">&quot;moco&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="linenos"> 8</span><span class="w">        </span><span class="nt">&quot;sbref&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="linenos"> 9</span><span class="w">        </span><span class="nt">&quot;derived&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="linenos">10</span><span class="w">    </span><span class="p">},</span>
+<span class="linenos">11</span><span class="w">    </span><span class="nt">&quot;use_echonumbers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="linenos">12</span><span class="w">    </span><span class="nt">&quot;horizontal_audit&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">13</span><span class="w">        </span><span class="nt">&quot;stratify_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;series_number&quot;</span><span class="p">,</span>
+<span class="linenos">14</span><span class="w">        </span><span class="nt">&quot;include_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="linenos">15</span><span class="w">            </span><span class="s2">&quot;EchoTrainLength&quot;</span><span class="p">,</span>
+<span class="linenos">16</span><span class="w">            </span><span class="s2">&quot;ParallelAcquisitionTechnique&quot;</span><span class="p">,</span>
+<span class="linenos">17</span><span class="w">            </span><span class="s2">&quot;MagneticFieldStrength&quot;</span><span class="p">,</span>
+<span class="linenos">18</span><span class="w">            </span><span class="s2">&quot;MRAcquisitionType&quot;</span><span class="p">,</span>
+<span class="linenos">19</span><span class="w">            </span><span class="s2">&quot;MultiSliceMode&quot;</span><span class="p">,</span>
+<span class="linenos">20</span><span class="w">            </span><span class="s2">&quot;PhasePolarity&quot;</span><span class="p">,</span>
+<span class="linenos">21</span><span class="w">            </span><span class="s2">&quot;PhaseEncodingSteps&quot;</span><span class="p">,</span>
+<span class="linenos">22</span><span class="w">            </span><span class="s2">&quot;PixelBandwidth&quot;</span><span class="p">,</span>
+<span class="linenos">23</span><span class="w">            </span><span class="s2">&quot;ScanningSequence&quot;</span><span class="p">,</span>
+<span class="linenos">24</span><span class="w">            </span><span class="s2">&quot;SequenceVariant&quot;</span><span class="p">,</span>
+<span class="linenos">25</span><span class="w">            </span><span class="s2">&quot;RepetitionTime&quot;</span><span class="p">,</span>
+<span class="linenos">26</span><span class="w">            </span><span class="s2">&quot;EchoTime&quot;</span><span class="p">,</span>
+<span class="linenos">27</span><span class="w">            </span><span class="s2">&quot;FlipAngle&quot;</span><span class="p">,</span>
+<span class="linenos">28</span><span class="w">            </span><span class="s2">&quot;PhaseEncodingDirection&quot;</span><span class="p">,</span>
+<span class="linenos">29</span><span class="w">            </span><span class="s2">&quot;ShimMode&quot;</span><span class="p">,</span>
+<span class="linenos">30</span><span class="w">            </span><span class="s2">&quot;Rows&quot;</span><span class="p">,</span>
+<span class="linenos">31</span><span class="w">            </span><span class="s2">&quot;Columns&quot;</span><span class="p">,</span>
+<span class="linenos">32</span><span class="w">            </span><span class="s2">&quot;AcquisitionMatrix&quot;</span>
+<span class="linenos">33</span><span class="w">        </span><span class="p">]</span>
+<span class="linenos">34</span><span class="w">    </span><span class="p">},</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nt">&quot;exclude_subjects&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="linenos">36</span><span class="w">        </span><span class="s2">&quot;210098&quot;</span><span class="p">,</span>
+<span class="linenos">37</span><span class="w">        </span><span class="s2">&quot;210078&quot;</span>
+<span class="linenos">38</span><span class="w">    </span><span class="p">]</span>
+<span class="linenos">39</span><span class="p">}</span>
+</pre></div>
+</div>
+<span class="target" id="module-MRdataset.config"></span><dl class="py data">
 <dt class="sig sig-object py" id="MRdataset.config.VALID_PARAMETERS">
-<span class="sig-name descname"><span class="pre">VALID_PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['AcquisitionMatrix',</span> <span class="pre">'AngioFlag',</span> <span class="pre">'BitsAllocated',</span> <span class="pre">'BitsStored',</span> <span class="pre">'BodyPartExamined',</span> <span class="pre">'CoilString',</span> <span class="pre">'Columns',</span> <span class="pre">'DwellTime',</span> <span class="pre">'EchoNumber',</span> <span class="pre">'EchoTime',</span> <span class="pre">'EchoTrainLength',</span> <span class="pre">'FlipAngle',</span> <span class="pre">'FlowCompensation',</span> <span class="pre">'GradientMode',</span> <span class="pre">'HighBit',</span> <span class="pre">'ImageOrientationPatient',</span> <span class="pre">'ImagePositionPatient',</span> <span class="pre">'ImagedNucleus',</span> <span class="pre">'ImagingFrequency',</span> <span class="pre">'InversionTime',</span> <span class="pre">'LargestImagePixelValue',</span> <span class="pre">'MRAcquisitionType',</span> <span class="pre">'MRTransmitCoilSequence',</span> <span class="pre">'MTState',</span> <span class="pre">'MagneticFieldStrength',</span> <span class="pre">'Manufacturer',</span> <span class="pre">'ManufacturersModelName',</span> <span class="pre">'MultiBandAccelerationFactor',</span> <span class="pre">'MultiSliceMode',</span> <span class="pre">'NonLinearGradientCorrection',</span> <span class="pre">'NumberOfAverages',</span> <span class="pre">'PATMode',</span> <span class="pre">'ParallelAcquisitionTechnique',</span> <span class="pre">'ParallelReductionFactorInPlane',</span> <span class="pre">'PartialFourier',</span> <span class="pre">'PartialFourierDirection',</span> <span class="pre">'PatientPosition',</span> <span class="pre">'PercentPhaseFOV',</span> <span class="pre">'PercentSampling',</span> <span class="pre">'PhaseEncodingDirection',</span> <span class="pre">'PhaseEncodingSteps',</span> <span class="pre">'PhasePolarity',</span> <span class="pre">'PhotometricInterpretation',</span> <span class="pre">'PixelBandwidth',</span> <span class="pre">'PixelRepresentation',</span> <span class="pre">'PixelSpacing',</span> <span class="pre">'PositivePCSDirections',</span> <span class="pre">'ReceiveCoilActiveElements',</span> <span class="pre">'ReceiveCoilName',</span> <span class="pre">'RepetitionTime',</span> <span class="pre">'Rows',</span> <span class="pre">'SAR',</span> <span class="pre">'SamplesPerPixel',</span> <span class="pre">'ScanOptions',</span> <span class="pre">'ScanningSequence',</span> <span class="pre">'SequenceName',</span> <span class="pre">'SequenceVariant',</span> <span class="pre">'ShimMode',</span> <span class="pre">'ShimSetting',</span> <span class="pre">'SliceLocation',</span> <span class="pre">'SliceMeasurementDuration',</span> <span class="pre">'SliceResolution',</span> <span class="pre">'SliceThickness',</span> <span class="pre">'SmallestImagePixelValue',</span> <span class="pre">'SoftwareVersions',</span> <span class="pre">'SpacingBetweenSlices',</span> <span class="pre">'SpoilingState',</span> <span class="pre">'TransmitCoilName',</span> <span class="pre">'VariableFlipAngleFlag',</span> <span class="pre">'WindowCenter',</span> <span class="pre">'WindowCenterWidthExplanation',</span> <span class="pre">'WindowWidth']</span></em><a class="headerlink" href="#MRdataset.config.VALID_PARAMETERS" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">VALID_PARAMETERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['AcquisitionMatrix',</span> <span class="pre">'AngioFlag',</span> <span class="pre">'BitsAllocated',</span> <span class="pre">'BitsStored',</span> <span class="pre">'BodyPartExamined',</span> <span class="pre">'CoilString',</span> <span class="pre">'Columns',</span> <span class="pre">'DwellTime',</span> <span class="pre">'EchoNumber',</span> <span class="pre">'EchoTime',</span> <span class="pre">'EchoTrainLength',</span> <span class="pre">'FieldOfView',</span> <span class="pre">'FlipAngle',</span> <span class="pre">'FlowCompensation',</span> <span class="pre">'GradientMode',</span> <span class="pre">'HighBit',</span> <span class="pre">'ImageOrientationPatient',</span> <span class="pre">'ImagePositionPatient',</span> <span class="pre">'ImagedNucleus',</span> <span class="pre">'ImagingFrequency',</span> <span class="pre">'InversionTime',</span> <span class="pre">'LargestImagePixelValue',</span> <span class="pre">'MRAcquisitionType',</span> <span class="pre">'MRTransmitCoilSequence',</span> <span class="pre">'MTState',</span> <span class="pre">'MagneticFieldStrength',</span> <span class="pre">'Manufacturer',</span> <span class="pre">'ManufacturersModelName',</span> <span class="pre">'MultiBandAccelerationFactor',</span> <span class="pre">'MultiSliceMode',</span> <span class="pre">'NonLinearGradientCorrection',</span> <span class="pre">'NumberOfAverages',</span> <span class="pre">'PATMode',</span> <span class="pre">'ParallelAcquisitionTechnique',</span> <span class="pre">'ParallelReductionFactorInPlane',</span> <span class="pre">'PartialFourier',</span> <span class="pre">'PartialFourierDirection',</span> <span class="pre">'PatientPosition',</span> <span class="pre">'PercentPhaseFOV',</span> <span class="pre">'PercentSampling',</span> <span class="pre">'PhaseEncodingDirection',</span> <span class="pre">'PhaseEncodingSteps',</span> <span class="pre">'PhasePolarity',</span> <span class="pre">'PhotometricInterpretation',</span> <span class="pre">'PixelBandwidth',</span> <span class="pre">'PixelRepresentation',</span> <span class="pre">'PixelSpacing',</span> <span class="pre">'PositivePCSDirections',</span> <span class="pre">'ReceiveCoilActiveElements',</span> <span class="pre">'ReceiveCoilName',</span> <span class="pre">'RepetitionTime',</span> <span class="pre">'Rows',</span> <span class="pre">'SAR',</span> <span class="pre">'SamplesPerPixel',</span> <span class="pre">'ScanOptions',</span> <span class="pre">'ScanningSequence',</span> <span class="pre">'SequenceName',</span> <span class="pre">'SequenceVariant',</span> <span class="pre">'ShimMode',</span> <span class="pre">'ShimSetting',</span> <span class="pre">'SliceLocation',</span> <span class="pre">'SliceMeasurementDuration',</span> <span class="pre">'SliceResolution',</span> <span class="pre">'SliceThickness',</span> <span class="pre">'SmallestImagePixelValue',</span> <span class="pre">'SoftwareVersions',</span> <span class="pre">'SpacingBetweenSlices',</span> <span class="pre">'SpoilingState',</span> <span class="pre">'TransmitCoilName',</span> <span class="pre">'VariableFlipAngleFlag',</span> <span class="pre">'WindowCenter',</span> <span class="pre">'WindowCenterWidthExplanation',</span> <span class="pre">'WindowWidth']</span></em><a class="headerlink" href="#MRdataset.config.VALID_PARAMETERS" title="Permalink to this definition">#</a></dt>
 <dd><p>Parameters that are supported by MRdataset</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="MRdataset.config.previous_log_fpath">
+<span class="sig-name descname"><span class="pre">previous_log_fpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.config.previous_log_fpath" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the path to the previous run log file</p>
 </dd></dl>
 
 </section>
@@ -262,6 +333,7 @@
             <ul>
 <li><a class="reference internal" href="#">Configuration</a><ul>
 <li><a class="reference internal" href="#MRdataset.config.VALID_PARAMETERS"><code class="docutils literal notranslate"><span class="pre">VALID_PARAMETERS</span></code></a></li>
+<li><a class="reference internal" href="#MRdataset.config.previous_log_fpath"><code class="docutils literal notranslate"><span class="pre">previous_log_fpath()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -273,7 +345,7 @@
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87c7b5fc"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7185041f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

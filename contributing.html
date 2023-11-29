@@ -266,7 +266,7 @@ $<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> 
 <li><p>When you're done making changes, check that your changes pass flake8 and the
 tests, including testing other Python versions with tox:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>flake8<span class="w"> </span>MRdataset<span class="w"> </span>tests
-$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span><span class="nb">test</span><span class="w"> </span>or<span class="w"> </span>pytest
+$<span class="w"> </span>pytest
 $<span class="w"> </span>tox
 </pre></div>
 </div>
@@ -290,7 +290,7 @@ $<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>
 <li><p>If the pull request adds functionality, the docs should be updated. Put
 your new functionality into a function with a docstring, and add the
 feature to the list in README.rst.</p></li>
-<li><p>The pull request should work for Python 3.5, 3.6, 3.7 and 3.8, and for PyPy. Check
+<li><p>The pull request should work for Python 3.8. Check
 <a class="reference external" href="https://travis-ci.com/Open-Minds-Lab/MRdataset/pull_requests">https://travis-ci.com/Open-Minds-Lab/MRdataset/pull_requests</a>
 and make sure that the tests pass for all supported Python versions.</p></li>
 </ol>
@@ -301,18 +301,6 @@ and make sure that the tests pass for all supported Python versions.</p></li>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pytest<span class="w"> </span>tests.test_MRdataset
 </pre></div>
 </div>
-</section>
-<section id="deploying">
-<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this heading">#</a></h2>
-<p>A reminder for the maintainers on how to deploy.
-Make sure all your changes are committed (including an entry in HISTORY.rst).
-Then run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>bump2version<span class="w"> </span>patch<span class="w"> </span><span class="c1"># possible: major / minor / patch</span>
-$<span class="w"> </span>git<span class="w"> </span>push
-$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>--tags
-</pre></div>
-</div>
-<p>Travis will then deploy to PyPI if tests pass.</p>
 </section>
 </section>
 
@@ -383,7 +371,6 @@ $<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>
 <li><a class="reference internal" href="#get-started">Get Started!</a></li>
 <li><a class="reference internal" href="#pull-request-guidelines">Pull Request Guidelines</a></li>
 <li><a class="reference internal" href="#tips">Tips</a></li>
-<li><a class="reference internal" href="#deploying">Deploying</a></li>
 </ul>
 </li>
 </ul>
@@ -395,7 +382,7 @@ $<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87c7b5fc"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7185041f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

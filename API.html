@@ -223,7 +223,8 @@ pickle files.</p>
 </dl>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#MRdataset.base.BaseDataset" title="MRdataset.base.BaseDataset"><span class="pre">BaseDataset</span></a></span></span><a class="headerlink" href="#MRdataset.common.import_dataset" title="Permalink to this definition">#</a></dt>
-<dd><p>Create MRdataset from data source as per arguments. This function acts as a Wrapper class for
+<dd><p>Create MRdataset from data source as per arguments. This function acts as a
+Wrapper class for
 BaseDataset. This is the main interface between this package and your
 dataset. This function is used by the CLI and the python scripts.</p>
 <dl class="field-list simple">
@@ -244,7 +245,8 @@ and reports. If not provided, a random name is generated e.g. 54231</p>
 </dd>
 </dl>
 </dd>
-<dt><strong>config_path: Union[str, Path]</strong></dt><dd><p>path to config file which contains the rules for reading the dataset e.g.
+<dt><strong>config_path: Union[str, Path]</strong></dt><dd><p>path to config file which contains the rules for reading the dataset
+e.g.
 sequences to read, subjects to ignore, etc.</p>
 </dd>
 <dt><strong>output_dir: Union[str, Path]</strong></dt><dd><p>path to the directory where the output files will be saved.</p>
@@ -340,13 +342,14 @@ Subject, Run etc.in a neuroimaging experiment.</p>
 <dt class="sig sig-object py" id="MRdataset.dicom.DicomDataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DicomDataset</span></span><a class="headerlink" href="#MRdataset.dicom.DicomDataset" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#MRdataset.base.BaseDataset" title="MRdataset.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>This class represents a dataset of dicom files. It is a subclass of BaseDataset.</p>
+<p>This class represents a dataset of dicom files. It is a subclass of
+BaseDataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>data_source</strong><span class="classifier">str or List[str]</span></dt><dd><p>The path or list of folders that contain the dicom files</p>
 </dd>
-<dt><strong>pattern</strong><span class="classifier">str</span></dt><dd><p>The pattern to match the files extension. Default is '*'.</p>
+<dt><strong>pattern</strong><span class="classifier">str</span></dt><dd><p>The pattern to match the file extension. Default is '*'.</p>
 </dd>
 <dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>The name of the dataset. Default is 'DicomDataset'.</p>
 </dd>
@@ -378,13 +381,19 @@ Subject, Run etc.in a neuroimaging experiment.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.dicom.DicomDataset.load" title="MRdataset.dicom.DicomDataset.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>()</p></td>
 <td><p>Default method to load the dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(other)</p></td>
-<td><p>Merges two datasets.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#MRdataset.dicom.DicomDataset.merge" title="MRdataset.dicom.DicomDataset.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(other)</p></td>
+<td><p>Merges two dicom datasets</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.dicom.DicomDataset.save_process_log" title="MRdataset.dicom.DicomDataset.save_process_log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_process_log</span></code></a>([output_dir])</p></td>
+<td><p>Saves the log file to the output directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">subjects</span></code>()</p></td>
+<td><p>Returns a list of all subject IDs in the dataset</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_horizontal</span></code>(seq_id)</p></td>
 <td><p>Generator to traverse the dataset horizontally.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical2</span></code>(seq_id_one, seq_id_two)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical2</span></code>(seq_id1, seq_id2)</p></td>
 <td><p>Generator to traverse the dataset vertically.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical_multi</span></code>(*seq_ids)</p></td>
@@ -404,6 +413,7 @@ Subject, Run etc.in a neuroimaging experiment.</p>
 <dd><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">ds_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dicom'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em>,</dd>
 </dl>
 
@@ -421,6 +431,28 @@ to find the dicom slices. It then runs some basic validation on them
 and adds them to the dataset.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.dicom.DicomDataset.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.dicom.DicomDataset.merge" title="Permalink to this definition">#</a></dt>
+<dd><p>Merges two dicom datasets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.dicom.DicomDataset.save_process_log">
+<span class="sig-name descname"><span class="pre">save_process_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.dicom.DicomDataset.save_process_log" title="Permalink to this definition">#</a></dt>
+<dd><p>Saves the log file to the output directory. This log file contains
+the information about how many dicom files were processed from each
+folder. This is used to speed up the loading process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>output_dir</strong><span class="classifier">str | Path</span></dt><dd><p>The path to the output directory. Default is None.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <span class="target" id="module-MRdataset.base"></span><dl class="py class">
@@ -433,7 +465,7 @@ Subject &gt; Session &gt; Sequence &gt; Run</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>data_source</strong><span class="classifier">Union[List, Path, str]</span></dt><dd><p>valid path to the dataset on disk</p>
+<dt><strong>data_source</strong><span class="classifier">List | Path | str</span></dt><dd><p>valid path to the dataset on disk</p>
 </dd>
 <dt><strong>is_complete</strong><span class="classifier">bool</span></dt><dd><p>flag to indicate if the dataset is complete or not</p>
 </dd>
@@ -466,13 +498,16 @@ Subject &gt; Session &gt; Sequence &gt; Run</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.merge" title="MRdataset.base.BaseDataset.merge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code></a>(other)</p></td>
 <td><p>Merges two datasets.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_horizontal" title="MRdataset.base.BaseDataset.traverse_horizontal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_horizontal</span></code></a>(seq_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.subjects" title="MRdataset.base.BaseDataset.subjects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subjects</span></code></a>()</p></td>
+<td><p>Returns a list of all subject IDs in the dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_horizontal" title="MRdataset.base.BaseDataset.traverse_horizontal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_horizontal</span></code></a>(seq_id)</p></td>
 <td><p>Generator to traverse the dataset horizontally.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical2" title="MRdataset.base.BaseDataset.traverse_vertical2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical2</span></code></a>(seq_id_one, seq_id_two)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical2" title="MRdataset.base.BaseDataset.traverse_vertical2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical2</span></code></a>(seq_id1, seq_id2)</p></td>
 <td><p>Generator to traverse the dataset vertically.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical_multi" title="MRdataset.base.BaseDataset.traverse_vertical_multi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical_multi</span></code></a>(*seq_ids)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical_multi" title="MRdataset.base.BaseDataset.traverse_vertical_multi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical_multi</span></code></a>(*seq_ids)</p></td>
 <td><p>Generator to traverse the dataset vertically.</p></td>
 </tr>
 </tbody>
@@ -496,7 +531,8 @@ Subject &gt; Session &gt; Sequence &gt; Run</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="MRdataset.base.BaseDataset.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.base.BaseDataset.add" title="Permalink to this definition">#</a></dt>
-<dd><p>Adds a given sequence to provided subject_id, session_id and run_id for the dataset</p>
+<dd><p>Adds a given sequence to provided subject_id, session_id and run_id for
+the dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -513,6 +549,8 @@ a string like 'fMRI' or 't1w'.</p>
 <dt><strong>run_id</strong><span class="classifier">str</span></dt><dd><p>Unique identifier the Run. For example, a run ID can be
 a string like 'run-01' or '001'. For DICOM datasets, this can be
 SeriesInstanceUID.</p>
+</dd>
+<dt><strong>seq</strong><span class="classifier">protocol.BaseSequence</span></dt><dd><p>Instance of the sequence</p>
 </dd>
 </dl>
 </dd>
@@ -576,20 +614,23 @@ SeriesInstanceUID.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="MRdataset.base.BaseDataset.merge">
 <span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.base.BaseDataset.merge" title="Permalink to this definition">#</a></dt>
-<dd><p>Merges two datasets.</p>
+<dd><p>Merges two datasets. This function is an alias for _merge(). It is
+provided for intuitive use. See _merge() for more details. It can be
+overloaded by the child classes to provide additional functionality.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>other</strong><span class="classifier">BaseDataset</span></dt><dd><p>Another instance of BaseDataset to merge with the current dataset</p>
 </dd>
-<dt><strong>.. note:: Note that the function will add all subjects, sessions, and</strong></dt><dd><p>runs from the <em>other</em> dataset
-to this dataset. This doesn't mean that <em>other</em> dataset will
-be equal to this dataset after the merge. But, this dataset
-will be a superset of the <em>other</em> dataset.</p>
-</dd>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.base.BaseDataset.subjects">
+<span class="sig-name descname"><span class="pre">subjects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.base.BaseDataset.subjects" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a list of all subject IDs in the dataset</p>
 </dd></dl>
 
 <dl class="py method">
@@ -608,7 +649,8 @@ sequence) for each sequence in the dataset.</p>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>tuple_ids</strong><span class="classifier">tuple</span></dt><dd><p>A tuple of subject_id, session_id, run_id, and protocol.Sequence instance</p>
+<dt><strong>tuple_ids</strong><span class="classifier">tuple</span></dt><dd><p>A tuple of subject_id, session_id, run_id, and protocol.Sequence
+instance</p>
 </dd>
 </dl>
 </dd>
@@ -617,7 +659,7 @@ sequence) for each sequence in the dataset.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="MRdataset.base.BaseDataset.traverse_vertical2">
-<span class="sig-name descname"><span class="pre">traverse_vertical2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_id_one</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_id_two</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.base.BaseDataset.traverse_vertical2" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">traverse_vertical2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq_id1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_id2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.base.BaseDataset.traverse_vertical2" title="Permalink to this definition">#</a></dt>
 <dd><p>Generator to traverse the dataset vertically. i.e.,
 sequences for a particular subject. The method will yield
 sequences from the same session for a given subject. For example,
@@ -625,9 +667,9 @@ fMRI and associated field maps from the same session.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>seq_id_one</strong><span class="classifier">str</span></dt><dd><p>Name of the Sequence ID</p>
+<dt><strong>seq_id1</strong><span class="classifier">str</span></dt><dd><p>Name of the Sequence ID</p>
 </dd>
-<dt><strong>seq_id_two</strong><span class="classifier">str</span></dt><dd><p>Name of the Sequence ID</p>
+<dt><strong>seq_id2</strong><span class="classifier">str</span></dt><dd><p>Name of the Sequence ID</p>
 </dd>
 </dl>
 </dd>
@@ -734,6 +776,8 @@ fMRI, t1w and associated field maps from the same session.</p>
 <li><a class="reference internal" href="#MRdataset.dicom.DicomDataset"><code class="docutils literal notranslate"><span class="pre">DicomDataset</span></code></a><ul>
 <li><a class="reference internal" href="#MRdataset.dicom.DicomDataset.__init__"><code class="docutils literal notranslate"><span class="pre">DicomDataset.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.dicom.DicomDataset.load"><code class="docutils literal notranslate"><span class="pre">DicomDataset.load()</span></code></a></li>
+<li><a class="reference internal" href="#MRdataset.dicom.DicomDataset.merge"><code class="docutils literal notranslate"><span class="pre">DicomDataset.merge()</span></code></a></li>
+<li><a class="reference internal" href="#MRdataset.dicom.DicomDataset.save_process_log"><code class="docutils literal notranslate"><span class="pre">DicomDataset.save_process_log()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset"><code class="docutils literal notranslate"><span class="pre">BaseDataset</span></code></a><ul>
@@ -744,6 +788,7 @@ fMRI, t1w and associated field maps from the same session.</p>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.get_subject_ids"><code class="docutils literal notranslate"><span class="pre">BaseDataset.get_subject_ids()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.load"><code class="docutils literal notranslate"><span class="pre">BaseDataset.load()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.merge"><code class="docutils literal notranslate"><span class="pre">BaseDataset.merge()</span></code></a></li>
+<li><a class="reference internal" href="#MRdataset.base.BaseDataset.subjects"><code class="docutils literal notranslate"><span class="pre">BaseDataset.subjects()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_horizontal"><code class="docutils literal notranslate"><span class="pre">BaseDataset.traverse_horizontal()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical2"><code class="docutils literal notranslate"><span class="pre">BaseDataset.traverse_vertical2()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.traverse_vertical_multi"><code class="docutils literal notranslate"><span class="pre">BaseDataset.traverse_vertical_multi()</span></code></a></li>
@@ -762,7 +807,7 @@ fMRI, t1w and associated field maps from the same session.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=87c7b5fc"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7185041f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

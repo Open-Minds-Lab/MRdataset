@@ -16,9 +16,9 @@ requirements = [
     'dicom2nifti>=2.4.2',
     'nibabel',
     'pydicom',
-    'dictdiffer',
-    'pandas>=1.5.2',
-    'pybids'
+    'pybids',
+    'protocol',
+    'numpy'
 ]
 
 test_requirements = ['pytest>=3', ]
@@ -26,22 +26,19 @@ test_requirements = ['pytest>=3', ]
 setup(
     author="Pradeep Raamana",
     author_email='raamana@gmail.com',
-    python_requires='>=3.6',
+    python_requires='>=3.8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
     description="MRdataset",
     entry_points={
         'console_scripts': [
-            'mrdataset=MRdataset.cli:main',
-            'mrds=MRdataset.cli:main'
+            'mrdataset=MRdataset.cli:cli',
+            'mrds=MRdataset.cli:cli'
         ],
     },
     install_requires=requirements,

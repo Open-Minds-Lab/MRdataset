@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "MRdataset"
+dynamic = ["version"]
+description = "MRdataset"
+readme = "README.rst"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+authors = [
+    { name = "Harsh Sinha", email = "sinha.harsh@pitt.edu" },
+    { name = "Pradeep Raamana", email = "raamana@gmail.com" },
+]
+keywords = [
+    "MRdataset",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.8",
+]
+dependencies = [
+    "dicom2nifti>=2.4.2",
+    "nibabel",
+    "numpy",
+    "protocol",
+    "pybids",
+    "pydicom",
+]
+
+[project.scripts]
+mrdataset = "MRdataset.cli:cli"
+mrds = "MRdataset.cli:cli"
+
+[project.urls]
+Homepage = "https://github.com/Open-Minds-Lab/MRdataset"
+Documentation = "https://open-minds-lab.github.io/MRdataset/"
+
+[tool.hatch.build]
+include = [
+    "MRdataset/*.py",
+]
+exclude = [
+    "MRdataset/tests/*",
+]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "MRdataset/_version.py"
+
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/mrdataset",
+]
+exclude = [
+    "/.github",
+    "/docs",
+]

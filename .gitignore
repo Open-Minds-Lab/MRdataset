@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+MRdataset/_version.py
 .Python
 env/
 develop-eggs/

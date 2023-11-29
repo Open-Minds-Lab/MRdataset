@@ -12,9 +12,8 @@ To install MRdataset, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install MRdataset
+    $ pip install -U MRdataset
 
-This is the preferred method to install MRdataset, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -33,18 +32,16 @@ You can clone the public repository:
 .. code-block:: console
 
     $ git clone git://github.com/Open-Minds-Lab/MRdataset
-..
-    Or download the `tarball`_:
-
-    .. code-block:: console
-
-        $ curl -OJL https://github.com/Open-Minds-Lab/MRdataset/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
 .. code-block:: console
 
-    $ python setup.py install
+    $ python -m pip install --upgrade pip
+    $ pip install git+https://github.com/sinhaharsh/protocol.git#egg=protocol
+    $ cd MRdataset/
+    $ if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+    $ pip install .
 
 
 .. _Github repo: https://github.com/Open-Minds-Lab/MRdataset

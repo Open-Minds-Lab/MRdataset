@@ -1,920 +1,562 @@
-"""Module containing the base class for all MRdataset objects"""
-from functools import total_ordering
+from abc import ABC, abstractmethod
+from itertools import product
 from pathlib import Path
-from typing import List, Optional, Type, Sized, Union
+from typing import List, Union
 
-import pandas as pd
-from MRdataset.log import logger
+from MRdataset import logger
+from MRdataset.config import VALID_DATASET_FORMATS
+from MRdataset.utils import valid_dirs, convert2ascii
+from protocol import BaseSequence
 
 
-@total_ordering
-class Node:
+# class Run(UserDict):
+#     """Container for an imaging run.
+#
+#     Design:
+#     - A run is an instance of a sequence
+#     - A session can have multiple runs acquired with the same
+#           sequence/parameters
+#     - for only a SINGLE subject
+#
+#     """
+#
+#     def __init__(self,
+#                  session_id: str = 'SessionID',
+#                  subject_id: str = 'SubjectID',
+#                  sequence: ImagingSequence = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.session_id = session_id
+#         self.subject_id = subject_id
+#         self.sequence = sequence
+#
+#
+# class Session(UserDict):
+#     """Container for an imaging session.
+#
+#     Design:
+#     - A session is a collection of runs,
+#         and each run is different acquisition with the same
+#         sequence/parameters
+#     - for only a SINGLE subject
+#     - like a Visit in longitudinal studies
+#     """
+#
+#     def __init__(self,
+#                  session_id='SessionID',
+#                  subject_id='SubjectID',
+#                  runs: List[Run] = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.session_id = session_id
+#         self.subject_id = subject_id
+#         self.runs = runs
+#
+#
+# class Subject(UserDict):
+#     """base class for all subjects"""
+#
+#     def __init__(self,
+#                  subject_id='SubjectID',
+#                  sessions: List[Session] = None):
+#         """constructor"""
+#
+#         super().__init__()
+#         self.subject_id = subject_id
+#         self.sessions = sessions
+
+class BaseDataset(ABC):
     """
-    The class specifies a generic element in a neuroimaging experiment.
-    It is inherited to create subclasses like BaseDataset, Modality, Subject
-    etc.
+    Base class for all datasets. The class provides a common interface to access
+    the dataset in a hierarchical fashion. The hierarchy is as follows:
+    Subject > Session > Sequence > Run
 
-    Attributes
+    Parameters
     ----------
+    data_source : List | Path | str
+        valid path to the dataset on disk
+    is_complete : bool
+        flag to indicate if the dataset is complete or not
     name : str
-        Identifier/name for the node
+        name of the dataset
+    ds_format : str
+        format of the dataset. One of ['dicom', 'bids']
     """
 
-    def __init__(self, **kwargs) -> None:
+    # self._subj_ids : set
+    #     List of unique subject IDs in the entire dataset.
+    # self._seq_ids : set
+    #     List of unique sequence IDs in the dataset.
+    # self._seqs_map : dict
+    #     Dictionary mapping sequence IDs to corresponding
+    #     (subject_id, session_id, run_id) tuples
+    # self._sess_map : dict
+    #     Dictionary mapping session IDs to corresponding sequence IDs
+    # self._tree_map : dict
+    #     A hierarchical representation of the dataset, storing data
+    #     in a tree-like structure with subjects as the root, sessions as
+    #     children of subjects, sequences as children of sessions, and
+    #     runs as children of sequences.
+    # self._flat_map : dict
+    #     A flat representation of the dataset, storing data in
+    #     a dictionary where keys are tuples (subj_id, sess_id, seq_id, run_id)
+    #     and values are the corresponding protocol.BaseSequence for that
+    #     specific run.
+    # """
+    def __init__(self,
+                 data_source: Union[List, Path, str] = None,
+                 is_complete: bool = True,
+                 name: str = 'Dataset',
+                 ds_format: str = 'dicom'):
+        """constructor"""
+
+        self.data_source = valid_dirs(data_source)
+        self.name = convert2ascii(name)
+
+        if ds_format not in VALID_DATASET_FORMATS:
+            raise ValueError(f'Invalid dataset format {ds_format}')
+        self.format = ds_format
+
+        self.is_complete = is_complete
+
+        self._subj_ids = set()
+        self._seq_ids = set()
+
+        self._tree_map = dict()
+        self._flat_map = dict()
+
+        self._seqs_map = dict()
+        self._sess_map = dict()
+
+        self._saved_path = ''
+        # self.data_source[0] / "mrdataset" / "mrdataset.pkl"
+        self._reloaded = False
+        self._process_whole_folder = dict()
+        self._key_vars = set(['_flat_map',  # noqa
+                              '_tree_map',
+                              '_seqs_map',
+                              '_sess_map',
+                              '_subj_ids',
+                              '_seq_ids',
+                              'format',
+                              'name',
+                              'root',
+                              'subjects'])
+
+    def get_sequence_ids(self):
+        """Returns a list of all sequence IDs in the dataset"""
+        # Cast to list so that it can be indexed, set is not subscript-able
+        return sorted(self._seq_ids)
+
+    def subjects(self):
+        """Returns a list of all subject IDs in the dataset"""
+        return sorted(self._subj_ids)
+
+    def get_subject_ids(self, seq_id):
         """
-        Constructor for Node class
+        Returns a list of all subject IDs in the dataset for a given sequence ID
 
         Parameters
         ----------
-        kwargs : dict
-            Additional keyword arguments passed to Node
+        seq_id : str
+            Name of the Sequence ID
         """
-        self.name = None
-        self._sub_nodes = {}
-        self._compliant_list = set()
-        self._non_compliant_list = set()
-        self.compliant = True
+        if not isinstance(seq_id, str):
+            raise TypeError('seq_id must be a string')
+        if seq_id not in self._seqs_map.keys():
+            return []
 
-    def reset_lists(self):
-        """
-        Clears the compliance of the node
-        """
-        self.compliant = True
-        self._compliant_list = set()
-        self._non_compliant_list = set()
+        # seqs map is a set of tuples (subj, sess, run)
+        tuples = self._seqs_map[seq_id]
+        subj_ids = set([t[0] for t in tuples])
 
-    @property
-    def sub_nodes(self):
-        """
-        Each node can be connected to several sub nodes, generally
-        subcomponents of Node
-        """
-        return sorted(list(self._sub_nodes.values()))
+        # Cast to list so that it can be indexed, set is not subscriptable
+        return sorted(subj_ids)
 
-    @property
-    def compliant_list(self):
-        """
-        Each node can maintain a list of compliant sub nodes
-        """
-        # TODO: Check if casting to list is required, or we can just return
-        # a set
-        return list(self._compliant_list)
+    # def _reload_saved(self):
+    #     """helper to reload previously saved MRdataset"""
+    #
+    #     if len(self._subj_ids) > 0 and self._reloaded:
+    #         print('Dataset seems to be loaded already. Skipping reload!')
+    #
+    #     try:
+    #         print('reloading previously parsed MRdataset ...')
+    #         with open(self._saved_path, 'rb') as in_file:
+    #             prev = pickle.load(in_file)
+    #         for attr in self._key_vars:
+    #             self.__setattr__(attr, getattr(prev, attr))
+    #     except Exception as exc:
+    #         print(f' unable to reload from {self._saved_path}')
+    #         raise exc
+    #     else:
+    #         self._reloaded = True
+    #         print(self)
 
-    @property
-    def non_compliant_list(self):
-        """
-        Each node can maintain a list of compliant sub nodes
-        """
-        # TODO: Check if casting to list is required, or we can just return
-        # a set
-        return list(self._non_compliant_list)
+    @abstractmethod
+    def load(self):
+        """default method to load the dataset"""
 
-    def add_sub_node(self, other: 'Node') -> None:
+    def _tree_add_node(self, subject_id, session_id, seq_id, run_id,
+                       seq_info):
         """
-        Adds a sub-node to self._sub_nodes dict, if already present
-        updates it
+        A hierarchical representation of the dataset, storing data
+        in a tree-like structure with subjects as the root, sessions as children
+        of subjects, sequences as children of sessions, and runs as children of
+        sequences.
 
         Parameters
         ----------
-        other : Node
-            another Node object that must be added to list of sub_nodes
-
-        Raises
-        ------
-        TypeError
-            If other is not of type Node
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        seq_info : protocol.BaseSequence
+            Instance of the sequence
         """
-        # TODO: consider adding either __copy__ or __deepcopy__ to Node
-        if not isinstance(other, Node):
-            raise TypeError(f'must be {type(Node)}, not {type(other)}')
-        self._sub_nodes[other.name] = other
+        if subject_id not in self._tree_map:
+            self._tree_map[subject_id] = dict()
 
-    def get_sub_node_by_name(self, name: str) -> Optional[Type['Node']]:
-        """
-        Fetches a sub_node which has the same key as 'name'. If key is not
-        available, returns None
+        if session_id not in self._tree_map[subject_id]:
+            self._tree_map[subject_id][session_id] = dict()
 
-        Parameters
-        ----------
-        name : str
-            Key/Identifier to be searched in the dictionary
+        if seq_id not in self._tree_map[subject_id][session_id]:
+            self._tree_map[subject_id][session_id][seq_id] = dict()
 
-        Returns
-        -------
-        None or Node
-            value specified for key if key is in self.sub_nodes
-        """
-        return self._sub_nodes.get(name, None)
-
-    def _add_compliant_name(self, other: str) -> None:
-        """
-        Add a name to list of compliant sub_nodes
-
-        Parameters
-        ----------
-        other : str
-            Name to be added to list of compliant sub_nodes
-
-        Raises
-        ------
-        TypeError
-            If other is not of type str
-        """
-        if not isinstance(other, str):
-            raise TypeError(f'must be str, not {type(other)}')
-        if other in self._compliant_list:
-            return
-        self._compliant_list.add(other)
-
-    def _add_non_compliant_name(self, other: str) -> None:
-        """
-        Add a name to list of non-compliant sub_nodes
-
-        Parameters
-        ----------
-        other : str
-            Name to be added to list of non-compliant sub_nodes
-
-        Raises
-        ------
-        TypeError
-            If other is not of type str
-        """
-        if not isinstance(other, str):
-            raise TypeError(f'must be str, not {type(other)}')
-        if other in self._non_compliant_list:
-            return
-        self._non_compliant_list.add(other)
-
-    def print_tree(self, marker_str: str = '+- ',
-                   level_markers: Sized = None) -> None:
-        """
-        Adapted from
-        https://simonhessner.de/python-3-recursively-print-structured-tree-including-hierarchy-markers-using-depth-first-search/
-        Recursive function that prints the hierarchical structure of a tree
-        including markers that indicate parent-child relationships between nodes
-
-        Parameters
-        ----------
-        marker_str : str
-            String to print in front of each node  ('+- ' by default)
-        level_markers : list
-            Internally used by recursion to indicate where to print markers
-            and connections
-        """
-
-        empty_str = ' ' * len(marker_str)
-        connection_str = '|' + empty_str[:-1]
-
-        if level_markers is None:
-            level = 0
-            level_markers = []
-        else:
-            level = len(level_markers)
-
-        def mapper(draw):
-            # If the sub_node is the last sub_node, don't draw a connection
-            return connection_str if draw else empty_str
-
-        # Draw the markers for the current level
-        markers = ''.join(map(mapper, level_markers[:-1]))
-        # Draw the marker for the current node
-        markers += marker_str if level > 0 else ''
-        # Print the node name
-        print(f'{markers}{self.name}')
-
-        # Recursively print the sub_nodes
-        for i, sub_node in enumerate(self.sub_nodes):
-            # If the node is last, don't draw a connection
-            is_last = i == len(self.sub_nodes) - 1
-            sub_node.print_tree(marker_str, [*level_markers, not is_last])
-
-    def __repr__(self) -> str:
-        """String representation for developers"""
-        return f'<class MRdataset.base.{self.__class__.__name__}({self.name})>'
+        if run_id not in self._tree_map[subject_id][session_id][seq_id]:
+            self._tree_map[subject_id][session_id][seq_id][run_id] = seq_info
 
     def __str__(self):
-        """String representation for users"""
-        if len(self.sub_nodes) > 0:
-            return f'{self.__class__.__name__} {self.name} with ' \
-                   f'{len(self.sub_nodes)} ' \
-                   f'{self.sub_nodes[0].__class__.__name__}'
-        else:
-            return f'{self.__class__.__name__} {self.name} is empty.'
+        """readable summary"""
 
-    def __lt__(self, other):
-        """Comparison operator for sorting"""
-        if not isinstance(other, self.__class__):
-            raise RuntimeError(f'< not supported between instances of '
-                               f'{self.__class__.__name__} and '
-                               f'{other.__class__.__name__}')
-        return self.name < other.name
+        return "{} subjects with {} sessions in total" \
+               "".format(len(self._tree_map), len(self._flat_map))
+
+    def __repr__(self):
+        return self.__str__()
+
+    def _merge(self, other):
+        """
+        Merges two datasets.
+
+        Parameters
+        ----------
+        other : BaseDataset
+            Another instance of BaseDataset to merge with the current dataset
+
+
+        .. note:: Note that the function will add all subjects, sessions, and
+            runs from the *other* dataset
+            to this dataset. This doesn't mean that *other* dataset will
+            be equal to this dataset after the merge. But, this dataset
+            will be a superset of the *other* dataset.
+        """
+        if not isinstance(other, BaseDataset):
+            raise TypeError('Both must be a BaseDataset')
+
+        if self.format != other.format:
+            raise ValueError('Both must be of the same format')
+
+        for seq_id in other.get_sequence_ids():
+            for subj_id, sess_id, run_id, seq in other.traverse_horizontal(
+                    seq_id):
+                self.add(subject_id=subj_id, session_id=sess_id,
+                         seq_id=seq_id, run_id=run_id, seq=seq)
+
+    def merge(self, other):
+        """
+        Merges two datasets. This function is an alias for _merge(). It is
+        provided for intuitive use. See _merge() for more details. It can be
+        overloaded by the child classes to provide additional functionality.
+
+        Parameters
+        ----------
+        other : BaseDataset
+            Another instance of BaseDataset to merge with the current dataset
+        """
+        self._merge(other)
+
+    def add(self, subject_id, session_id, seq_id, run_id, seq):
+        """
+        Adds a given sequence to provided subject_id, session_id and run_id for
+        the dataset
+
+        Parameters
+        ----------
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        seq : protocol.BaseSequence
+            Instance of the sequence
+        """
+
+        if not isinstance(seq, BaseSequence):
+            raise TypeError(f'Expected BaseSequence but got {type(seq)}')
+
+        if (subject_id, session_id, seq_id, run_id) not in self._flat_map:
+            self._flat_map[(subject_id, session_id, seq_id, run_id)] = seq
+            self._tree_add_node(subject_id=subject_id, session_id=session_id,
+                                seq_id=seq_id, run_id=run_id, seq_info=seq)
+
+            # map a sequence id to a specific runs with data for it
+            if seq_id not in self._seqs_map:
+                self._seqs_map[seq_id] = set()
+            self._seqs_map[seq_id].add((subject_id, session_id, run_id))
+
+            # maintaining a different cross-mappings for insight/debugging
+            if session_id not in self._sess_map:
+                self._sess_map[session_id] = set()
+            self._sess_map[session_id].add(seq_id)
+
+            # maintaining ID lists for easy reference
+            self._subj_ids.add(subject_id)
+            self._seq_ids.add(seq_id)
+
+    def get(self, subject_id, session_id, seq_id, run_id, default=None):
+        """
+        Returns a Sequence given subject/session/seq/run from the dataset
+
+        Parameters
+        ----------
+        subject_id : str
+            Unique identifier for the Subject. For example, a subject ID can be
+            a string like 'sub-01' or '001'.
+        session_id : str
+            Unique identifier the Session. For example, a session ID can be
+            a string like 'ses-01' or '001'. For DICOM datasets, this can be
+            StudyInstanceUID.
+        seq_id : str
+            Unique identifier the Sequence. For example, a sequence ID can be
+            a string like 'fMRI' or 't1w'.
+        run_id : str
+            Unique identifier the Run. For example, a run ID can be
+            a string like 'run-01' or '001'. For DICOM datasets, this can be
+            SeriesInstanceUID.
+        default : Any
+            Default value to return if the sequence is not found
+        """
+        try:
+            return self._tree_map[subject_id][session_id][seq_id][run_id]
+        except KeyError:
+            logger.info('Unable to find '
+                        f'{subject_id}/{session_id}/{seq_id}/{run_id}')
+            return default
+
+    def __getitem__(self, subject_id):
+        """intuitive getter"""
+        return self._tree_map[subject_id]
+
+    # def save(self, out_path=None):
+    #     """offloads the data structure to disk for quicker reload"""
+    #
+    #     if out_path is None:
+    #         out_path = self._saved_path
+    #         out_path.parent.mkdir(exist_ok=True)
+    #     else:
+    #         if not out_path.parent.exists():
+    #             try:
+    #                 out_path.parent.mkdir(exist_ok=True)
+    #             except Exception as exc:
+    #                 print('out dir for the given path can not be created!')
+    #                 raise exc
+    #
+    #     if len(self._subj_ids) >= 1:
+    #         with open(out_path, 'wb') as out_file:
+    #             pickle.dump(self, out_file)
+    #     else:
+    #         print('No subjects exist in the dataset. Not saving it!')
+
+    def traverse_horizontal(self, seq_id):
+        """
+        Generator to traverse the dataset horizontally. i.e.,
+        all subjects, across sessions and runs for a given sequence.
+        The method will yield a tuple of (subject_id, session_id, run_id,
+        sequence) for each sequence in the dataset.
+
+        Parameters
+        ----------
+        seq_id : str
+            Name of the Sequence ID
+
+        Yields
+        ------
+        tuple_ids : tuple
+            A tuple of subject_id, session_id, run_id, and protocol.Sequence
+            instance
+        """
+
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                if seq_id in self._tree_map[subj][sess]:
+                    for run in self._tree_map[subj][sess][seq_id]:
+                        yield (subj, sess, run,
+                               self._tree_map[subj][sess][seq_id][run])
+
+    def traverse_vertical2(self, seq_id1, seq_id2):
+        """
+        Generator to traverse the dataset vertically. i.e.,
+        sequences for a particular subject. The method will yield
+        sequences from the same session for a given subject. For example,
+        fMRI and associated field maps from the same session.
+
+        Parameters
+        ----------
+        seq_id1 : str
+            Name of the Sequence ID
+        seq_id2 : str
+            Name of the Sequence ID
+
+        Yields
+        ------
+        tuple_ids : tuple
+            A tuple of subj, sess, run, seq_one, seq_two
+        """
+
+        count = 0
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                # checking for subset relationship
+                if {seq_id1, seq_id2} <= self._tree_map[subj][sess].keys():
+                    # two sequences may not have a common run ID
+                    #   they might have multiple runs, with different number
+                    #   of runs
+                    #   so getting all of their linked combinations
+                    linked_runs = self._link_runs_across_sequences(
+                        self._tree_map[subj][sess][seq_id1],
+                        self._tree_map[subj][sess][seq_id2])
+                    for run1, run2 in linked_runs:
+                        count = count + 1
+                        yield (subj, sess, run1, run2,
+                               self._tree_map[subj][sess][seq_id1][run1],
+                               self._tree_map[subj][sess][seq_id2][run2])
+
+        if count < 1:
+            logger.info('There were no sessions/runs in these sequences!')
+
+    def traverse_vertical_multi(self, *seq_ids):
+        """
+        Generator to traverse the dataset vertically. i.e.,
+        sequences for a particular subject. The method will yield multiple
+        sequences from the same session for a given subject. For example,
+        fMRI, t1w and associated field maps from the same session.
+
+        Parameters
+        ----------
+        seq_ids : list
+            Sequence IDs to retrieve from the dataset
+
+        Returns
+        -------
+        tuple_ids_data : tuple
+            A tuple of subj, sess, tuple_runs, tuple_seqs
+        """
+
+        count = 0
+        for subj in self._subj_ids:
+            for sess in self._tree_map[subj]:
+                # if all seq IDs exist in session
+                #   checking for subset relationship:
+                if set(seq_ids) <= self._tree_map[subj][sess].keys():
+                    seqs = [self._tree_map[subj][sess][sq] for sq in seq_ids]
+
+                    # two sequences may not have a common run ID
+                    #   they might have multiple runs, with different number
+                    #   of runs
+                    #   so getting all of their linked combinations
+                    runs = self._first_run_from_sequences(seqs)
+
+                    out_seqs = [self._tree_map[subj][sess][seq_id][run_id]
+                                for seq_id, run_id in zip(seq_ids, runs)]
+
+                    count = count + 1
+                    yield subj, sess, runs, out_seqs
+
+        if count < 1:
+            logger.warning(
+                f'There were no sessions with all {len(seq_ids)} '
+                'input sequences!')
+
+    @staticmethod
+    def _first_run_from_sequences(seq_list):
+        """returns the first run from each of the input sequences"""
+
+        # picking the first run from each sequence
+        run_list = list()
+        for seq in seq_list:
+            if len(seq.keys()) >= 1:
+                # print(f'{seq} has more than 1 run! choosing the first')
+                first_run = list(seq.keys())[0]
+                run_list.append(first_run)
+            else:
+                logger.warning(f'skipping {seq} with no runs!')
+
+        return run_list
+
+    # @staticmethod
+    # def _run_combinations_across_sequences(seq_list):
+    #     """returns a combinatorial pairs of runs from sequence list"""
+    #
+    #     run_lists = [list(seq.keys()) for seq in seq_list if
+    #                  len(seq.keys()) >= 1]
+    #
+    #     for ii in range(len(run_lists)):
+    #         # remaining lists
+    #         for jj in range(ii + 1, len(run_lists)):
+    #             # for each element from first list
+    #             for kk in range(len(run_lists[ii])):
+    #                 # all elements from the other lists
+    #                 for qq in range(len(run_lists[jj])):
+    #                     yield run_lists[ii][kk], run_lists[jj][qq]
+    #
+    #     return run_lists
+
+    @staticmethod
+    def _link_runs_across_sequences(seq_dict1, seq_dict2):
+        """returns a combinatorial combination of runs from two sequences"""
+
+        # no need to compute set() on dict key() as they are already unique
+        if len(seq_dict1.keys()) < 1:
+            logger.warning(f'{seq_dict1} has no runs!')
+
+        if len(seq_dict2.keys()) < 1:
+            logger.warning(f'{seq_dict2} has no runs!')
+
+        # combinatorial
+        for run_one, run_two in product(seq_dict1.keys(), seq_dict2.keys()):
+            yield run_one, run_two
 
     def __eq__(self, other):
-        """Comparison operator for equality"""
-        if not type(other) == type(self):
-            raise RuntimeError(f'== not supported between instances of '
-                               f'{self.__class__.__name__} and '
-                               f'{other.__class__.__name__}')
-        if other.sub_nodes == self.sub_nodes:
-            return True
-        return False
+        """equality check"""
 
-    def __nonzero__(self):
-        """
-        Returns True if the node is not empty, at that level. False otherwise.
-        """
-        return len(self.sub_nodes) > 0
-
-
-class BaseDataset(Node):
-    """
-    Container to manage properties and issues at the project level.
-    Encapsulates all the details necessary for a complete project.
-    A single dataset may contain multiple modalities, and each modality
-    expected to have atleast single subject.
-
-    Attributes
-    ----------
-    name : str
-        Identifier/name for the dataset
-    data_source : str or Path
-        directory containing dataset files such as dcm, nii, json, etc
-    """
-
-    def __init__(self, data_source, **kwargs):
-        """
-        Constructor for BaseDataset class
-
-        Parameters
-        ----------
-        name : str
-            Identifier/name for the node
-        data_source : str or Path
-            directories containing dataset with dicom files
-        kwargs : dict
-            Additional keyword arguments passed to BaseDataset
-        """
-        super().__init__()
-        # Manage directories
-        if isinstance(data_source, str):
-            data_source = [data_source]
-        self.data_source = data_source
-
-        self.ds_format = self.get_ds_format()
-        self.is_complete = True
-
-    def walk(self):
-        """
-        Walks through the dataset and creates a tree of nodes
-        """
-        raise NotImplementedError('walk method must be implemented')
-
-    def get_ds_format(self):
-        """
-        Extracts ds_format from classname
-        For example, returns 'dicom', given DicomDataset class
-        """
-        classname = self.__class__.__name__.lower()
-        if 'dataset' in classname:
-            ds_format = classname.split('dataset', maxsplit=1)[0]
-        else:
-            raise ValueError("Expected classname with keyword 'dataset'. "
-                             'For example, DicomDataset, BIDSDataset. Got'
-                             f'{classname} instead. Rename the class as '
-                             f'{classname}Dataset')
-        return ds_format
-
-    @property
-    def modalities(self) -> List['Modality']:
-        """Collection of all Modality Nodes in the BaseDataset"""
-        return self.sub_nodes
-
-    @property
-    def compliant_modality_names(self) -> List[str]:
-        """List of modality names which are compliant"""
-        return self.compliant_list
-
-    @property
-    def non_compliant_modality_names(self) -> List[str]:
-        """List of modality names which are not compliant"""
-        return self.non_compliant_list
-
-    def add_modality(self, new_modality: 'Modality') -> None:
-        """Add a new Modality Node to list of modalities in the BaseDataset
-
-        Parameters
-        ----------
-        new_modality : base.Modality
-            new modality node added to the BaseDataset
-        """
-        if not isinstance(new_modality, Modality):
-            raise TypeError(
-                f'Expected argument of type {type(Modality)}, '
-                f'got {type(new_modality)} instead')
-        self.add_sub_node(new_modality)
-
-    def get_modality_by_name(self, modality_name: str) -> Optional['Modality']:
-        """Fetch a Modality Node searching by its name. If name not found,
-        returns None
-
-        Parameters
-        ----------
-        modality_name : str
-            Key/Identifier to be searched in the dictionary
-
-        Returns
-        -------
-        None or Modality
-            value specified for key if key is in self.sub_nodes
-        """
-        return self.get_sub_node_by_name(modality_name)
-
-    def add_compliant_modality_name(self, modality_name: str) -> None:
-        """
-        Add modality name (which is fully compliant) to the list
-        Parameters
-        ----------
-        modality_name : str
-            Name to be added to list of compliant sub_nodes
-        """
-        self._add_compliant_name(modality_name)
-
-    def add_non_compliant_modality_name(self, modality_name: str) -> None:
-        """Add modality name (which is not compliant) to the list
-
-        Parameters
-        ----------
-        modality_name : str
-            Name to be added to list of non-compliant modalities
-        """
-        self._add_non_compliant_name(modality_name)
-
-    def amend_data_src_attribute(self, values: Union[str, Path, list]) -> None:
-        """Update data source folders for the dataset"""
-        if not isinstance(self.data_source, list):
-            list1 = [self.data_source]
-        else:
-            list1 = self.data_source
-
-        if not isinstance(values, list):
-            list2 = [values]
-        else:
-            list2 = values
-
-        combined_list = list1.extend(list2)
-        self.data_source = combined_list
-
-    def merge(self, other: 'BaseDataset') -> None:
-        """
-        The merging process starts on the modalities level, and it gradually
-        traverses down the tree until all nodes are merged.
-
-        This function merges two trees by traversing each level of the second
-        tree (i.e. other) and finding its corresponding node in the
-        first tree (i.e. self) using the get_func.
-
-        If an exising node is not found in first tree which has same name as the
-        new_node from second tree, new_node is added to the first tree using
-        the add_func. If a existing node is found, the function recursively
-        calls itself with list of sub_nodes (other_list) in new_node.
-        Then it checks if all sub_nodes are present in the existing node.
-
-        The process continues until all nodes in both trees have been merged
-        and a single merged tree is created.
-
-        Parameters
-        ----------
-        other: BaseDataset
-            another partial dataset you want to merge with self.
-        """
-        logger.info('Function is meant only for smooth '
-                    ' execution of ABCD dataset. '
-                    'There is no guarantee on other datasets')
-        # Add a check to ensure that the two datasets are of same type
         if not isinstance(other, BaseDataset):
-            raise TypeError(
-                f'Cannot merge MRdataset.BaseDataset and {type(other)}')
-        # Add a check to ensure that the two datasets are of same ds_format
-        if self.ds_format != other.ds_format:
-            raise TypeError(f'Cannot merge {self.ds_format} and {other.ds_format}')
+            raise TypeError('Both must be a BaseDataset')
 
-        self.amend_data_src_attribute(other.data_source)
+        if self.format != other.format:
+            raise ValueError('Both must be of the same format')
 
-        def traverse_and_add(get_sub_node_func,
-                             other_sub_node_list,
-                             add_sub_node_func):
-            """
-            The merging process starts on the modalities level, and it gradually
-            traverses down the tree recursively until all nodes are merged.
-
-            Parameters
-            ----------
-            get_sub_node_func : Callable
-                Function to get a sub_node from the current node
-            other_sub_node_list : List
-                List of sub_nodes to be merged
-            add_sub_node_func: Callable
-                Function to add a sub_node to the current node
-
-            Returns
-            -------
-            None
-            """
-            for new_item in other_sub_node_list:
-                existing_item = get_sub_node_func(new_item.name)
-                if existing_item:
-                    if len(new_item.sub_nodes) > 0:
-                        traverse_and_add(existing_item.get_sub_node_by_name,
-                                         new_item.sub_nodes,
-                                         existing_item.add_sub_node)
-                else:
-                    add_sub_node_func(new_item)
-
-        # The merging process starts on the modalities level, and it gradually
-        # traverses down the tree recursively until all nodes are merged.
-        traverse_and_add(get_sub_node_func=self.get_modality_by_name,
-                         other_sub_node_list=other.modalities,
-                         add_sub_node_func=self.add_sub_node)
-
-        # for modality in other.modalities:
-        #     # Check if modality is present in self
-        #     exist_modality = self.get_modality_by_name(modality.name)
-        #     # If modality doesn't exist
-        #     if exist_modality is None:
-        #         # Add modality to self, which would also add all subjects
-        #         # inside it
-        #         self.add_modality(modality)
-        #         continue
-        #     # If modality already exists, add all the subjects in it
-        #     # Remember, the subjects are exclusive in both the datasets
-        #     # because of the way the jobs were split
-        #     for subject in modality.subjects:
-        #         # Add subject to modality
-        #         exist_modality.add_subject(subject)
-
-
-class Modality(Node):
-    """
-    Container to manage properties and issues at the modality level.
-    Encapsulates all the details necessary for a modality.
-    A single modality may contain multiple subjects, and each subject
-    will have atleast single session.
-
-    Attributes
-    ----------
-    name : str
-        Identifier/name for the modality
-    compliant: bool
-        If the modality is fully compliant
-    """
-
-    def __init__(self, name: str) -> None:
-        """
-        Constructor
-
-        Parameters
-        ----------
-        name : str
-            Identifier/name for the modality. e.g. DTI-RL, fMRI
-        """
-        super().__init__()
-        self._reference = {}
-        self.name = name
-        self.non_compliant_data = None
-        self._error_subject_names = []
-        self.reset_compliance()
-
-    def reset_compliance(self):
-        self.reset_lists()
-        for subject in self.subjects:
-            for session in subject.sessions:
-                for run in session.runs:
-                    run.reset_lists()
-                session.reset_lists()
-            subject.reset_lists()
-
-        self._reference = {}
-        self._error_subject_names = []
-        cols = ['parameter', 'echo_time', 'ref_value', 'new_value', 'subjects']
-        self.non_compliant_data = pd.DataFrame(columns=cols)
-
-    def get_echo_times(self) -> List[float]:
-        """
-        Different echo_times found for this modality in the project
-
-        Returns
-        -------
-        list
-            List of values
-        """
-        return list(self._reference.keys())
-
-    def get_reference(self, echo_time: float = None) -> Optional[dict]:
-        """
-        Get the reference protocol used to check compliance
-
-        Parameters
-        ----------
-        echo_time : float
-            Unique echo-time for a multi-echo modality
-
-        Returns
-        -------
-        dict
-            Key, Value pairs specifying the reference protocol
-        """
-        keys = list(self.get_echo_times())
-        if len(self._reference) == 0:
-            return None
-        elif len(self._reference) == 1:
-            return self._reference[keys[0]]
+        if self._flat_map == other._flat_map:
+            return True
         else:
-            if echo_time is None:
-                raise LookupError('Got NoneType for echo time. '
-                                  'Specify echo_time, '
-                                  f'Use one of {keys}')
-            if echo_time not in keys:
-                raise LookupError(f'Echo time {echo_time} not found. '
-                                  f'Use one of {keys}')
-            return self._reference[echo_time]
-
-    @property
-    def subjects(self) -> List['Subject']:
-        """Collection of Subject Nodes in the Modality"""
-        return self.sub_nodes
-
-    @property
-    def compliant_subject_names(self) -> List[str]:
-        """List of subject names which are compliant"""
-        return self.compliant_list
-
-    @property
-    def non_compliant_subject_names(self) -> List[str]:
-        """List of subject names which are not compliant"""
-        return self.non_compliant_list
-
-    def add_subject(self, new_subject: 'Subject') -> None:
-        """Add a new Subject Node to list of subjects in the Modality
-
-        Parameters
-        ----------
-        new_subject : base.Subject
-            new subject node added to the Modality
-        """
-        if not isinstance(new_subject, Subject):
-            raise TypeError(
-                f'Expected argument of type {type(Subject)}, '
-                f'got {type(new_subject)} instead')
-        self.add_sub_node(new_subject)
-
-    def add_compliant_subject_name(self, subject_name: str) -> None:
-        """
-        Add subject name (which is compliant) to the list
-
-        Parameters
-        ----------
-        subject_name : str
-            String value specifying a subject
-
-        Returns
-        -------
-
-        """
-        self._add_compliant_name(subject_name)
-
-    def add_non_compliant_subject_name(self, subject_name: str) -> None:
-        """Add subject name (which is not compliant) to the list"""
-        self._add_non_compliant_name(subject_name)
-
-    def error_subject_names(self) -> List:
-        """Add subject/sessions for which majority could not
-        be could not be computed
-        """
-        return self._error_subject_names
-
-    def add_error_subject_names(self, value):
-        if not hasattr(self, '_error_subject_names'):
-            self._error_subject_names = []
-        self._error_subject_names.append(value)
-
-    def get_subject_by_name(self, subject_name: str) -> Optional['Subject']:
-        """
-        Fetch a Subject Node searching by its name
-
-        Parameters
-        ----------
-        subject_name : str
-            String value specifying a subject
-
-        Returns
-        -------
-        None or Subject
-            value specified for key if key is in self.sub_nodes
-        """
-        return self.get_sub_node_by_name(subject_name)
-
-    def set_reference(self, params: dict, echo_time=None) -> None:
-        """Sets the reference protocol to check compliance
-
-        Parameters
-        ----------
-        params : dict
-            <Key, Value> pairs for parameters. e.g. Manufacturer : Siemens
-        echo_time : float
-            echo time to store different references for multi-echo modalities
-        """
-
-        if echo_time is None:
-            echo_time = 1.0
-            logger.info('echo time is not specified! Using a value of 1.0.')
-
-        self._reference[echo_time] = params.copy()
-
-    def is_multi_echo(self) -> bool:
-        """If the modality is multi-echo modality"""
-        if len(self._reference) == 0:
-            raise ValueError('Reference for modality not set. Use '
-                             'set_reference first!')
-        return len(self._reference) > 1
-
-    def non_compliant_params(self, echo_time: float = None) -> dict:
-        """
-        Reasons for non-compliance in this modality across all the subjects.
-
-        The following code uses the query method on the Pandas dataframe
-        self.non_compliant_data to filter the rows based on query string
-        "(echo_time == @echo_time)". This query string specifies that only
-        rows where the value in the column 'echo_time' is equal to the value of
-        the variable echo_time should be included in the resulting dataframe,
-        denoted by the variable db. The @ symbol is used to indicate that the
-        variable echo_time is a variable in the current namespace. The @ symbol
-        is not required if the variable is a column in the dataframe.
-
-        Parameters
-        ----------
-        echo_time
-
-        Returns
-        -------
-        values : List[str]
-            List of parameters that are non-compliant in this modality
-        """
-        if echo_time:
-            query_str = '(echo_time==@echo_time)'
-            db = self.non_compliant_data.query(query_str)
-            return db['parameter'].unique()
-        else:
-            return self.non_compliant_data['parameter'].unique()
-
-    def add_non_compliant_param(self, parameter: str, echo_time: float,
-                                reference: Union[str, float],
-                                new_value: Union[str, float, None],
-                                subject_name: str):
-        """
-        This function updates a DataFrame self.non_compliant_data with a new
-        row of non_compliant_data.
-
-        Parameters
-        ----------
-        parameter : str
-            Parameter, for example, Manufacturer, EchoTime, etc.
-        echo_time : float
-            Echo time
-        reference : str or float
-            Reference value of the parameter
-        new_value: str or float
-            Value of the parameter for this subject
-        subject_name: str
-            Subject name
-
-        Returns
-        -------
-
-        """
-        # The function first creates a list query that contains all the
-        # input values in the order they will appear in the new row.
-        query = [parameter, echo_time, reference, new_value, subject_name]
-        # Compares the DataFrame self.non_compliant_data with the query list.
-        # The all method whether all the values in each row of
-        # self.non_compliant_data are equal to the corresponding values
-        # in the query list.
-        # .any() method returns a single boolean value
-        # indicating whether any of the rows in self.non_compliant_data
-        # is equal to query.
-        matches = (self.non_compliant_data == query).all(axis=1).any()
-        if not matches:
-            # If the query list is not present in self.non_compliant_data,
-            # then the query list is appended to
-            # self.non_compliant_data as a new row.
-            # If matches is True, then the query list is already present
-            # in self.non_compliant_data and no new row is added.
-            self.non_compliant_data.loc[len(self.non_compliant_data)] = query
-
-    def query_by_param(self, parameter: str,
-                       echo_time: float, column_name: str):
-        """
-        This function queries the DataFrame self.non_compliant_data to find the
-        corresponding values for a given parameter and echo time.
-        The function is used in mrQA to find the reference value, the subject
-        name, the parameter value for this subject. The function is
-        used to create the report of non-compliant subjects.
-
-        Parameters
-        ----------
-        parameter : str
-            Parameter, for example, Manufacturer, EchoTime, etc.
-        echo_time : float
-            Echo time
-        column_name : str
-            Name of the column to query.
-            One of ['ref_value', 'new_value', 'subjects']
-
-        Returns
-        -------
-        values : List[str]
-
-        Raises
-        _SpecialForm
-        """
-        # Do not remove brackets, seems redundant but code may break
-        # See https://stackoverflow.com/a/57897625
-        query_str = '(parameter==@parameter) & (echo_time==@echo_time)'
-        db = self.non_compliant_data.query(query_str)
-        column_names = list(self.non_compliant_data.columns)
-        if column_name not in column_names:
-            print(column_name)
-            raise AttributeError(f'Expected one of {column_names}. '
-                                 f'Got {column_name}')
-        return db[column_name].unique()
-
-
-class Subject(Node):
-    """
-    Container to manage properties and issues at the subject level.
-    Encapsulates all the details necessary for a subject.
-    A single subject may contain multiple sessions for a single modality.
-    For a project called ABCD, it is grouped by modalities like T1, T2 etc.
-    So, each modality, say T1 will have multiple subjects. And each subject
-    can have multiple sessions.
-
-    Attributes
-    ----------
-    name : str
-        Identifier/name for the node
-
-    """
-
-    def __init__(self, name: str):
-        """
-        Constructor for Subject class
-
-        Parameters
-        ----------
-        name : str
-            Identifier/name for the Subject node
-        """
-        super().__init__()
-        self.name = name
-
-    @property
-    def sessions(self) -> List['Session']:
-        """Collection of Session Nodes in the Subject"""
-        return self.sub_nodes
-
-    def add_session(self, new_session) -> None:
-        """Add a new Session Node to list of sessions in the Subject
-
-        Parameters
-        ----------
-        new_session : Session
-            new session node added to the Subject
-        """
-        if not isinstance(new_session, Session):
-            raise TypeError(
-                f'Expected argument of type {type(Session)}, '
-                f'got {type(new_session)} instead')
-        self.add_sub_node(new_session)
-
-    def get_session_by_name(self, session_name: str) -> Optional['Session']:
-        """
-        Fetch a Session Node searching by its name
-        Parameters
-        ----------
-        session_name : str
-            Identifier/name for the Session Node
-
-        Returns
-        -------
-        None or Session
-        """
-        return self.get_sub_node_by_name(session_name)
-
-    def add_compliant_session_name(self, session_name: str) -> None:
-        """
-        Add session name (which is compliant) to the list
-
-        Parameters
-        ----------
-        session_name : str
-            String value specifying a session
-
-        Returns
-        -------
-
-        """
-        self._add_compliant_name(session_name)
-
-    def add_non_compliant_session_name(self, session_name: str) -> None:
-        """Add session name (which is not compliant) to the list"""
-        self._add_non_compliant_name(session_name)
-
-
-class Session(Node):
-    """
-    Container to manage properties and issues at the session level.
-    Encapsulates all the details necessary for a session.
-    A single session may contain multiple runs
-
-    Attributes
-    ----------
-    name : str
-        Identifier/name for the Session
-    params : dict
-        Key, value pairs specifying the parameters for checking compliance
-    """
-
-    def __init__(self, name: str):
-        """
-        Constructor
-
-        Parameters
-        ----------
-        name : str
-            Identifier/name for the Session
-        """
-        super().__init__()
-        self.name = name
-        self.params = {}
-
-    @property
-    def runs(self):
-        """Collection of Run Nodes in the Session"""
-        return self.sub_nodes
-
-    def add_run(self, new_run: 'Run') -> None:
-        """Add a new Run Node to list of runs in the Session
-
-        Parameters
-        ----------
-        new_run : Run
-            new run node added to the session
-
-        Raises
-        ------
-        TypeError
-            If the new_run is not of type Run
-        """
-        if not isinstance(new_run, Run):
-            raise TypeError(f'Expected type {type(Run)}, '
-                            f'got {type(new_run)} instead')
-        self.add_sub_node(new_run)
-
-    def get_run_by_name(self, run_name: str) -> Optional['Run']:
-        """Fetch a Run Node searching by its name"""
-        return self.get_sub_node_by_name(run_name)
-
-
-class Run(Node):
-    """
-    Container to manage properties and issues at the run level.
-    Encapsulates all the details necessary for a run. A run is a series of
-    brain volumes. This is the lowest level in the hierarchy. Individual .dcm
-    files should have same parameters at this level.
-    """
-
-    def __init__(self, name: str):
-        """
-        Constructor
-
-        Parameters
-        ----------
-        name : str
-            Identifier/name for the Run
-        """
-        super().__init__()
-        self.name = name
-        self.echo_time = 0
-        # TODO: check if self.error is required
-        self.error = False
-        self.params = {}
-        self.delta = None
-
-    def reset_lists(self):
-        """
-        Clears the compliance of the node
-        """
-        self.compliant = True
-        self._compliant_list = set()
-        self._non_compliant_list = set()
-        self.delta = None
+            return False

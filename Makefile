@@ -48,7 +48,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint/flake8: ## check style with flake8
-	flake8 MRdataset tests
+	flake8 MRdataset
 
 lint: lint/flake8 ## check style
 
@@ -59,18 +59,20 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source MRdataset -m pytest
+	coverage run --rcfile=.coveragerc --source MRdataset -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/MRdataset.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ MRdataset
+	cp MRdataset/tests/resources/mri-config.json docs/
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+	$(BROWSER) docs/build/html/index.html
+
+gh-pages: ## copy to gh-pages folder
+	cp -r docs/build/html/* ../MRdataset-gh-pages/
+
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
@@ -84,4 +86,5 @@ dist: clean ## builds source and wheel package
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
-	python setup.py install
+	python -m pip install .
+

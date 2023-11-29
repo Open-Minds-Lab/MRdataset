@@ -305,24 +305,21 @@ def test_find_terminal_folders_multiple_terminals():
 
 def test_find_folders_with_min_files():
     with tempfile.TemporaryDirectory() as tmpdirname:
-        root = Path(tmpdirname)
-        folder1 = root / "folder1"
-        folder1.mkdir()
-        file = folder1 / "file.dcm"
-        file.touch()
-        folder2 = root / "folder2"
-        folder2.mkdir()
-        file = folder2 / "file.dcm"
-        file.touch()
-        folder3 = root / "folder3"
-        folder3.mkdir()
-        file = folder3 / "file.dcm"
-        file.touch()
+        root = Path(tmpdirname).resolve()
+        thresh = 3
+        expected = set()
+        for idx, num_files in zip(range(5), [2, 3, 3, 5, 1]):
+            folder = root / f"folder{idx}"
+            folder.mkdir()
+            for count in range(num_files):
+                file = folder / f"file{count}.dcm"
+                file.touch()
 
-        terminal_folders = folders_with_min_files(root,
-                                                  pattern="*.dcm",
-                                                  min_count=1)
-        assert set(terminal_folders) == {folder1, folder2, folder3}
+            if num_files >= thresh:
+                expected.add(folder.resolve())
+
+        terminal_folders = folders_with_min_files(root, "*.dcm", min_count=thresh)
+        assert set(terminal_folders) == expected
 
 
 # Define a strategy for generating valid paths (strings)
@@ -362,9 +359,9 @@ def test_valid_dirs_with_list_of_paths_returns_list(paths):
         for p in paths:
             p.mkdir(exist_ok=True, parents=True)
 
-        result = valid_dirs(paths)
-        assert isinstance(result, list)
-        assert all(isinstance(item, Path) for item in result)
+            result = valid_dirs(paths)
+            assert isinstance(result, list)
+            assert all(isinstance(item, Path) for item in result)
 
 
 @given(st.lists(valid_paths(), min_size=1, max_size=10))

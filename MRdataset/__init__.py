@@ -2,9 +2,12 @@
 
 __author__ = """Pradeep Raamana"""
 __email__ = 'raamana@gmail.com'
+
 # __version__ = '0.1.0'
 import logging
+
 from MRdataset.config import configure_logger
+
 logger = logging.getLogger(__name__)
 logger = configure_logger(logger, output_dir=None, mode='w')
 
@@ -15,4 +18,8 @@ from MRdataset.utils import valid_dirs
 from MRdataset.base import BaseDataset
 from MRdataset.dicom import DicomDataset
 
-from MRdataset._version import __version__
+try:
+    from MRdataset._version import __version__
+except ImportError:
+    raise ImportError('It seems MRdataset is not installed correctly. Use pip '
+                      ' to install it first.')

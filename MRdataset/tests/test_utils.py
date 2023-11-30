@@ -12,7 +12,8 @@ from pydicom import dcmread
 from MRdataset.dicom_utils import is_dicom_file, is_valid_inclusion
 from MRdataset.utils import convert2ascii, read_json, \
     is_folder_with_no_subfolders, find_terminal_folders, \
-    check_mrds_extension, valid_dirs, folders_with_min_files  # Import your function from the correct module
+    check_mrds_extension, valid_dirs, \
+    folders_with_min_files  # Import your function from the correct module
 
 
 def test_valid_dicom_file(tmp_path='/tmp'):
@@ -359,9 +360,9 @@ def test_valid_dirs_with_list_of_paths_returns_list(paths):
         for p in paths:
             p.mkdir(exist_ok=True, parents=True)
 
-            result = valid_dirs(paths)
-            assert isinstance(result, list)
-            assert all(isinstance(item, Path) for item in result)
+        result = valid_dirs(paths)
+        assert isinstance(result, list)
+        assert all(isinstance(item, Path) for item in result)
 
 
 @given(st.lists(valid_paths(), min_size=1, max_size=10))

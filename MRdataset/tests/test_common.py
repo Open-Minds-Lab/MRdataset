@@ -7,17 +7,20 @@ from pathlib import Path
 # use hypothesis to generate multiple test cases
 import hypothesis.strategies as st
 import pytest
-from MRdataset import import_dataset, save_mr_dataset, load_mr_dataset, BaseDataset
+from hypothesis import given, settings, HealthCheck
+
+from MRdataset import import_dataset, save_mr_dataset, load_mr_dataset, \
+    BaseDataset
 from MRdataset.common import find_dataset_using_ds_format
-from MRdataset.config import MRException, MRdatasetWarning, DatasetEmptyException
+from MRdataset.config import MRException, MRdatasetWarning, \
+    DatasetEmptyException
 from MRdataset.dicom import DicomDataset
 from MRdataset.tests.simulate import make_compliant_test_dataset
-from hypothesis import given, settings
 
 THIS_DIR = Path(__file__).parent.resolve()
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(st.integers(min_value=1, max_value=10),
        st.floats(allow_nan=False,
                  allow_infinity=False),
@@ -40,7 +43,7 @@ def test_save_load_mr_dataset(num_subjects,
     return
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(st.text(min_size=1, max_size=10))
 def test_find_dataset_using_ds_format(ds_format):
     """Test find_dataset_using_ds_format"""

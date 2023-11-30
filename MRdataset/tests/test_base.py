@@ -3,16 +3,18 @@ from itertools import product
 from pathlib import Path
 
 import pytest
+from hypothesis import given, settings, HealthCheck
+
 from MRdataset.dicom import DicomDataset
-from MRdataset.tests.conftest import dcm_dataset_strategy, vertical_dataset_strategy
+from MRdataset.tests.conftest import dcm_dataset_strategy, \
+    vertical_dataset_strategy
 from MRdataset.tests.simulate import make_compliant_test_dataset
 from MRdataset.utils import convert2ascii
-from hypothesis import given, settings, HealthCheck
 
 THIS_DIR = Path(__file__).parent.resolve()
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(args=dcm_dataset_strategy)
 def test_load(args):
     ds, attributes = args
@@ -42,7 +44,8 @@ def test_accept_valid_dataset_format():
                           ds_format='invalid_format',
                           config_path=THIS_DIR / 'resources/mri-config.json')
 
-@settings(max_examples=50, deadline=None)
+
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(args=dcm_dataset_strategy)
 def test_add(args):
     ds, attributes = args
@@ -59,7 +62,7 @@ def test_add(args):
                 ds.add(subject, session, seq_id, run, None)
 
 
-@settings(max_examples=50, deadline=None)
+@settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)
 @given(args=dcm_dataset_strategy)
 def test_equality(args):
     ds1, attributes = args

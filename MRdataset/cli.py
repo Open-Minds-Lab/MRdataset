@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from MRdataset import import_dataset, save_mr_dataset
+from MRdataset import import_dataset, save_mr_dataset, logger
 from MRdataset.utils import is_writable
 
 
@@ -44,15 +44,19 @@ def parse_args():
         raise OSError('Expected valid directory for --data_source argument, '
                       f'Got {args.data_source}')
     if not args.config:
-        raise ValueError('Please provide a valid config file. Got NoneType')
+        THIS_DIR = Path(__file__).parent.resolve()
+        args.config = THIS_DIR / 'resources/mri-config.json'
+        logger.warning('Please provide a valid config file. '
+                       f'Using default config file - {str(args.config)}')
 
     if args.output_dir:
         if not is_writable(args.output_dir):
             raise OSError('Expected a writable directory for --output_dir '
                           f'argument, Got {args.output_dir}')
     else:
-        raise ValueError('Please provide a valid output directory. '
-                         'Got NoneType')
+        args.output_dir = Path.cwd()
+        logger.warning('Please provide a valid output directory. '
+                       'Got NoneType. Using current working directory.')
     return args
 
 
@@ -92,7 +96,7 @@ def cli():
                              is_complete=not args.is_partial,
                              config_path=args.config,
                              output_dir=args.output_dir)
-    save_mr_dataset(f"{args.output_dir}/{args.name}.mrds.pkl", dataset)
+    save_mr_dataset(f"{args.output_dir}/{dataset.name}.mrds.pkl", dataset)
     return dataset
 
 

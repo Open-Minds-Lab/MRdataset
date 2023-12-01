@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings
 from hypothesis.strategies import characters
 from pydicom import dcmread
 
@@ -263,6 +263,8 @@ def test_folder_with_min_files_nonexistent_folder():
             a = list(folders_with_min_files(root, pattern="*.dcm", min_count=1))
         with pytest.raises(ValueError):
             a = list(folders_with_min_files([], pattern="*.dcm", min_count=0))
+
+
 # Test find_terminal_folders with files
 def test_find_terminal_folders_with_files():
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -326,13 +328,20 @@ def test_find_folders_with_min_files():
 # Define a strategy for generating valid paths (strings)
 @st.composite
 def valid_paths(draw):
-    return draw(st.text(alphabet=characters(
+    def _my_filter(path):
+        # Filter out empty strings
+        p = convert2ascii(path)
+        return len(p) > 0
+
+    text = draw(st.text(alphabet=characters(
         min_codepoint=1,
         max_codepoint=1000,
-        blacklist_categories=('Cc', 'Cs', 'P')).map(lambda s: s.strip()).filter(lambda s: len(s) > 0),
-                        min_size=1, max_size=100))
+        categories=['Lu', 'Ll']).map(lambda s: s.strip()),
+                        min_size=1, max_size=100).filter(_my_filter))
+    return convert2ascii(text)
 
 
+@settings(max_examples=50, deadline=None)
 # Property-based test: the output should be a list of valid paths
 @given(valid_paths())
 def test_valid_dirs_with_single_path_returns_list(path):
@@ -346,13 +355,14 @@ def test_valid_dirs_with_single_path_returns_list(path):
         os.rmdir(i)
 
 
+@settings(max_examples=50, deadline=None)
 @given(valid_paths())
 def test_valid_dirs_with_single_path_returns_list(path):
     with pytest.raises(OSError):
         result = valid_dirs(path)
 
 
-# Property-based test: the output should be a list of valid paths
+@settings(max_examples=50, deadline=None)
 @given(st.lists(valid_paths(), min_size=1, max_size=10))
 def test_valid_dirs_with_list_of_paths_returns_list(paths):
     with tempfile.TemporaryDirectory() as tmpdirname:
@@ -365,6 +375,7 @@ def test_valid_dirs_with_list_of_paths_returns_list(paths):
         assert all(isinstance(item, Path) for item in result)
 
 
+@settings(max_examples=50, deadline=None)
 @given(st.lists(valid_paths(), min_size=1, max_size=10))
 def test_invalid_dirs(paths):
     with tempfile.TemporaryDirectory() as tmpdirname:

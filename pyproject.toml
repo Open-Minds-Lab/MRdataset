@@ -28,7 +28,6 @@ dependencies = [
     "nibabel",
     "numpy",
     "protocol",
-    "pybids",
     "pydicom",
 ]
 

@@ -1,4 +1,4 @@
 MRdataset/_version.py export-subst
-.travis.yml merge=oursstrategy
+.github/workflows/continuous-integration.yml merge=oursstrategy
 tox.ini merge=oursstrategy
 

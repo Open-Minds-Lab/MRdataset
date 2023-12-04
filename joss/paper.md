@@ -31,9 +31,6 @@ bibliography: paper.bib
 Large-scale medical imaging datasets (e.g., MR, PET, CT) play a pivotal role in healthcare research. However, the reliability of their statistical results is contingent on the quality of the acquired data. These datasets are often acquired at multiple sites using diverse scanners, and formats. Divergent practices at individual sites and scanners lead to differences in acquisition and data organization. Manually reconciling these variations is not only time-consuming and labor-intensive but also error prone. To address this need, we developed MRdataset, a Python package that serves as a seamless interface to access diverse medical imaging dataset formats. MRdataset eliminates the burden of extensive re-formatting by accounting for differences in data organization, scanner specifications and various imaging formats.
 
 
-
-
-
 # Statement of need
 
 Medical imaging data is shared in various file formats (such as DICOM, NIfTI, Analyze) and organized differently for distinct study designs, and data capturing platforms (such as XNAT). The lack of standardized interfaces adds unnecessary complexity to the otherwise straightforward task of retrieving imaging sequences. This leads to significant inefficiencies and delays, hindering the seamless flow between data acquisition and analysis. MRdataset includes separate modules for handling each format (e.g., DICOM, NifTi) and the user can simply specify the format while reading the dataset. MRdataset provides a canonical data structure to offer researchers with a consistent API, regardless of the underlying file format or dataset structure on disk, thereby acting as a unified interface across various dataset formats.
@@ -53,7 +50,7 @@ Healthcare research involves diverse equipment and evolving community standards 
 
 # Acknowledgments
 
-We acknowledge contributions from Tanupat Boonchalermvichien for parsing the DICOM format.
+We acknowledge contributions from Tanupat Boonchalermvichien for their help with parsing some parts of the DICOM format in the initial stages.
 
 
 

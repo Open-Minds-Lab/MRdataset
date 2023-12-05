@@ -104,6 +104,15 @@ a Creative Commons Attribution 4.0 International License (CC BY
 </sec>
 <sec id="statement-of-need">
   <title>Statement of need</title>
+  <fig>
+    <caption><p>MRdataset uses modular classes to read various dataset
+    formats to produce a common data structure. Its hierarchical
+    representation of subjects, sessions, sequences and runs enables a
+    consistent API for accessing elements such as subjects/sequences in
+    the dataset.
+    <styled-content id="figU003Ahierarchy"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="jpeg" xlink:href="media/Slide17.jpg" />
+  </fig>
   <p>Medical imaging data is shared in various file formats (such as
   DICOM, NIfTI, Analyze) and organized differently for distinct study
   designs, and data capturing platforms (such as XNAT). The lack of
@@ -116,7 +125,8 @@ a Creative Commons Attribution 4.0 International License (CC BY
   provides a canonical data structure to offer researchers with a
   consistent API, regardless of the underlying file format or dataset
   structure on disk, thereby acting as a unified interface across
-  various dataset formats.</p>
+  various dataset formats
+  (<xref alt="[fig:hierarchy]" rid="figU003Ahierarchy">[fig:hierarchy]</xref>).</p>
   <p>Prior works (Yarkoni et al.
   (<xref alt="2019" rid="ref-Yarkoni2019" ref-type="bibr">2019</xref>),
   Brett et al.
@@ -164,12 +174,6 @@ a Creative Commons Attribution 4.0 International License (CC BY
   angles in an array-like fashion although they are scattered in
   different DICOM slices. Subsequently, they are stored in a manner
   tailored to aligned with the needs of researchers.</p>
-  <fig>
-    <caption><p>Examples showing how MRdataset can be used to access
-    subjects, and sequences for horizontal and vertical
-    traversal.<styled-content id="figU003Aloops"></styled-content></p></caption>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="media/loops.png" />
-  </fig>
   <p>Imaging datasets are often large (N&gt;10,000), and parsing DICOM
   slice headers is slow, given each imaging session may have about 400
   DICOM slices each. In order to efficiently process such large numbers
@@ -184,6 +188,12 @@ a Creative Commons Attribution 4.0 International License (CC BY
   individual subsets from different sites to understand if any
   variations in image quality are site/scanner-specific, aiding in the
   identification of potential sources of confounding factors.</p>
+  <fig>
+    <caption><p>Examples showing how MRdataset can be used to access
+    subjects, and sequences for horizontal and vertical
+    traversal.<styled-content id="figU003Aloops"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="media/loops.png" />
+  </fig>
   <p>Healthcare research involves diverse equipment and evolving
   community standards that utilize distinct formats and acquisition
   protocols. Therefore, we would have to continue dealing with diverse
@@ -201,7 +211,8 @@ a Creative Commons Attribution 4.0 International License (CC BY
 <sec id="acknowledgments">
   <title>Acknowledgments</title>
   <p>We acknowledge contributions from Tanupat Boonchalermvichien for
-  parsing the DICOM format.</p>
+  their help with parsing some parts of the DICOM format in the initial
+  stages.</p>
 </sec>
 </body>
 <back>

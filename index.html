@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Installation" href="installation.html" />
 
-    <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
         <title>MRdataset</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -201,11 +201,18 @@
 <a class="reference external image-reference" href="https://app.codacy.com/gh/sinhaharsh/MRdataset/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img alt="https://app.codacy.com/project/badge/Grade/4e6e129acb3340e3b422541be3924a90" src="https://app.codacy.com/project/badge/Grade/4e6e129acb3340e3b422541be3924a90" /></a>
 <a class="reference external image-reference" href="https://github.com/sinhaharsh/MRdataset/actions/workflows/continuous-integration.yml"><img alt="https://github.com/sinhaharsh/MRdataset/actions/workflows/continuous-integration.yml/badge.svg" src="https://github.com/sinhaharsh/MRdataset/actions/workflows/continuous-integration.yml/badge.svg" /></a>
 <img alt="_images/hierarchy.jpg" src="_images/hierarchy.jpg" />
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>A unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc.</p></li>
+<li><p>Provides a unified interface for horizontal and vertical traversal of various neuroimaging datasets (DICOM) and any other generic format etc.</p></li>
+<li><p>Ensures that the DICOM files are valid imaging DICOMs and provides the option to skip phantoms, localizer, head scouts etc.</p></li>
+<li><p>Provides flexibility to ignore automatically generated derived scans such as MoCo series, Single-band references, perfusion weighted scans.</p></li>
+<li><p>Verifies if each DICOM slice belongs to the same scan volume and, then subsequently organizes all scans are hierarchical fashion (Subject &gt; Session &gt; Sequence &gt; Run)</p></li>
+<li><p>Identifies sequences acquired within the same session, which is especially useful for associating field maps with their corresponding functional (EPI) scans.</p></li>
 <li><p><strong>Tutorial</strong>: Please refer to the Jupyter Notebook <a class="reference external" href="https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb">tutorial</a>.</p></li>
 <li><p><strong>Documentation</strong>: <a class="reference external" href="https://open-minds-lab.github.io/MRdataset/">https://open-minds-lab.github.io/MRdataset/</a></p></li>
 </ul>
+</section>
 <section id="api-usage">
 <h2>API usage<a class="headerlink" href="#api-usage" title="Permalink to this heading">#</a></h2>
 <p>To use MRdataset in a project -</p>
@@ -369,6 +376,7 @@ If the dataset is complete, the flag should not be set.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">MRdataset : unified interface to various neuroimaging datasets</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#api-usage">API usage</a></li>
 <li><a class="reference internal" href="#command-line-usage">Command line usage</a><ul>
 <li><a class="reference internal" href="#further">Further</a></li>
@@ -386,7 +394,7 @@ If the dataset is complete, the flag should not be set.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=7185041f"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2dc84c2f"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

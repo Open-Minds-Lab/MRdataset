@@ -14,8 +14,15 @@ MRdataset : unified interface to various neuroimaging datasets
 
 .. image:: ./docs/images/hierarchy.jpg
 
-* A unified interface to various neuroimaging datasets such as DICOM, BIDS and any other generic format etc.
-* Documentation: https://open-minds-lab.github.io/MRdataset/
+## Description
+
+* Provides a unified interface for horizontal and vertical traversal of various neuroimaging datasets (DICOM) and any other generic format etc.
+* Ensures that the DICOM files are valid imaging DICOMs and provides the option to skip phantoms, localizer, head scouts etc.
+* Provides flexibility to ignore automatically generated derived scans such as MoCo series, Single-band references, perfusion weighted scans.
+* Verifies if each DICOM slice belongs to the same scan volume and, then subsequently organizes all scans are hierarchical fashion (Subject > Session > Sequence > Run)
+* Identifies sequences acquired within the same session, which is especially useful for associating field maps with their corresponding functional (EPI) scans.
+
+*Documentation: https://open-minds-lab.github.io/MRdataset/
 
 
 

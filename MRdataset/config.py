@@ -16,7 +16,7 @@ VALID_DATASET_FORMATS = [
 VALID_BIDS_EXTENSIONS = ['.json', '.nii', '.nii.gz']
 
 
-VALID_DATATYPES = [
+VALID_BIDS_DATATYPES = [
     'anat',
     'beh',
     'dwi',

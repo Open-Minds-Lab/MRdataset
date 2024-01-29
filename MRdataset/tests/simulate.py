@@ -1,4 +1,5 @@
 import errno
+import json
 import random
 import shutil
 import tempfile
@@ -26,6 +27,19 @@ def sample_dicom_dataset(tmp_path='/tmp'):
     return DATA_ROOT / 'example_dicom_data'
 
 
+def sample_bids_dataset(tmp_path='/tmp'):
+    DATA_ARCHIVE = THIS_DIR / 'resources/example_bids_data.zip'
+    if not DATA_ARCHIVE.exists():
+        raise FileNotFoundError(f'Please download example datasets from '
+                                f' github')
+    DATA_ROOT = Path(tmp_path)
+    output_dir = DATA_ROOT / 'example_bids_dataset'
+    if not output_dir.exists():
+        with zipfile.ZipFile(DATA_ARCHIVE, 'r') as zip_ref:
+            zip_ref.extractall(DATA_ROOT)
+    return DATA_ROOT / 'example_bids_dataset'
+
+
 def sample_vertical_dataset(tmp_path='/tmp'):
     DATA_ARCHIVE = THIS_DIR / 'resources/vertical.zip'
     DATA_ROOT = Path(tmp_path)
@@ -44,7 +58,7 @@ def make_vertical_test_dataset(num_sequences) -> Path:
     while True:
         filepath = random.choice(dcm_list)
         dicom = pydicom.read_file(filepath)
-        export_file(dicom, filepath, dest_dir)
+        export_dicom_file(dicom, filepath, dest_dir)
         subject_id = dicom.get('PatientID', None)
         seq_names[subject_id].add(dicom.get('SeriesDescription', None))
         if len(seq_names[subject_id]) >= num_sequences:
@@ -69,16 +83,52 @@ def make_compliant_test_dataset(num_subjects,
         dicom.EchoTrainLength = echo_train_length
         dicom.FlipAngle = flip_angle
 
-        export_file(dicom, filepath, dest_dir)
+        export_dicom_file(dicom, filepath, dest_dir)
         subject_names.add(dicom.get('PatientID', None))
         i += 1
     return dest_dir
 
 
-def make_multi_echo_dataset(num_subjects,
+def make_compliant_bids_dataset(num_subjects,
                                 repetition_time,
                                 echo_train_length,
                                 flip_angle) -> Path:
+    src_dir, dest_dir = setup_directories(sample_bids_dataset())
+    json_list = list(src_dir.glob('**/*.json'))
+    subject_names = set()
+    i = -1
+
+    while len(subject_names) < num_subjects:
+        i += 1
+
+        try:
+            filepath = json_list[i]
+        except IndexError:
+            break
+
+        try:
+            with open(filepath, "r") as read_file:
+                parameters = json.load(read_file)
+        except (FileNotFoundError, ValueError) as e:
+            continue
+        parameters['RepetitionTime'] = repetition_time
+        parameters['EchoTrainLength'] = echo_train_length
+        parameters['FlipAngle'] = flip_angle
+        try:
+            subject_name = str(filepath).split('/')[3]
+            if subject_name in subject_names:
+                continue
+            subject_names.add(subject_name)
+            export_bids_file(parameters, filepath, dest_dir, src_dir)
+        except IndexError:
+            pass
+    return dest_dir
+
+
+def make_multi_echo_dataset(num_subjects,
+                            repetition_time,
+                            echo_train_length,
+                            flip_angle) -> Path:
     src_dir, dest_dir = setup_directories(sample_dicom_dataset())
     dcm_list = list(src_dir.glob('**/*.dcm'))
 
@@ -92,10 +142,10 @@ def make_multi_echo_dataset(num_subjects,
         dicom.EchoTrainLength = echo_train_length
         dicom.FlipAngle = flip_angle
         dicom.EchoTime = echo_train_length
-        export_file(dicom, filepath, dest_dir)
+        export_dicom_file(dicom, filepath, dest_dir)
         dicom.EchoTime = echo_train_length*2
         newfilepath = filepath.parent/(filepath.stem+'2.dcm')
-        export_file(dicom, newfilepath, dest_dir)
+        export_dicom_file(dicom, newfilepath, dest_dir)
         subject_names.add(dicom.get('PatientID', None))
         i += 1
     return dest_dir
@@ -143,7 +193,7 @@ def make_test_dataset(num_noncompliant_subjects,
         for sub_path in subject_paths:
             for filepath in sub_path.glob('*.dcm'):
                 dicom = pydicom.read_file(filepath)
-                export_file(dicom, filepath, dest_dir)
+                export_dicom_file(dicom, filepath, dest_dir)
 
     for i, modality in enumerate(modalities):
         count = num_noncompliant_subjects[i]
@@ -157,14 +207,14 @@ def make_test_dataset(num_noncompliant_subjects,
                 dicom.RepetitionTime = repetition_time
                 dicom.EchoTrainLength = echo_train_length
                 dicom.FlipAngle = flip_angle
-                export_file(dicom, filepath, dest_dir)
+                export_dicom_file(dicom, filepath, dest_dir)
                 modality = dicom.get('SeriesDescription', None).replace(' ', '_')
                 dataset_info[modality].add(patient_id)
 
     return dest_dir, dataset_info
 
 
-def export_file(dicom, filepath, out_dir):
+def export_dicom_file(dicom, filepath, out_dir):
     patient_id = dicom.get('PatientID', None)
     series_desc = dicom.get('SeriesDescription', None)
     series_number = dicom.get('SeriesNumber', None)
@@ -175,6 +225,13 @@ def export_file(dicom, filepath, out_dir):
     filename = f'{patient_id}_{number}.dcm'
     dicom.save_as(output_path / filename)
 
+
+def export_bids_file(parameters, filepath, out_dir, current_dir):
+    relative_path = filepath.relative_to(current_dir)
+    output_path = Path(out_dir)/relative_path
+    output_path.parent.mkdir(exist_ok=True, parents=True)
+    with open(output_path, 'w') as fh:
+        json.dump(parameters, fh)
 
 # def make_bids_test_dataset(num_noncompliant_subjects,
 #                            repetition_time,

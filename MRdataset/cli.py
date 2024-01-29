@@ -50,6 +50,14 @@ def parse_args():
                        f'Using default config file - {str(args.config)}')
 
     if args.output_dir:
+        output_dir = Path(args.output_dir)
+        if not output_dir.is_dir():
+            try:
+                output_dir.mkdir(parents=True, exist_ok=True)
+            except OSError as exc:
+                logger.error('Unable to create folder: {output_dir}')
+                raise exc
+
         if not is_writable(args.output_dir):
             raise OSError('Expected a writable directory for --output_dir '
                           f'argument, Got {args.output_dir}')

@@ -98,6 +98,15 @@ def test_empty_folders():
                              output_dir=folder_path, name='test_dataset')
         assert len(mrd.get_sequence_ids()) == 0
 
+
+def test_invalid_output_dir():
+    fake_ds_dir = make_compliant_test_dataset(1, 1, 1, 1)
+    with pytest.raises(TypeError):
+        mrd = import_dataset(fake_ds_dir,
+                             config_path=THIS_DIR / 'resources/bids-config.json',
+                             output_dir=1, name='test_dataset',
+                             ds_format='dicom')
+
 # def get_csa_props_test():
 #     "CSA header looks funny in Pitt 7T (20221130)"
 #     text = "blah = 0x1\nxy\nsAdjData.uiAdjShimMode                = 0x1\na = b"

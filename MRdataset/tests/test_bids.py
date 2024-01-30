@@ -47,3 +47,56 @@ def test_dataset(num_subjects,
         assert set(mrd.get_subject_ids(seq_id)) == mrd_num_subjects
     shutil.rmtree(fake_ds_dir)
     return
+
+
+def test_config_dict():
+    fake_ds_dir = make_compliant_bids_dataset(1, 1, 1, 1)
+    with pytest.raises(FileNotFoundError):
+        mrd = import_dataset(fake_ds_dir, config_path='non-existent.json',
+                             output_dir=fake_ds_dir, name='test_dataset',
+                             ds_format='bids')
+
+
+def test_invalid_output_dir():
+    fake_ds_dir = make_compliant_bids_dataset(1, 1, 1, 1)
+    with pytest.raises(TypeError):
+        mrd = import_dataset(fake_ds_dir,
+                             config_path=THIS_DIR / 'resources/bids-config.json',
+                             output_dir=1, name='test_dataset',
+                             ds_format='bids')
+
+
+def test_invalid_datatype():
+    fake_ds_dir = make_compliant_bids_dataset(4, 1, 1, 1)
+
+    def rename_folders(directory):
+        # rename all folders to "mnat"
+        for folder in directory.iterdir():
+            if ('sub' not in folder.name) and ('ses' not in folder.name):
+                folder.rename(folder.parent / 'mnat')
+                rename_folders(folder.parent / 'mnat')
+            else:
+                if folder.is_dir():
+                    rename_folders(folder)
+
+    rename_folders(fake_ds_dir)
+    with pytest.raises(TypeError):
+        mrd = import_dataset(fake_ds_dir,
+                             config_path=THIS_DIR / 'resources/bids-config.json',
+                             output_dir=1, name='test_dataset',
+                             ds_format='bids')
+
+
+def test_empty_folders():
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        folder_path = Path(tmpdirname)
+        subfolder = folder_path / "derivatives"
+        subfolder.mkdir(parents=True, exist_ok=True)
+        filepath = subfolder / "test.json"
+        filepath.touch()
+
+        mrd = import_dataset(folder_path,
+                             config_path=THIS_DIR / 'resources/mri-config.json',
+                             output_dir=folder_path, name='test_dataset',
+                             ds_format='bids')
+        assert len(mrd.get_sequence_ids()) == 0

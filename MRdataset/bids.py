@@ -121,7 +121,7 @@ class BidsDataset(BaseDataset, ABC):
 
             # None of the datasets we processed (over 20) had run information,
             # even though BIDS allows it. So we just use run-0x for all of them.
-            run_id = f'run-{str(i+1).zfill(2)}'
+            run_id = f'run-{str(i + 1).zfill(2)}'
             seq.set_session_info(subject_id=subject_id,
                                  session_id=session_id,
                                  run_id=run_id,

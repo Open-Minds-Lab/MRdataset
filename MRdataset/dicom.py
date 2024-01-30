@@ -58,17 +58,17 @@ class DicomDataset(BaseDataset, ABC):
                  name='DicomDataset',
                  config_path=None,
                  verbose=False,
-                 ds_format='dicom',
                  output_dir=None,
+                 min_count=1,
                  **kwargs):
         """constructor"""
 
         super().__init__(data_source=data_source, name=name,
-                         ds_format=ds_format)
+                         ds_format='dicom')
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         # TODO: Add option to change min_count passing it as an argument
-        self.min_count = 1  # min slice count to be considered a volume
+        self.min_count = min_count  # min slice count to be considered a volume
         self.verbose = verbose
         self.config_path = config_path
         self.config_dict = None

@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Configuration" href="config.html" /><link rel="prev" title="Installation" href="installation.html" />
 
-    <!-- Generated with Sphinx 7.1.2 and Furo 2023.09.10 -->
+    <!-- Generated with Sphinx 7.1.0 and Furo 2023.09.10 -->
         <title>API Reference - MRdataset</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
@@ -412,8 +412,8 @@ BaseDataset.</p>
 <dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'DicomDataset'</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
-<dd><em class="sig-param"><span class="n"><span class="pre">ds_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dicom'</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em>,</dd>
 </dl>
 
@@ -451,6 +451,97 @@ folder. This is used to speed up the loading process.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-MRdataset.bids"></span><dl class="py class">
+<dt class="sig sig-object py" id="MRdataset.bids.BidsDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BidsDataset</span></span><a class="headerlink" href="#MRdataset.bids.BidsDataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#MRdataset.base.BaseDataset" title="MRdataset.base.BaseDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDataset</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Class to represent a BIDS dataset. It is a subclass of BaseDataset.
+It gathers data from JSON files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_source</strong><span class="classifier">str or List[str]</span></dt><dd><p>The path to the dataset.</p>
+</dd>
+<dt><strong>pattern</strong><span class="classifier">str</span></dt><dd><p>The pattern to match for JSON files.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>The name of the dataset.</p>
+</dd>
+<dt><strong>config_path</strong><span class="classifier">str</span></dt><dd><p>The path to the config file.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Whether to print verbose output on console.</p>
+</dd>
+<dt><strong>ds_format</strong><span class="classifier">str</span></dt><dd><p>The format of the dataset. One of ['dicom', 'bids'].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code>(subject_id, session_id, seq_id, run_id, seq)</p></td>
+<td><p>Adds a given sequence to provided subject_id, session_id and run_id for the dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code>(subject_id, session_id, seq_id, run_id)</p></td>
+<td><p>Returns a Sequence given subject/session/seq/run from the dataset</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sequence_ids</span></code>()</p></td>
+<td><p>Returns a list of all sequence IDs in the dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_subject_ids</span></code>(seq_id)</p></td>
+<td><p>Returns a list of all subject IDs in the dataset for a given sequence ID</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#MRdataset.bids.BidsDataset.load" title="MRdataset.bids.BidsDataset.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>()</p></td>
+<td><p>Default method to load the dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge</span></code>(other)</p></td>
+<td><p>Merges two datasets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">subjects</span></code>()</p></td>
+<td><p>Returns a list of all subject IDs in the dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_horizontal</span></code>(seq_id)</p></td>
+<td><p>Generator to traverse the dataset horizontally.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical2</span></code>(seq_id1, seq_id2)</p></td>
+<td><p>Generator to traverse the dataset vertically.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">traverse_vertical_multi</span></code>(*seq_ids)</p></td>
+<td><p>Generator to traverse the dataset vertically.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.bids.BidsDataset.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">data_source</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*.json'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BidsDataset'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">min_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.bids.BidsDataset.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>constructor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="MRdataset.bids.BidsDataset.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MRdataset.bids.BidsDataset.load" title="Permalink to this definition">#</a></dt>
+<dd><p>Default method to load the dataset. It iterates over all the folders
+in the data_source and finds subfolders with at least min_count files
+matching the pattern. It then processes each subfolder and adds the
+sequence to the dataset.</p>
 </dd></dl>
 
 </dd></dl>
@@ -780,6 +871,11 @@ fMRI, t1w and associated field maps from the same session.</p>
 <li><a class="reference internal" href="#MRdataset.dicom.DicomDataset.save_process_log"><code class="docutils literal notranslate"><span class="pre">DicomDataset.save_process_log()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#MRdataset.bids.BidsDataset"><code class="docutils literal notranslate"><span class="pre">BidsDataset</span></code></a><ul>
+<li><a class="reference internal" href="#MRdataset.bids.BidsDataset.__init__"><code class="docutils literal notranslate"><span class="pre">BidsDataset.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#MRdataset.bids.BidsDataset.load"><code class="docutils literal notranslate"><span class="pre">BidsDataset.load()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset"><code class="docutils literal notranslate"><span class="pre">BaseDataset</span></code></a><ul>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.__init__"><code class="docutils literal notranslate"><span class="pre">BaseDataset.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#MRdataset.base.BaseDataset.add"><code class="docutils literal notranslate"><span class="pre">BaseDataset.add()</span></code></a></li>
@@ -807,7 +903,7 @@ fMRI, t1w and associated field maps from the same session.</p>
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2dc84c2f"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=8940f5c9"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

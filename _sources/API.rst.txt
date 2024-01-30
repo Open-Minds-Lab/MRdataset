@@ -30,6 +30,11 @@ Subject, Run etc.in a neuroimaging experiment.
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: MRdataset.bids
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 .. automodule:: MRdataset.base
    :members:

@@ -48,4 +48,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb
+.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/main/docs/usage.ipynb

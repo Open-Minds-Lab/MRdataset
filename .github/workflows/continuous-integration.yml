@@ -8,6 +8,11 @@ on:
         branches:
             - main
 
+    pull_request:
+        branches:
+            - main
+
+
 jobs:
     py:
         runs-on: ${{ matrix.os }}

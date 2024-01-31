@@ -1,17 +1,14 @@
+import glob
 import shutil
 import tempfile
-from collections import defaultdict
 from pathlib import Path
 
 import hypothesis.strategies as st
 import pytest
-from bids import BIDSLayout
 from hypothesis import given, settings, HealthCheck
 
 from MRdataset import import_dataset
-from MRdataset.bids import BidsDataset
-from MRdataset.tests.simulate import make_compliant_test_dataset, \
-    make_multi_echo_dataset, copyeverything, make_compliant_bids_dataset
+from MRdataset.tests.simulate import make_compliant_bids_dataset
 
 THIS_DIR = Path(__file__).parent.resolve()
 
@@ -71,7 +68,8 @@ def test_invalid_datatype():
 
     def rename_folders(directory):
         # rename all folders to "mnat"
-        for folder in directory.iterdir():
+        for folder in glob.glob(str(directory) + '/*/'):
+            folder = Path(folder)
             if ('sub' not in folder.name) and ('ses' not in folder.name):
                 folder.rename(folder.parent / 'mnat')
                 rename_folders(folder.parent / 'mnat')

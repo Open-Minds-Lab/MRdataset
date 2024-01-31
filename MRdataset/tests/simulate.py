@@ -17,7 +17,9 @@ from MRdataset.utils import convert2ascii
 THIS_DIR = Path(__file__).parent.resolve()
 
 
-def sample_dicom_dataset(tmp_path='/tmp'):
+def sample_dicom_dataset(tmp_path=None):
+    if not tmp_path:
+        tmp_path = tempfile.gettempdir()
     DATA_ARCHIVE = THIS_DIR / 'resources/example_dicom_data.zip'
     DATA_ROOT = Path(tmp_path)
     output_dir = DATA_ROOT / 'example_dicom_data'
@@ -27,7 +29,9 @@ def sample_dicom_dataset(tmp_path='/tmp'):
     return DATA_ROOT / 'example_dicom_data'
 
 
-def sample_bids_dataset(tmp_path='/tmp'):
+def sample_bids_dataset(tmp_path=None):
+    if not tmp_path:
+        tmp_path = tempfile.gettempdir()
     DATA_ARCHIVE = THIS_DIR / 'resources/example_bids_data.zip'
     if not DATA_ARCHIVE.exists():
         raise FileNotFoundError(f'Please download example datasets from '
@@ -40,7 +44,9 @@ def sample_bids_dataset(tmp_path='/tmp'):
     return DATA_ROOT / 'example_bids_dataset'
 
 
-def sample_vertical_dataset(tmp_path='/tmp'):
+def sample_vertical_dataset(tmp_path=None):
+    if not tmp_path:
+        tmp_path = tempfile.gettempdir()
     DATA_ARCHIVE = THIS_DIR / 'resources/vertical.zip'
     DATA_ROOT = Path(tmp_path)
     output_dir = DATA_ROOT / 'vertical/'
@@ -109,7 +115,7 @@ def make_compliant_bids_dataset(num_subjects,
         try:
             with open(filepath, "r") as read_file:
                 parameters = json.load(read_file)
-        except (FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError, ValueError):
             continue
         parameters['RepetitionTime'] = repetition_time
         parameters['EchoTrainLength'] = echo_train_length

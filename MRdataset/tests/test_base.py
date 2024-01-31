@@ -5,11 +5,8 @@ from pathlib import Path
 import pytest
 from hypothesis import given, settings, HealthCheck
 
-from MRdataset import BaseDataset, import_dataset
-from MRdataset.dicom import DicomDataset
 from MRdataset.tests.conftest import dcm_dataset_strategy, \
     vertical_dataset_strategy
-from MRdataset.tests.simulate import make_compliant_test_dataset
 from MRdataset.utils import convert2ascii
 
 THIS_DIR = Path(__file__).parent.resolve()

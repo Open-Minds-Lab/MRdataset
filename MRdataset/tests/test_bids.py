@@ -36,7 +36,7 @@ def test_dataset(num_subjects,
 
     for seq_id in seq_ids:
         mrd_num_subjects = set()
-        for subject, session, run, seq in mrd.traverse_horizontal(seq_id):
+        for subject, _, _, seq in mrd.traverse_horizontal(seq_id):
             mrd_num_subjects.add(subject)
             assert seq['RepetitionTime'].get_value() == repetition_time
             assert seq['EchoTrainLength'].get_value() == echo_train_length
@@ -49,18 +49,18 @@ def test_dataset(num_subjects,
 def test_config_dict():
     fake_ds_dir = make_compliant_bids_dataset(1, 1, 1, 1)
     with pytest.raises(FileNotFoundError):
-        mrd = import_dataset(fake_ds_dir, config_path='non-existent.json',
-                             output_dir=fake_ds_dir, name='test_dataset',
-                             ds_format='bids')
+        import_dataset(fake_ds_dir, config_path='non-existent.json',
+                       output_dir=fake_ds_dir, name='test_dataset',
+                       ds_format='bids')
 
 
 def test_invalid_output_dir():
     fake_ds_dir = make_compliant_bids_dataset(1, 1, 1, 1)
     with pytest.raises(TypeError):
-        mrd = import_dataset(fake_ds_dir,
-                             config_path=THIS_DIR / 'resources/bids-config.json',
-                             output_dir=1, name='test_dataset',
-                             ds_format='bids')
+        import_dataset(fake_ds_dir,
+                       config_path=THIS_DIR / 'resources/bids-config.json',
+                       output_dir=1, name='test_dataset',
+                       ds_format='bids')
 
 
 def test_invalid_datatype():

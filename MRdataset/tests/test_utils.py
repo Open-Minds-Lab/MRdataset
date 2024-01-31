@@ -16,7 +16,9 @@ from MRdataset.utils import convert2ascii, read_json, \
     folders_with_min_files  # Import your function from the correct module
 
 
-def test_valid_dicom_file(tmp_path='/tmp'):
+def test_valid_dicom_file(tmp_path=None):
+    if tmp_path is None:
+        tmp_path = tempfile.gettempdir()
     # Create a temporary DICOM file
     dicom_file = Path(tmp_path) / "valid_dicom.dcm"
     with open(dicom_file, 'wb') as file_stream:
@@ -26,7 +28,9 @@ def test_valid_dicom_file(tmp_path='/tmp'):
     assert is_dicom_file(str(dicom_file)) is True
 
 
-def test_invalid_dicom_file(tmp_path='/tmp'):
+def test_invalid_dicom_file(tmp_path=None):
+    if tmp_path is None:
+        tmp_path = tempfile.gettempdir()
     # Create a temporary file that is not a DICOM file
     non_dicom_file = Path(tmp_path) / "non_dicom.txt"
     with open(non_dicom_file, 'w') as file_stream:

@@ -79,10 +79,10 @@ def test_invalid_datatype():
 
     rename_folders(fake_ds_dir)
     with pytest.raises(TypeError):
-        mrd = import_dataset(fake_ds_dir,
-                             config_path=THIS_DIR / 'resources/bids-config.json',
-                             output_dir=1, name='test_dataset',
-                             ds_format='bids')
+        import_dataset(fake_ds_dir,
+                       config_path=THIS_DIR / 'resources/bids-config.json',
+                       output_dir=1, name='test_dataset',
+                       ds_format='bids')
 
 
 def test_empty_folders():

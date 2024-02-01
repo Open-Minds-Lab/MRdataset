@@ -1,0 +1,20 @@
+{
+    "begin": "2014-03-12",
+    "end": "2017-03-12",
+    "include_sequence": {
+        "nifti_header": false
+    },
+    "use_echonumbers": true,
+    "horizontal_audit": {
+        "stratify_by": "series_number",
+        "include_parameters": [
+            "EchoTrainLength",
+            "RepetitionTime",
+            "FlipAngle"
+        ]
+    },
+    "exclude_subjects": [
+        "210098",
+        "210078"
+    ]
+}

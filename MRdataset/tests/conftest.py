@@ -5,16 +5,19 @@ from typing import Tuple
 
 import pydicom
 import pytest
+from hypothesis import strategies as st
+from hypothesis.strategies import SearchStrategy
+
 from MRdataset.dicom import DicomDataset
 from MRdataset.tests.simulate import make_compliant_test_dataset, \
     make_vertical_test_dataset
-from hypothesis import strategies as st
-from hypothesis.strategies import SearchStrategy
 
 THIS_DIR = Path(__file__).parent.resolve()
 
 @pytest.fixture
-def sample_dicom_object(tmp_path='/tmp'):
+def sample_dicom_object(tmp_path=None):
+    if tmp_path is None:
+        tmp_path = tempfile.gettempdir()
     dicom_file = Path(tmp_path) / "sample_dicom.dcm"
     sample_dicom = pydicom.Dataset()
     sample_dicom.PatientName = "CITIZEN^Joan"

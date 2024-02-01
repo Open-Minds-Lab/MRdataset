@@ -38,7 +38,6 @@ Once you have a copy of the source, you can install it with:
 .. code-block:: console
 
     $ python -m pip install --upgrade pip
-    $ pip install git+https://github.com/sinhaharsh/protocol.git#egg=protocol
     $ cd MRdataset/
     $ if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
     $ pip install .

@@ -14,6 +14,23 @@ with warnings.catch_warnings():
 
 # logger = logging.getLogger('root')
 
+def is_bids_file(filename: Union[str, Path]):
+    """
+    Check if the file is a valid BIDS file
+    Parameters
+    ----------
+    filename : Path | str
+        path to the file
+
+    Returns
+    -------
+    bool : if the file is a valid BIDS file
+    """
+    # TODO: Add some criteria to skip certain files
+    if 'derivatives' in str(filename):
+        return False
+    return True
+
 
 def is_dicom_file(filename: Union[str, Path]):
     """

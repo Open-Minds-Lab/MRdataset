@@ -22,7 +22,7 @@ Description
 * Verifies if each DICOM slice belongs to the same scan volume and, then subsequently organizes all scans are hierarchical fashion (Subject > Session > Sequence > Run)
 * Identifies sequences acquired within the same session, which is especially useful for associating field maps with their corresponding functional (EPI) scans.
 
-* **Tutorial**: Please refer to the Jupyter Notebook `tutorial`_.
+* **Tutorial**: Please refer to the Jupyter Notebook `tutorial <https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/main/docs/usage.ipynb>`_.
 * **Documentation**: https://open-minds-lab.github.io/MRdataset/
 
 .. include:: ./usage.rst
@@ -48,4 +48,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. _tutorial: https://nbviewer.org/github/Open-Minds-Lab/MRdataset/blob/parallel/docs/usage.ipynb

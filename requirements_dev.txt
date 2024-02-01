@@ -1,7 +1,7 @@
 setuptools
 pytest~=7.1.2
 flake8
-hypothesis~=6.90.0
+hypothesis>=6.97.1
 coverage
 
 dicom2nifti>=2.4.2

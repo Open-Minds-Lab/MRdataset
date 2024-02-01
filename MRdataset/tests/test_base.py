@@ -5,10 +5,8 @@ from pathlib import Path
 import pytest
 from hypothesis import given, settings, HealthCheck
 
-from MRdataset.dicom import DicomDataset
 from MRdataset.tests.conftest import dcm_dataset_strategy, \
     vertical_dataset_strategy
-from MRdataset.tests.simulate import make_compliant_test_dataset
 from MRdataset.utils import convert2ascii
 
 THIS_DIR = Path(__file__).parent.resolve()
@@ -36,13 +34,12 @@ def test_load(args):
     return
 
 
-def test_accept_valid_dataset_format():
-    fake_ds_dir = make_compliant_test_dataset(1, 1, 1, 1)
-    with pytest.raises(ValueError):
-        ds = DicomDataset(name='invalid_format',
-                          data_source=fake_ds_dir,
-                          ds_format='invalid_format',
-                          config_path=THIS_DIR / 'resources/mri-config.json')
+# def test_accept_valid_dataset_format():
+#     fake_ds_dir = make_compliant_test_dataset(1, 1, 1, 1)
+#     with pytest.raises(ValueError):
+#         ds = import_dataset(name='invalid_format',
+#                             data_source=fake_ds_dir,
+#                             config_path=THIS_DIR / 'resources/mri-config.json')
 
 
 @settings(suppress_health_check=[HealthCheck.too_slow], max_examples=50, deadline=None)

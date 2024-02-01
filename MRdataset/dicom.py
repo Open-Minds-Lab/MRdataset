@@ -4,7 +4,7 @@ from itertools import islice
 from pathlib import Path
 from typing import Tuple, List
 
-from protocol import ImagingSequence
+from protocol import DicomImagingSequence
 from pydicom import dcmread
 from pydicom.errors import InvalidDicomError
 
@@ -58,17 +58,17 @@ class DicomDataset(BaseDataset, ABC):
                  name='DicomDataset',
                  config_path=None,
                  verbose=False,
-                 ds_format='dicom',
                  output_dir=None,
+                 min_count=1,
                  **kwargs):
         """constructor"""
 
         super().__init__(data_source=data_source, name=name,
-                         ds_format=ds_format)
+                         ds_format='dicom')
         self.data_source = valid_dirs(data_source)
         self.pattern = pattern
         # TODO: Add option to change min_count passing it as an argument
-        self.min_count = 1  # min slice count to be considered a volume
+        self.min_count = min_count  # min slice count to be considered a volume
         self.verbose = verbose
         self.config_path = config_path
         self.config_dict = None
@@ -215,7 +215,7 @@ class DicomDataset(BaseDataset, ABC):
         example, EchoTime and Echonumber for multi-echo sequences.
 
         It then processes the divergent slices to find the varying parameters
-        and updates the protocol.ImagingSequence object.
+        and updates the protocol.DicomImagingSequence object.
 
         Parameters
         ----------
@@ -262,14 +262,14 @@ class DicomDataset(BaseDataset, ABC):
             # Note that we cannot use enumerate and idx ==0 here, because we
             #   may have to skip some slices
             if len(divergent_slices) == 0:
-                first_slice = ImagingSequence(dicom=dicom, path=folder)
+                first_slice = DicomImagingSequence(dicom=dicom, path=folder)
                 # We collect the first slice as a reference to compare
                 #   other slices with, although it is not divergent in
                 #   its true sense
                 divergent_slices.append(first_slice)
 
             else:
-                cur_slice = ImagingSequence(dicom=dicom, path=folder)
+                cur_slice = DicomImagingSequence(dicom=dicom, path=folder)
 
                 # check if the session info is same
                 # Session info includes subject_id, session_id, run_id
@@ -329,7 +329,7 @@ class DicomDataset(BaseDataset, ABC):
         Parameters
         ----------
         divergent_slices : list
-            ImagingSequence objects with divergent parameters
+            DicomImagingSequence objects with divergent parameters
 
         Returns
         -------

@@ -1,6 +1,6 @@
-==============================================================
-MRdataset : unified interface to various neuroimaging datasets
-==============================================================
+=====================================================================
+MRdataset : unified interface to various neuroimaging dataset formats
+=====================================================================
 
 .. image:: https://img.shields.io/pypi/v/MRdataset.svg
         :target: https://pypi.python.org/pypi/MRdataset
@@ -14,7 +14,8 @@ MRdataset : unified interface to various neuroimaging datasets
 
 .. image:: ./docs/images/hierarchy.jpg
 
-## Description
+Description
+------------
 
 * Provides a unified interface for horizontal and vertical traversal of various neuroimaging datasets (DICOM) and any other generic format etc.
 * Ensures that the DICOM files are valid imaging DICOMs and provides the option to skip phantoms, localizer, head scouts etc.
@@ -22,7 +23,11 @@ MRdataset : unified interface to various neuroimaging datasets
 * Verifies if each DICOM slice belongs to the same scan volume and, then subsequently organizes all scans are hierarchical fashion (Subject > Session > Sequence > Run)
 * Identifies sequences acquired within the same session, which is especially useful for associating field maps with their corresponding functional (EPI) scans.
 
-*Documentation: https://open-minds-lab.github.io/MRdataset/
+
+Documentation 
+-------------
+
+https://open-minds-lab.github.io/MRdataset/
 
 
 

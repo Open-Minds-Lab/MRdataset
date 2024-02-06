@@ -5,6 +5,7 @@ __email__ = 'raamana@gmail.com'
 
 # __version__ = '0.1.0'
 import logging
+import sys
 
 from MRdataset.config import configure_logger
 
@@ -22,5 +23,12 @@ from MRdataset.dicom import DicomDataset
 try:
     from MRdataset._version import __version__
 except ImportError:
-    raise ImportError('It seems MRdataset is not installed correctly. Use pip '
-                      ' to install it first.')
+    if sys.version_info < (3, 8):
+        from importlib_metadata import version
+    else:
+        from importlib.metadata import version
+
+    try:
+        __version__ = version('MRdataset')
+    except Exception:
+        __version__ = "unknown"

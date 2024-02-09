@@ -37,8 +37,9 @@ jobs:
                 run: |
                     make lint
             -   name: Test with pytest
+                working-directory: ${{ runner.temp }}
                 run: |
-                    pytest
+                    pytest --pyargs MRdataset
 
     py312:
         runs-on: ${{ matrix.os }}
@@ -66,5 +67,6 @@ jobs:
                 run: |
                     make lint
             -   name: Test with pytest
+                working-directory: ${{ runner.temp }}
                 run: |
-                    pytest
+                    pytest --pyargs MRdataset

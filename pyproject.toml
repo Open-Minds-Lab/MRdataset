@@ -43,9 +43,10 @@ Documentation = "https://open-minds-lab.github.io/MRdataset/"
 include = [
     "MRdataset/*.py",
     "MRdataset/resources/*",
+    "MRdataset/tests/*",
+    "MRdataset/tests/resources/*",
 ]
 exclude = [
-    "MRdataset/tests/*",
 ]
 
 [tool.hatch.version]

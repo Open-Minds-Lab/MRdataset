@@ -1,13 +1,13 @@
 from abc import ABC
 from pathlib import Path
-
-from protocol import BidsImagingSequence
+from re import search
 
 from MRdataset import logger
 from MRdataset.base import BaseDataset
 from MRdataset.config import VALID_BIDS_DATATYPES
 from MRdataset.dicom_utils import is_bids_file
 from MRdataset.utils import folders_with_min_files, valid_dirs, read_json
+from protocol import BidsImagingSequence
 
 
 class BidsDataset(BaseDataset, ABC):
@@ -100,6 +100,7 @@ class BidsDataset(BaseDataset, ABC):
         """Processes the folder and returns a list of sequences."""
         json_files = self._filter_json_files(folder)
         sequences = []
+        last_id = 0
         for i, file in enumerate(json_files):
             try:
                 seq = BidsImagingSequence(bidsfile=file, path=folder)
@@ -121,7 +122,7 @@ class BidsDataset(BaseDataset, ABC):
 
             # None of the datasets we processed (over 20) had run information,
             # even though BIDS allows it. So we just use run-0x for all of them.
-            run_id = f'run-{str(i + 1).zfill(2)}'
+            run_id, last_id = self.get_run_id(file, last_id)
             seq.set_session_info(subject_id=subject_id,
                                  session_id=session_id,
                                  run_id=run_id,
@@ -129,3 +130,22 @@ class BidsDataset(BaseDataset, ABC):
             if seq.is_valid():
                 sequences.append(seq)
         return sequences
+
+    @staticmethod
+    def get_run_id(filename, last_id):
+        """
+        Use regex to extract run id from filename.
+        Example filename : sub-01_ses-imagery01_task-imagery_run-01_bold.json
+        """
+        # Regular expression pattern
+        pattern = r'run-\d+'
+        # Extracting substring using regex
+        match = search(pattern, str(filename))
+
+        if match:
+            run_id = match.group(0)
+            new_id_num = int(run_id.split('-')[-1])
+        else:
+            new_id_num = last_id + 1
+            run_id = f'run-{str(new_id_num).zfill(2)}'
+        return run_id, new_id_num

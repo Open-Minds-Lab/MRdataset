@@ -8,7 +8,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import pydicom
-
+from MRdataset.dicom_utils import is_bids_file
 from MRdataset.tests.config import compl_data_xnat
 from MRdataset.utils import convert2ascii
 
@@ -100,7 +100,7 @@ def make_compliant_bids_dataset(num_subjects,
                                 echo_train_length,
                                 flip_angle) -> Path:
     src_dir, dest_dir = setup_directories(sample_bids_dataset())
-    json_list = list(src_dir.glob('**/*.json'))
+    json_list = filter(is_bids_file, src_dir.glob('**/*.json'))
     subject_names = set()
     i = -1
 
@@ -108,8 +108,8 @@ def make_compliant_bids_dataset(num_subjects,
         i += 1
 
         try:
-            filepath = json_list[i]
-        except IndexError:
+            filepath = next(json_list)
+        except StopIteration:
             break
 
         try:

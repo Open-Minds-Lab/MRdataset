@@ -34,7 +34,13 @@ dependencies = [
 [project.scripts]
 mrdataset = "MRdataset.cli:cli"
 mrds = "MRdataset.cli:cli"
-
+[project.optional-dependencies]
+test = [
+    "pytest~=7.1.2",
+    "hypothesis>=6.97.1",
+    "flake8",
+    "coverage"
+]
 [project.urls]
 Homepage = "https://github.com/Open-Minds-Lab/MRdataset"
 Documentation = "https://open-minds-lab.github.io/MRdataset/"

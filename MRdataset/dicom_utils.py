@@ -1,11 +1,11 @@
 """ Utility functions for dicom files """
 import warnings
 from pathlib import Path
+from re import search
 from typing import Union
 
 import dicom2nifti
 import pydicom
-
 from MRdataset import logger
 
 with warnings.catch_warnings():
@@ -29,6 +29,14 @@ def is_bids_file(filename: Union[str, Path]):
     # TODO: Add some criteria to skip certain files
     if 'derivatives' in str(filename):
         return False
+
+    # Regular expression pattern
+    pattern = r'sub-\d+'
+    # Extracting substring using regex
+    match = search(pattern, str(filename))
+    if not match:
+        return False
+
     return True
 
 

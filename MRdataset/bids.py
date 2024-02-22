@@ -4,7 +4,7 @@ from re import search
 
 from MRdataset import logger
 from MRdataset.base import BaseDataset
-from MRdataset.config import VALID_BIDS_DATATYPES
+from MRdataset.config import VALID_BIDS_DATATYPES, SUPPORTED_BIDS_DATATYPES
 from MRdataset.dicom_utils import is_bids_file
 from MRdataset.utils import folders_with_min_files, valid_dirs, read_json
 from protocol import BidsImagingSequence
@@ -129,6 +129,9 @@ class BidsDataset(BaseDataset, ABC):
                                  name=name)
             if seq.is_valid():
                 sequences.append(seq)
+            else:
+                if name not in SUPPORTED_BIDS_DATATYPES:
+                    logger.error(f'Unsupported datatype: {name}. Skipping it.')
         return sequences
 
     @staticmethod

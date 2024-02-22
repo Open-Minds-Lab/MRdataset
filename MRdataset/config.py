@@ -30,6 +30,7 @@ VALID_BIDS_DATATYPES = [
     'pet'
 ]
 
+SUPPORTED_BIDS_DATATYPES = ['func', 'anat']
 
 # Suppress duplicated warnings
 
@@ -59,7 +60,7 @@ class DatasetEmptyException(MRException):
                          '--data_source. Got 0 DICOM/JSON files.')
 
 
-def configure_logger(log, output_dir, mode='w', level='WARNING'):
+def configure_logger(log, output_dir, mode='w', level='ERROR'):
     """
     Initiate log files.
 

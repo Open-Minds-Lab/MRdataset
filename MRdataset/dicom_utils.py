@@ -29,7 +29,8 @@ def is_bids_file(filename: Union[str, Path]):
     # TODO: Add some criteria to skip certain files
     if 'derivatives' in str(filename):
         return False
-
+    if 'bidsignore' in str(filename):
+        return False
     # Regular expression pattern
     pattern = r'sub-[^_]+'
     # Extracting substring using regex

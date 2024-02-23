@@ -31,7 +31,7 @@ def is_bids_file(filename: Union[str, Path]):
         return False
 
     # Regular expression pattern
-    pattern = r'sub-\d+'
+    pattern = r'sub-[^_]+'
     # Extracting substring using regex
     match = search(pattern, str(filename))
     if not match:

@@ -32,7 +32,6 @@ VALID_BIDS_DATATYPES = [
 
 SUPPORTED_BIDS_DATATYPES = ['func', 'anat']
 
-# Suppress duplicated warnings
 
 class MRException(Exception):
     """

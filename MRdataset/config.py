@@ -30,7 +30,7 @@ VALID_BIDS_DATATYPES = [
     'pet'
 ]
 
-SUPPORTED_BIDS_DATATYPES = ['func', 'anat']
+SUPPORTED_BIDS_DATATYPES = ['func', 'anat', 'dwi', 'fmap']
 
 
 class MRException(Exception):

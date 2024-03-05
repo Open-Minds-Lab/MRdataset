@@ -33,6 +33,15 @@ def is_bids_file(filename: Union[str, Path]):
         return False
     if 'sourcedata' in str(filename):
         return False
+
+    # TODO: Add support for physiological and other continuous
+    #  recordings. Skip for now.
+    #  See : https://bids-specification.readthedocs.io/en/stable/modality-specific-files/physiological-and-other-continuous-recordings.html # noqa
+    #  Example dataset on OpenNeuro : ds002785
+    if '_physio.' in str(filename):
+        return False
+    if '_stim.' in str(filename):
+        return False
     # Regular expression pattern
     pattern = r'sub-[^_]+'
     # Extracting substring using regex

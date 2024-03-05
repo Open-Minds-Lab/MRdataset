@@ -11,11 +11,11 @@ authors:
     orcid: 0000-0003-4662-0558
     affiliation: "1, 2, 3"
 affiliations:
- - name: Intelligent Systems Program, School of Computing and Information, University of Pittsburgh
+ - name: Intelligent Systems Program, School of Computing and Information, University of Pittsburgh, United States of America
    index: 1
- - name: Department of Biomedical Informatics, University of Pittsburgh
+ - name: Department of Biomedical Informatics, University of Pittsburgh, United States of America
    index: 2
- - name: Department of Radiology, University of Pittsburgh
+ - name: Department of Radiology, University of Pittsburgh, United States of America
    index: 3
 date: 22 November 2023
 bibliography: paper.bib

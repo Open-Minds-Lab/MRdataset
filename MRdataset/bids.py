@@ -131,11 +131,11 @@ class BidsDataset(BaseDataset, ABC):
                 sequences.append(seq)
             else:
                 if name not in SUPPORTED_BIDS_DATATYPES:
-                    logger.error(f'MRdataset primarily supports '
-                                 f'{SUPPORTED_BIDS_DATATYPES}'
-                                 f'It seems the parameters in '
-                                 f'this sequence are invalid or '
-                                 f'not supported yet. Skipping it.')
+                    logger.warning(f'MRdataset primarily supports '
+                                   f'{SUPPORTED_BIDS_DATATYPES} .'
+                                   f'It seems the parameters in '
+                                   f'this sequence are invalid or '
+                                   f'not supported yet. Skipping it.')
         return sequences
 
     @staticmethod

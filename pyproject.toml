@@ -64,8 +64,10 @@ version-file = "MRdataset/_version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/mrdataset",
-]
+    "MRdataset/*.py",
+    "MRdataset/resources/*",
+    "MRdataset/tests/*",
+    "MRdataset/tests/resources/*",]
 exclude = [
     "/.github",
     "/docs",
